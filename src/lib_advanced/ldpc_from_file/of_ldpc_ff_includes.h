@@ -1,7 +1,7 @@
-/* $Id: of_ldpc_ff_includes.h 5 2011-03-07 10:33:59Z detchart $ */
+/* $Id: of_ldpc_ff_includes.h 89 2012-05-23 15:15:36Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009 - 2011 INRIA - All rights reserved
+ * (c) Copyright 2009 - 2012 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and
@@ -41,6 +41,9 @@
 #include <sys/time.h>	/* for timersub */
 
 #include "../../lib_common/of_openfec_api.h"
+
+#ifdef OF_USE_LDPC_FROM_FILE_CODEC
+
 #include "../../lib_common/of_types.h"
 #include "../../lib_common/statistics/of_statistics.h"
 #include "../../lib_common/of_mem.h"
@@ -55,5 +58,5 @@
 #include "of_ldpc_ff_api.h"
 #include "of_ldpc_ff.h"
 
+#endif
 #endif //OF_LDPC_FF_INCLUDES
-

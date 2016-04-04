@@ -1,7 +1,7 @@
-/* $Id: of_ldpc_staircase_api.c 67 2012-04-13 12:21:07Z detchart $ */
+/* $Id: of_ldpc_staircase_api.c 97 2013-11-07 00:15:57Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009 - 2011 INRIA - All rights reserved
+ * (c) Copyright 2009 - 2012 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL license under French law and
@@ -156,9 +156,9 @@ of_status_t	of_ldpc_staircase_release_codec_instance (of_ldpc_staircase_cb_t*	of
 	of_print_xor_symbols_statistics(ofcb->stats_xor);
 
 	if (ofcb->stats != NULL) {
-	of_hash_table_destroy(ofcb->stats->hash);
-	of_free(ofcb->stats->hash,NULL);
-	of_free(ofcb->stats,NULL);
+		of_hash_table_destroy(ofcb->stats->hash);
+		of_free(ofcb->stats->hash,NULL);
+		of_free(ofcb->stats,NULL);
 	}
 	if (ofcb->stats_xor != NULL)
 		of_free(ofcb->stats_xor,NULL);
@@ -181,10 +181,7 @@ of_status_t	of_ldpc_staircase_set_fec_parameters (of_ldpc_staircase_cb_t*	ofcb,
 	ofcb->stats			= of_calloc(1, sizeof(of_memory_usage_stats_t), NULL);
 	ofcb->stats->hash		= of_calloc(1, sizeof(of_hash_table_t), NULL);
 	ofcb->stats_xor			= of_calloc(1, sizeof(of_symbol_stats_op_t),NULL);
-	//ofcb->stats->nb_malloc	= 0;
-	//ofcb->stats->nb_calloc	= 0;
-	//ofcb->stats->nb_realloc	= 0;
-	//ofcb->stats->nb_free		= 0;
+
 	of_hash_table_init(ofcb->stats->hash, 97, of_hash, NULL);
 	ofcb->stats_symbols		= of_calloc(1,sizeof(of_symbols_stats_t),NULL);
 #endif
@@ -240,6 +237,26 @@ of_status_t	of_ldpc_staircase_set_fec_parameters (of_ldpc_staircase_cb_t*	ofcb,
 	of_mod2sparse_print_bitmap(ofcb->pchk_matrix);
 #else
 	//of_mod2sparse_matrix_stats(stdout,ofcb->pchk_matrix,ofcb->nb_source_symbols, ofcb->nb_repair_symbols);
+#endif
+//#define PRINT_LDGM_VARIANT /* enable this constant to get a trace of the identity version of H */
+#if defined(OF_DEBUG) && defined(PRINT_LDGM_VARIANT) && defined(IL_SUPPORT)
+	{
+	/*
+	 * calculate and plot the identity variant, H_id, where the staircase is replaced by an identity.
+	 * This is only for curiosity/research purposes. DO NOT use it otherwise.
+	 */
+	of_mod2dense	*dm = NULL;
+
+	dm = of_mod2dense_allocate(ofcb->nb_repair_symbols, ofcb->nb_total_symbols, NULL);
+	of_mod2sparse_to_dense(ofcb->pchk_matrix, dm);
+	for (row = 0; row < ofcb->nb_repair_symbols - 1; row++)
+	{
+		of_mod2dense_xor_rows(dm, row, row + 1);
+	}
+	of_mod2dense_print_bitmap(dm);
+	of_mod2dense_density(dm);
+	of_mod2dense_free(dm, NULL);
+	}
 #endif
 
 	if ((ofcb->encoding_symbols_tab = (void**) of_calloc (ofcb->nb_total_symbols, sizeof (void*) MEM_STATS_ARG)) == NULL) {

@@ -1,7 +1,7 @@
-/* $Id: command_line.c 57 2011-11-18 10:18:00Z roca $ */
+/* $Id: command_line.c 95 2013-04-26 07:09:39Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009-2011 INRIA - All rights reserved
+ * (c) Copyright 2009-2012 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and
@@ -74,6 +74,11 @@ printUsage (char *cmdName)
 	printf("GENERAL PURPOSE OPTIONS:\n");
 	printf("    -h[elp]     this help\n");
 	printf("    -v=<n>      set verbosity to n (only {0, 1, 2} are accepted)\n");
+	printf("    -find_min_overhead\n");
+	printf("                find the minimum code overhead. This test implies launching several\n");
+	printf("                decoding instances, with a number of received packets that is increased,\n");
+	printf("                starting from k, until decoding succeeds. Limited to a single block, and\n");
+	printf("                -seed must be specified to keep the same code and pkt losses (default: false).\n");
 	printf("\n");
 	printf("CODE/CODEC RELATED OPTIONS:\n");
 	printf("    -codec=<n>  set the code/codec:\n");
@@ -92,8 +97,12 @@ printUsage (char *cmdName)
 #ifdef  OF_USE_LDPC_FROM_FILE_CODEC
 	printf("                  %d: LDPC, with a binary H matrix specified in a file, advanced codec\n", OF_CODEC_LDPC_FROM_FILE_ADVANCED);
 #endif
+#ifdef OF_USE_REED_SOLOMON_2_M_CODEC
+	printf("    -rs_m=<n>   set the m parameter of RS over GF(2^m) codes to n (default %d)\n", DFLT_RS_M_PARAM);
+#endif
 #ifdef OF_USE_LDPC_STAIRCASE_CODEC
 	printf("    -ldpc_N1=<n> set the LDPC N1 parameter to n (default %d)\n", DFLT_LDPC_N1);
+	printf("                (only with LDPC-Staircase codecs)\n");
 #endif
 	printf("    -use_callbacks\n");
 	printf("                eperftool allocates memory for decoded source symbols (otherwise the\n");
@@ -108,11 +117,11 @@ printUsage (char *cmdName)
 	printf("                                  n1: loss probability in OK state (integer, default %i)\n", P_LOSS_WHEN_OK);
 	printf("                                  n2: success probability in NOK state (integer, default %i)\n", P_SUCCESS_WHEN_LOSSES);
 	printf("                  -loss=2:<n1>    simulate random losses by specifying the target loss\n");
-	printf("                                  probability (floating point value)\n");
+	printf("                                  probability expressed in percent (floating point value)\n");
 	printf("                  -loss=3:<n1>    simulate random losses by specifying the target number\n");
 	printf("                                  of losses (rather than probability)\n");
-	printf("                  -loss=4         simulate losses by randomly choosing one packet\n");
-	printf("                                  out of all each step (overwrites transmission type)\n");
+	printf("                  -loss=4         randomly choose one packet to send out of the n possibles\n");
+	printf("                                  at each step, with possible duplicates (overwrites transmission type)\n");
 	printf("    -tx_type=<n>\n");
 	printf("                set the transmission type:\n");
 	printf("                  0: randomly send all source + repair symbols (default)\n");
@@ -158,7 +167,7 @@ printUsage (char *cmdName)
 of_status_t	parse_command_line (int argc, char *argv[])
 {
 	int	c;
-	char *OptList = "c:k:r:l:s:t:u:v:h:o:m:n:";
+	char *OptList = "c:f:k:r:l:s:t:u:v:h:o:m:n:";
 #if defined(WIN32)
 	char *optarg = NULL;
 #endif
@@ -178,6 +187,15 @@ of_status_t	parse_command_line (int argc, char *argv[])
 				codec_id = (of_codec_id_t)atoi(optarg + 5);
 			} else {
 				OF_PRINT_ERROR(("bad argument -c%s\n", optarg))
+				return OF_STATUS_FATAL_ERROR;
+			}
+			break;
+
+		case 'f':
+			if (!strncmp(optarg, "ind_min_overhead", 16)) {
+				find_min_overhead_mode = true;
+			} else {
+				OF_PRINT_ERROR(("bad argument -f%s\n", optarg))
 				return OF_STATUS_FATAL_ERROR;
 			}
 			break;
@@ -361,7 +379,7 @@ finish_init_command_line_params ()
 /* 		goto error; */
 	}
 	if (updated_symbol_size && (symbol_size == 0)) {
-		OF_PRINT_ERROR(("ERROR: invalid symbol size 0 (must be >= 1).\n", symbol_size))
+		OF_PRINT_ERROR(("ERROR: invalid symbol size 0 (must be >= 1).\n"))
 		goto error;
 	}
 	if (updated_code_rate && ((code_rate <= 0.0) || (code_rate > 1.0))) {
@@ -388,11 +406,11 @@ finish_init_command_line_params ()
 	else if (updated_matrix_file) {
 		/* TODO read in the matrix file */
 
-		if(of_get_pck_matrix_dimensions_from_file(ldpc_matrix_file_name,&tot_nb_repair_symbols,&tot_nb_encoding_symbols)!=OF_STATUS_OK){
+		if(of_get_pck_matrix_dimensions_from_file(ldpc_matrix_file_name, &tot_nb_repair_symbols, &tot_nb_encoding_symbols) != OF_STATUS_OK){
 			OF_PRINT_ERROR(("ERROR: cannot read pck matrix dimension from file\n"))
 			goto error;
 		}
-		tot_nb_source_symbols	= tot_nb_encoding_symbols-tot_nb_repair_symbols;
+		tot_nb_source_symbols	= tot_nb_encoding_symbols - tot_nb_repair_symbols;
 		object_size		= tot_nb_source_symbols * symbol_size;
 		code_rate		= (double)tot_nb_source_symbols / (double)(tot_nb_encoding_symbols);
 	}
@@ -409,7 +427,15 @@ finish_init_command_line_params ()
 		code_rate		= (double)tot_nb_source_symbols / (double)(tot_nb_encoding_symbols);
 	}
 	fec_ratio = 1.0 / code_rate;
-
+	if (find_min_overhead_mode == true) {
+		/* when eperftool is used iteratively in order to find the mininum decoding overhead,
+		 * start with k, assuming there's a single block... */
+		find_min_overhead_nb_rx_pkts = tot_nb_source_symbols;
+		if (suggested_seed == 0) {
+			OF_PRINT_ERROR(("ERROR: seed must be specified in find_min_overhead mode\n"))
+			goto error;
+		}
+	}
 	OF_PRINT(("tot_nb_source_symbols=%i  tot_nb_repair_symbols=%i  symbol_size=%i  ldpc_N1=%i  rs_m=%i\n",tot_nb_source_symbols,tot_nb_repair_symbols,symbol_size,ldpc_N1,rs_m_param))
 	OF_PRINT(("codec_id=%d\n",codec_id))
 

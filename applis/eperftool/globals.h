@@ -1,7 +1,7 @@
-/* $Id: globals.h 3 2011-03-03 10:48:54Z detchart $ */
+/* $Id: globals.h 95 2013-04-26 07:09:39Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009-2011 INRIA - All rights reserved
+ * (c) Copyright 2009-2012 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and
@@ -86,10 +86,19 @@ extern tx_mode_t	tx_mode;
 /** By default seed is choosen randomly. */
 extern UINT32	suggested_seed;
 
+/** Number of symbols received, once erasures have been applied. */
 extern INT32	max_decoding_steps;
 
+/** false by default, true if eperftool is used iteratively in order to find the mininum
+ * decoding overhead. */
+extern bool	find_min_overhead_mode;
+
+/** when eperftool is used so as to find the mininum decoding overhead, the current nb of
+ * received symbols to test. */
+extern INT32	find_min_overhead_nb_rx_pkts;
+
 /** if use_callback is true, then eperftool uses callbacks from the OpenFEC library */
-extern bool use_callback;
+extern bool	use_callback;
 
 /*
  * Control the number of source symbols sent

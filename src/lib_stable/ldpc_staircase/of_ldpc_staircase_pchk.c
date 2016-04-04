@@ -1,4 +1,4 @@
-/* $Id: of_create_pchk.c 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: of_ldpc_staircase_pchk.c 104 2014-04-08 07:26:27Z roca $ */
 /*
  * The contents of this directory and its sub-directories are
  * Copyright (c) 1995-2003 by Radford M. Neal
@@ -58,10 +58,10 @@ of_mod2sparse* of_create_pchck_matrix_rfc5170_compliant (UINT32		nb_rows,
 {
 	OF_ENTER_FUNCTION
 	of_mod2entry	*e;
-	UINT32		added,
-			uneven;
-	INT32		i, j, k, t;
-	UINT32		*u;
+	UINT32		added, uneven;
+	INT32		i, j, k;
+	INT32		t;			/* left limit within the list of possible choices u[] */
+	UINT32		*u;			/* table used to have a homogeneous 1 distrib. */
 	of_mod2sparse	*pchkMatrix = NULL;
 	UINT32		skipCols = 0;		// avoid warning
 	UINT32		nbDataCols = 0;		// avoid warning
@@ -71,7 +71,7 @@ of_mod2sparse* of_create_pchck_matrix_rfc5170_compliant (UINT32		nb_rows,
 	/* a few sanity checks... */
 	if (left_degree > nb_rows)
 	{
-		OF_PRINT_ERROR(("number of checks per bit (%d) is greater than total checks (%d)\n",
+		OF_PRINT_ERROR(("number of 1s per column (i.e. N1=%d parameter) is greater than total number of rows (i.e. n-k=%d)\n",
 				left_degree, nb_rows));
 		OF_EXIT_FUNCTION
 		return NULL;
@@ -113,7 +113,10 @@ of_mod2sparse* of_create_pchck_matrix_rfc5170_compliant (UINT32		nb_rows,
 			}
 			else
 			{
-				/* no choice left, choose one randomly */
+				/* no choice left, choose one randomly.
+				 * This happens if we're not lucky and if in the remaining possible
+				 * choices, for instance for the last source symbol, the same row
+				 * appears several times. */
 				uneven += 1;
 				do
 				{
@@ -126,8 +129,7 @@ of_mod2sparse* of_create_pchck_matrix_rfc5170_compliant (UINT32		nb_rows,
 	}
 	if (uneven > 0 && of_verbosity >= 1)
 	{
-		ASSERT(0); /* should not happen */
-		OF_PRINT_LVL (1, ("Had to place %d checks in rows unevenly\n", uneven))
+		OF_PRINT_LVL(1, ("%s: Had to place %d checks in rows unevenly\n", __FUNCTION__, uneven))
 	}
 	of_free (u MEM_STATS_ARG);	/* VR: added */
 	/* Add extra bits to avoid rows with less than two checks. */
@@ -153,10 +155,10 @@ of_mod2sparse* of_create_pchck_matrix_rfc5170_compliant (UINT32		nb_rows,
 			added ++;
 		}
 	}
-	if (added > 0 || uneven > 0)
+	if (added >= 1)
 	{
 		ofcb->extra_entries_added_in_pchk = 1;
-		OF_TRACE_LVL(1,("Added %d extra bit-checks to make row Hamming weight at least two\n", added));
+		OF_TRACE_LVL(1,("%s: Added %d extra bit-checks to make row Hamming weight at least two\n", __FUNCTION__, added));
 	}
 	else
 	{

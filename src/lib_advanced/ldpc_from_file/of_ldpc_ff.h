@@ -1,7 +1,7 @@
-/* $Id: of_ldpc_ff.h 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: of_ldpc_ff.h 89 2012-05-23 15:15:36Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009 - 2011 INRIA - All rights reserved
+ * (c) Copyright 2009 - 2012 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and
@@ -31,11 +31,10 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
+#ifdef OF_USE_LDPC_FROM_FILE_CODEC
+
 #ifndef OF_LDPC_FF_H
 #define OF_LDPC_FF_H
-
-
-
 
 
 /**
@@ -147,3 +146,4 @@ of_status_t  of_get_pck_matrix_dimensions_from_file(char * matrix_file,UINT32 * 
 
 
 #endif //OF_LDPC_FF_H
+#endif

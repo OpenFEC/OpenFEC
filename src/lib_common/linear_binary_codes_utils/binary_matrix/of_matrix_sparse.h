@@ -1,4 +1,4 @@
-/* $Id: of_matrix_sparse.h 8 2011-03-25 09:14:06Z detchart $ */
+/* $Id: of_matrix_sparse.h 102 2013-11-08 19:25:52Z roca $ */
 /*
  * The contents of this directory and its sub-directories are
  * Copyright (c) 1995-2003 by Radford M. Neal
@@ -61,6 +61,7 @@ typedef struct of_mod2entry
 	 * with -1 for a row or column header
 	 */
 #ifdef SPARSE_MATRIX_OPT_SMALL_INDEXES /* memory optimization, see ldpc_profile.h */
+	currently not used... otherwise remove this line...
 	INT16	row;
 	INT16	col;
 #else
@@ -384,7 +385,11 @@ UINT32 mod2sparse_backward_sub (of_mod2sparse *, UINT32 *, UINT8 *, UINT8 *);
 #endif // #if 0
 
 /* copy only filled rows and cols from m to r */
-void of_mod2sparse_copy_filled_matrix(of_mod2sparse *m,of_mod2sparse *r,UINT32* index_rows,UINT32* index_cols,of_memory_usage_stats_t *stats);
+void of_mod2sparse_copy_filled_matrix  (of_mod2sparse	*m,
+					of_mod2sparse	*r,
+					UINT32		*index_rows,
+					UINT32		*index_cols,
+					of_memory_usage_stats_t *stats);
 
 #endif /* #ifndef OF_LDPC_MATRIX_SPARSE__ */
 

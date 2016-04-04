@@ -1,4 +1,4 @@
-/* $Id: of_matrix_sparse.c 54 2011-10-25 13:06:20Z detchart $ */
+/* $Id: of_matrix_sparse.c 102 2013-11-08 19:25:52Z roca $ */
 /*
  * The contents of this directory and its sub-directories are
  * Copyright (c) 1995-2003 by Radford M. Neal
@@ -689,8 +689,6 @@ void of_mod2sparse_printf (FILE * fout,
 void of_mod2sparse_print_bitmap (of_mod2sparse * m)
 {
 	OF_ENTER_FUNCTION
-	INT32		__row;
-	INT32		__col;
 	UINT32		i;
 	UINT32		x;
 	UINT32		y;
@@ -710,14 +708,13 @@ void of_mod2sparse_print_bitmap (of_mod2sparse * m)
 
 	y = of_mod2dense_rows (m);
 	x = of_mod2dense_cols (m);
-	for (__row = 0; __row < of_mod2sparse_rows(m); __row++)
+	for (row = 0; row < of_mod2sparse_rows(m); row++)
 	{
-		for (__col = 0; __col < of_mod2sparse_cols(m); __col++)
+		for (col = 0; col < of_mod2sparse_cols(m); col++)
 		{
-			//val	= 0;			
-            val = 0xFFFFFF;
-			x	= __col;
-			y	= of_mod2sparse_rows(m) - __row - 1;
+			val	= 0;			
+			x	= col;
+			y	= of_mod2sparse_rows(m) - row - 1;
 #ifdef IL_SUPPORT	
 			ilSetPixels(x, y, 0, 1, 1, 1, IL_RGBA, IL_UNSIGNED_BYTE, &val);
 #endif
@@ -728,8 +725,7 @@ void of_mod2sparse_print_bitmap (of_mod2sparse * m)
 		e = of_mod2sparse_first_in_row (m, i);
 		while (!of_mod2sparse_at_end_row (e))
 		{
-			//val	= 0xFFFFFF;
-            val=0;
+			val	= 0xFFFFFF;
 			row	= of_mod2sparse_row(e);
 			col	= of_mod2sparse_col(e);
 			x	= col;
@@ -2578,7 +2574,7 @@ of_mod2entry * of_mod2sparse_last_in_col (of_mod2sparse * m, UINT32 i)
 #endif
 
 
-#if defined(ML_DECODING)
+#if defined(ML_DECODING) /* { */
 
 //
 // Return the weight of the line row0
@@ -2813,7 +2809,7 @@ UINT32 of_mod2sparse_swap_rows
 			of_mod2entry * __e;
 
 			__e = of_mod2sparse_first_in_row (m, row0);
-			__col = of_mod2sparse_col (__e);
+			//__col = of_mod2sparse_col (__e);
 			while (!of_mod2sparse_at_end_row (__e))
 			{
 				row_weight++;
@@ -3169,8 +3165,6 @@ UINT32 mod2sparse_weight_col (of_mod2sparse * m, UINT32 col)
 }
 #endif // #if 0
 
-#endif // #if defined(DECODER_GAUSS_PIVOTING)
-
 void of_mod2sparse_copy_filled_matrix(of_mod2sparse *m,of_mod2sparse *r,UINT32* index_rows,UINT32* index_cols,of_memory_usage_stats_t *stats)
 {
 	of_mod2entry *e;
@@ -3189,6 +3183,8 @@ void of_mod2sparse_copy_filled_matrix(of_mod2sparse *m,of_mod2sparse *r,UINT32* 
 		}
 	}
 }
+
+#endif // } ML_DECODING
 
 
 #endif //OF_USE_LINEAR_BINARY_CODES_UTILS

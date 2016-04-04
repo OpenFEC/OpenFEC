@@ -1,7 +1,7 @@
-/* $Id: of_reed-solomon_gf_2_m_api.c 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: of_reed-solomon_gf_2_m_api.c 152 2014-07-08 14:01:42Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009 - 2011 INRIA - All rights reserved
+ * (c) Copyright 2009 - 2012 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and
@@ -33,6 +33,7 @@
 
 #include "of_reed-solomon_gf_2_m_includes.h"
 
+
 #ifdef OF_USE_REED_SOLOMON_2_M_CODEC
 
 
@@ -56,7 +57,7 @@ of_status_t of_rs_2_m_create_codec_instance (of_rs_2_m_cb_t**	of_cb)
 	 * max nb source symbols and max nb encoding symbols are computed
 	 * in the of_rs_2_m_set_fec_parameters function (m is needed).
 	 */
-	cb->max_bit_size			= OF_REED_SOLOMON_2_M_MAX_BIT_SIZE;				/* init it immediately... */
+	cb->max_m			= OF_REED_SOLOMON_2_M_MAX_M;	/* init it immediately... */
 	OF_EXIT_FUNCTION
 	return OF_STATUS_OK;
 }
@@ -65,62 +66,66 @@ of_status_t of_rs_2_m_create_codec_instance (of_rs_2_m_cb_t**	of_cb)
 of_status_t	of_rs_2_m_release_codec_instance (of_rs_2_m_cb_t*	ofcb)
 {
 	OF_ENTER_FUNCTION
-	UINT32 i;
 	of_rs_2m_release((of_galois_field_code_cb_t*)ofcb);
 #ifdef OF_USE_DECODER
 	if (ofcb->available_symbols_tab != NULL)
 	{
-		/*for (i=0;i<ofcb->nb_available_symbols;i++) {
-			if (ofcb->available_symbols_tab[i] != NULL) {
-			of_free(ofcb->available_symbols_tab[i] MEM_STATS_ARG);
-			ofcb->available_symbols_tab[i]=NULL;
-			}
-		}*/
 		of_free(ofcb->available_symbols_tab MEM_STATS_ARG);
 		ofcb->available_symbols_tab = NULL;
 	}
 #endif  /* OF_USE_DECODER */
+#ifdef OF_DEBUG /* { */
+	if (of_verbosity >= 0)
+	{
+		of_print_memory_statistics(ofcb->stats);
+	}
+	OF_TRACE_LVL(1, ("\tTo be added: Reed-Solomon GF(2^4): total of %ld bytes for precalculated tables (incl. %ld for the optimized mult table)\n", 
+		sizeof(of_gf_2_4_log) + sizeof(of_gf_2_4_exp) + sizeof(of_gf_2_4_inv) + sizeof(of_gf_2_4_mul_table) + sizeof(of_gf_2_4_opt_mul_table), sizeof(of_gf_2_4_opt_mul_table)))
+	OF_TRACE_LVL(1, ("\tTo be added: Reed-Solomon GF(2^8): total of %ld bytes for precalculated tables (incl. %ld for mult table)\n", 
+		sizeof(of_gf_2_8_log) + sizeof(of_gf_2_8_exp) + sizeof(of_gf_2_8_inv) + sizeof(of_gf_2_8_mul_table), sizeof(of_gf_2_8_mul_table)))
+	if (ofcb->stats != NULL) {
+		of_hash_table_destroy(ofcb->stats->hash);
+		of_free(ofcb->stats->hash, NULL);
+		of_free(ofcb->stats, NULL);
+	}
+#endif  /* } OF_DEBUG */
 	OF_EXIT_FUNCTION
 	return OF_STATUS_OK;
 }
 
-of_status_t	of_rs_2_m_set_fec_parameters       (of_rs_2_m_cb_t*		ofcb,
+
+of_status_t	of_rs_2_m_set_fec_parameters   (of_rs_2_m_cb_t*		ofcb,
 						of_rs_2_m_parameters_t*	params)
 {
 	OF_ENTER_FUNCTION
-	if ((ofcb->nb_bits = params->bit_size) > ofcb->max_bit_size && ofcb->nb_bits <2) {
-		OF_PRINT_ERROR(("of_rs_set_fec_parameters: ERROR, invalid bit_size parameter (got %d, maximum is %d and minimum is %d)",
-						ofcb->nb_bits, ofcb->max_bit_size,2));
-		goto error;
-	}	
-	if (ofcb->nb_bits!= 4 && ofcb->nb_bits != 8) {
-		OF_PRINT_ERROR(("of_rs_set_fec_parameters: ERROR, invalid bit_size parameter (must be 4 or 8)"));
-		goto error;
-	}
-	ofcb->field_size = (1<<ofcb->nb_bits)-1;
-	ofcb->max_nb_encoding_symbols = ofcb->max_nb_source_symbols = ofcb->field_size;
-	if ((ofcb->nb_source_symbols = params->nb_source_symbols) > ofcb->max_nb_source_symbols) {
-		OF_PRINT_ERROR(("of_rs_set_fec_parameters: ERROR, invalid nb_source_symbols parameter (got %d, maximum is %d)",
-				ofcb->nb_source_symbols, ofcb->max_nb_source_symbols));
-		goto error;
-	}
-	ofcb->nb_source_symbols = params->nb_source_symbols;
-	ofcb->nb_repair_symbols = params->nb_repair_symbols;
-	ofcb->encoding_symbol_length = params->encoding_symbol_length;
-	ofcb->nb_encoding_symbols = ofcb->nb_source_symbols + ofcb->nb_repair_symbols;
-#ifdef OF_USE_DECODER
 #ifdef OF_DEBUG
 	ofcb->stats			= of_calloc(1, sizeof(of_memory_usage_stats_t), NULL);
 	ofcb->stats->hash		= of_calloc(1, sizeof(of_hash_table_t), NULL);
 	of_hash_table_init(ofcb->stats->hash, 97, of_hash, NULL);
-	ofcb->available_symbols_tab	= (void**) of_calloc (ofcb->nb_encoding_symbols, sizeof (void*), NULL);
-#else
-	ofcb->available_symbols_tab	= (void**) of_calloc (ofcb->nb_encoding_symbols, sizeof (void*));
 #endif
+	ofcb->m				= params->m;
+	if ((ofcb->m != 4) && (ofcb->m != 8)) {
+		OF_PRINT_ERROR(("ERROR: invalid m parameter (must be 4 or 8)"));
+		goto error;
+	}
+	ofcb->field_size		= (1 << ofcb->m) - 1;
+	ofcb->max_nb_encoding_symbols	= ofcb->max_nb_source_symbols = ofcb->field_size;
+	if ((ofcb->nb_source_symbols	= params->nb_source_symbols) > ofcb->max_nb_source_symbols) {
+		OF_PRINT_ERROR(("ERROR: invalid nb_source_symbols parameter (got %d, maximum is %d)",
+				ofcb->nb_source_symbols, ofcb->max_nb_source_symbols))
+		goto error;
+	}
+	ofcb->nb_source_symbols		= params->nb_source_symbols;
+	ofcb->nb_repair_symbols		= params->nb_repair_symbols;
+	ofcb->encoding_symbol_length	= params->encoding_symbol_length;
+	ofcb->nb_encoding_symbols	= ofcb->nb_source_symbols + ofcb->nb_repair_symbols;
+#ifdef OF_USE_DECODER
+	ofcb->available_symbols_tab	= (void**) of_calloc (ofcb->nb_encoding_symbols, sizeof (void*) MEM_STATS_ARG);
 	ofcb->nb_available_symbols	= 0;
 #endif  /* OF_USE_DECODER */
 	OF_EXIT_FUNCTION
 	return OF_STATUS_OK;
+
 error:
 	OF_EXIT_FUNCTION
 	return OF_STATUS_FATAL_ERROR;
@@ -128,20 +133,20 @@ error:
 
 
 of_status_t	of_rs_2_m_set_callback_functions (of_rs_2_m_cb_t*		ofcb,
-				       void* (*decoded_source_symbol_callback) (void	*context,
-						       UINT32	size,	/* size of decoded source symbol */
-						       UINT32	esi),	/* encoding symbol ID in {0..k-1} */
-				       void* (*decoded_repair_symbol_callback) (void	*context,
-						       UINT32	size,	/* size of decoded repair symbol */
-						       UINT32	esi),	/* encoding symbol ID in {0..k-1} */
-				       void*	context_4_callback)
+						  void* (*decoded_source_symbol_callback) (void	*context,
+											   UINT32	size,	/* size of decoded source symbol */
+											   UINT32	esi),	/* encoding symbol ID in {0..k-1} */
+						  void* (*decoded_repair_symbol_callback) (void	*context,
+											   UINT32	size,	/* size of decoded repair symbol */
+											   UINT32	esi),	/* encoding symbol ID in {0..k-1} */
+						  void*	context_4_callback)
 {
 	ofcb->decoded_source_symbol_callback	=  decoded_source_symbol_callback;
 	ofcb->decoded_repair_symbol_callback	=  decoded_repair_symbol_callback;
 	ofcb->context_4_callback		=  context_4_callback;
 	if (ofcb->decoded_repair_symbol_callback != NULL)
 	{
-		OF_PRINT_ERROR(("of_rs_set_callback_functions: Warning, the decoded repair symbol callback is never called with Reed-Solomon codes, since those repair symbols are never decoded\n"))
+		OF_PRINT_ERROR(("WARNING, the decoded repair symbol callback is never called with Reed-Solomon codes, since those repair symbols are never decoded\n"))
 	}
 	return OF_STATUS_OK;
 }
@@ -149,26 +154,21 @@ of_status_t	of_rs_2_m_set_callback_functions (of_rs_2_m_cb_t*		ofcb,
 
 #ifdef OF_USE_ENCODER
 
-of_status_t	of_rs_2_m_build_repair_symbol (of_rs_2_m_cb_t*		ofcb,
-					   void*		encoding_symbols_tab[],
-					   UINT32		esi_of_symbol_to_build)
+of_status_t	of_rs_2_m_build_repair_symbol  (of_rs_2_m_cb_t*	ofcb,
+						void*		encoding_symbols_tab[],
+						UINT32		esi_of_symbol_to_build)
 {
 	OF_ENTER_FUNCTION
 	if (esi_of_symbol_to_build < ofcb->nb_source_symbols || esi_of_symbol_to_build >= ofcb->nb_encoding_symbols)
 	{
-		OF_PRINT_ERROR(("of_rs_2_m_build_repair_symbol: Error, bad esi of encoding symbol (%d)",
-				esi_of_symbol_to_build))
+		OF_PRINT_ERROR(("ERROR: bad esi of encoding symbol (%d)\n", esi_of_symbol_to_build))
 		goto error;
 	}
 	if (encoding_symbols_tab[esi_of_symbol_to_build] == NULL)
 	{
-#ifdef OF_DEBUG
-		if ((encoding_symbols_tab[esi_of_symbol_to_build] = of_calloc (1, ofcb->encoding_symbol_length, NULL)) == NULL)
-#else
-		if ((encoding_symbols_tab[esi_of_symbol_to_build] = of_calloc (1, ofcb->encoding_symbol_length)) == NULL)
-#endif
+		if ((encoding_symbols_tab[esi_of_symbol_to_build] = of_calloc (1, ofcb->encoding_symbol_length MEM_STATS_ARG)) == NULL)
 		{
-			OF_PRINT_ERROR(("of_rs_2_m_build_repair_symbol: Error, no memory\n"))
+			OF_PRINT_ERROR(("ERROR: no memory\n"))
 			goto error;
 		}
 	}
@@ -176,15 +176,15 @@ of_status_t	of_rs_2_m_build_repair_symbol (of_rs_2_m_cb_t*		ofcb,
 	{
 		if (of_rs_2m_build_encoding_matrix((of_galois_field_code_cb_t*)ofcb) != OF_STATUS_OK)
 		{
-		  OF_PRINT_ERROR(("of_rs_build_repair_symbol: Error, creating encoding matrix failed"))
-		  goto error;
+			OF_PRINT_ERROR(("ERROR: creating encoding matrix failed\n"))
+			goto error;
 		}
 	}
 	if (of_rs_2m_encode((of_galois_field_code_cb_t*) ofcb, (gf**)encoding_symbols_tab,
 				encoding_symbols_tab[esi_of_symbol_to_build], esi_of_symbol_to_build,
 				ofcb->encoding_symbol_length) != OF_STATUS_OK)
 	{
-		  OF_PRINT_ERROR(("of_rs_2_m_build_repair_symbol: Error, of_rs_encode failed"))
+		  OF_PRINT_ERROR(("ERROR: of_rs_encode failed\n"))
 		  goto error;
 	}
 	OF_EXIT_FUNCTION
@@ -205,13 +205,13 @@ of_status_t of_rs_2_m_decode_with_new_symbol (of_rs_2_m_cb_t*	ofcb,
 	OF_ENTER_FUNCTION
 	if (ofcb->decoding_finished)
 	{
-		OF_TRACE_LVL(2, ("of_rs_decode_with_new_symbol: decoding already done\n"));
+		OF_TRACE_LVL(2, ("%s: decoding already done\n", __FUNCTION__));
 		return OF_STATUS_OK;
 	}
 	if (ofcb->available_symbols_tab[new_symbol_esi] != NULL)
 	{
 		/* duplicated symbol, ignore */
-		OF_TRACE_LVL(2, ("of_rs_decode_with_new_symbol: symbol (esi=%d) duplicated\n", new_symbol_esi));
+		OF_TRACE_LVL(2, ("%s: symbol (esi=%d) duplicated\n", __FUNCTION__, new_symbol_esi));
 		goto end;
 	}
 	ofcb->available_symbols_tab[new_symbol_esi] = new_symbol;
@@ -226,7 +226,7 @@ of_status_t of_rs_2_m_decode_with_new_symbol (of_rs_2_m_cb_t*	ofcb,
 	{
 		/* we received all the k source symbols, so it's finished */
 		ofcb->decoding_finished = true;
-		OF_TRACE_LVL(2, ("of_rs_decode_with_new_symbol: done, all source symbols have been received\n"));
+		OF_TRACE_LVL(2, ("%s: done, all source symbols have been received\n", __FUNCTION__));
 		OF_EXIT_FUNCTION
 		return OF_STATUS_OK;
 	}
@@ -235,16 +235,16 @@ of_status_t of_rs_2_m_decode_with_new_symbol (of_rs_2_m_cb_t*	ofcb,
 		/* we received a sufficient number of symbols, so let's decode */
 		if (of_rs_2_m_finish_decoding(ofcb) != OF_STATUS_OK)
 		{
-			OF_PRINT_ERROR(("of_rs_decode_with_new_symbol: Error, of_rs_decode failure\n"))
+			OF_PRINT_ERROR(("ERROR: of_rs_decode failure\n"))
 			goto error;
 		}
 		ASSERT(ofcb->decoding_finished == true);
-		OF_TRACE_LVL(2, ("of_rs_decode_with_new_symbol: done, decoding successful\n"));
+		OF_TRACE_LVL(2, ("%s: done, decoding successful\n", __FUNCTION__));
 		OF_EXIT_FUNCTION
 		return OF_STATUS_OK;
 	}
 end:
-	OF_TRACE_LVL(2, ("of_rs_decode_with_new_symbol: okay, but not yet finished\n"));
+	OF_TRACE_LVL(2, ("%s: okay, but not yet finished\n", __FUNCTION__));
 	OF_EXIT_FUNCTION
 	return OF_STATUS_OK;
 error:
@@ -279,25 +279,20 @@ of_status_t	of_rs_2_m_set_available_symbols    (of_rs_2_m_cb_t*	ofcb,
 }
 
 
+#if 0		/* new */
 of_status_t	of_rs_2_m_finish_decoding (of_rs_2_m_cb_t*	ofcb)
 {
 	UINT32 		k;
 	UINT32 		n;
-
-
-	char		*tmp_buf[ofcb->nb_source_symbols];	/* copy available source/repair symbol buffers here... */
-	int		tmp_esi[ofcb->nb_source_symbols];	/* ...and their esi here. In fact we only need k entries
+	char		*tmp_buf[ofcb->nb_source_symbols];/* keep available source/repair symbol buffers here... */
+	int		tmp_esi[ofcb->nb_source_symbols]; /* ...and their esi here. In fact we only need k entries
 						 * in these tables, but in order to avoid using malloc (time
 						 * consumming), we use an automatic table of maximum size for
 						 * both tmp_buf[] and tmp_esi[]. */
 	INT32		tmp_idx;		/* index in tmp_buf[] and tmp_esi[] tabs */
-	char		*large_buf = NULL;	/* single large buffer where to copy all source/repair symbols */
-	UINT32		off;			/* offset, in unit of characters, in large_buf */
-	void		**ass_buf;		/* tmp pointer to the current source symbol entry in
-						 * available_symbols_tab[] */
+	void		**ass_buf;		/* tmp pointer to the current available source symbol entry in available_symbols_tab[] */
 	UINT32		ass_esi;		/* corresponding available source symbol ESI */
-	void		**ars_buf;		/* tmp pointer to the current repair symbol entry in
-						 * available_symbols_tab[] */
+	void		**ars_buf;		/* tmp pointer to the current available repair symbol entry in available_symbols_tab[] */
 	UINT32		ars_esi;		/* corresponding available repair symbol ESI */
 
 	OF_ENTER_FUNCTION
@@ -307,11 +302,9 @@ of_status_t	of_rs_2_m_finish_decoding (of_rs_2_m_cb_t*	ofcb)
 	}
 	k = ofcb->nb_source_symbols;
 	n = ofcb->nb_encoding_symbols;
-	//int *tmp_esi = (int*)malloc(ofcb->field_size*sizeof(int));
-	//char ** tmp_buf = (char**)malloc(n*sizeof(char*)); // ???? WRT RS(255)
 	if (ofcb->nb_available_symbols < k)
 	{
-		OF_PRINT_ERROR(("of_rs_finish_decoding: Error, nb received symbols < nb source symbols\n"))
+		OF_PRINT_ERROR(("ERROR: nb received symbols < nb source symbols\n"))
 		OF_EXIT_FUNCTION
 		return OF_STATUS_FAILURE;
 	}
@@ -321,6 +314,116 @@ of_status_t	of_rs_2_m_finish_decoding (of_rs_2_m_cb_t*	ofcb)
 		ofcb->decoding_finished = true;
 		OF_EXIT_FUNCTION
 		return OF_STATUS_OK;
+	}
+	/*
+	 * Because of of_rs_decode internal details, we put source symbols at their right location
+	 * and fill in the gaps (i.e. erased source symbols) with repair symbols.
+	 */
+	ass_esi = 0;
+	ars_esi = k;
+	ass_buf = ofcb->available_symbols_tab;
+	ars_buf = ofcb->available_symbols_tab + k;
+	for (tmp_idx = 0; tmp_idx < k; tmp_idx++)
+	{
+		if (*ass_buf == NULL)
+		{
+			/* this source symbol is not available, replace it with a repair */
+			while (*ars_buf == NULL)
+			{
+				ars_esi++;
+				ars_buf++;
+			}
+			OF_TRACE_LVL(2, ("of_rs_finish_decoding: copy repair with esi=%d in tmp_buf[%d]\n",
+					ars_esi, tmp_idx))
+			tmp_buf[tmp_idx] = *ars_buf;
+			tmp_esi[tmp_idx] = ars_esi;
+			ars_esi++;
+			ars_buf++;
+		}
+		else
+		{
+			OF_TRACE_LVL(2, ("of_rs_finish_decoding: copy source with esi=%d in tmp_buf[%d]\n",
+					ars_esi, tmp_idx))			
+			tmp_buf[tmp_idx] = *ass_buf;
+			tmp_esi[tmp_idx] = ass_esi;
+		}
+		ass_esi++;
+		ass_buf++;
+	}
+//#if 0
+	for (tmp_idx = 0; tmp_idx < k; tmp_idx++)
+	{
+		OF_TRACE_LVL(2, ("Before of_rs_decode: esi=%d, k=%d, tmp_idx=%d\n", tmp_esi[tmp_idx], k, tmp_idx))
+	}
+//#endif
+	if (ofcb->enc_matrix == NULL)
+	{
+		if (of_rs_2m_build_encoding_matrix((of_galois_field_code_cb_t*)ofcb) != OF_STATUS_OK)
+		{
+			OF_PRINT_ERROR(("ERROR: creating encoding matrix failed"))
+			goto error;
+		}
+	}
+	if (of_rs_2m_decode((of_galois_field_code_cb_t*)ofcb, (gf**)tmp_buf, (int*)tmp_esi, ofcb->encoding_symbol_length) != OF_STATUS_OK)
+	{
+		OF_PRINT_ERROR(("ERROR: of_rs_decode failure\n"))
+		goto error;
+	}
+	ofcb->decoding_finished = true;
+//#if 0
+	for (tmp_idx = 0; tmp_idx < k; tmp_idx++)
+	{
+		OF_TRACE_LVL(2, ("After of_rs_decode: esi=%d, k=%d, tmp_idx=%d\n", tmp_esi[tmp_idx], k, tmp_idx))
+	}
+//#endif
+	OF_EXIT_FUNCTION
+	return OF_STATUS_OK;
+
+error:
+	OF_EXIT_FUNCTION
+	return OF_STATUS_ERROR;
+}
+
+#else /* old follows */
+
+of_status_t	of_rs_2_m_finish_decoding (of_rs_2_m_cb_t*	ofcb)
+{
+	UINT32 		k;
+	UINT32 		n;
+	char		*tmp_buf[ofcb->nb_source_symbols];/* keep available source/repair symbol buffers here... */
+	int		tmp_esi[ofcb->nb_source_symbols]; /* ...and their esi here. In fact we only need k entries
+							   * in these tables, but in order to avoid using malloc (time
+							   * consumming), we use an automatic table of maximum size for
+							   * both tmp_buf[] and tmp_esi[]. */
+	INT32		tmp_idx;		/* index in tmp_buf[] and tmp_esi[] tabs */
+	char		*large_buf = NULL;	/* single large buffer where to copy all source/repair symbols */
+	UINT32		off;			/* offset, in unit of characters, in large_buf */
+	void		**ass_buf;		/* tmp pointer to the current available source symbol entry in available_symbols_tab[] */
+	UINT32		ass_esi;		/* corresponding available source symbol ESI */
+	void		**ars_buf;		/* tmp pointer to the current available repair symbol entry in available_symbols_tab[] */
+	UINT32		ars_esi;		/* corresponding available repair symbol ESI */
+
+	OF_ENTER_FUNCTION
+		if (ofcb->decoding_finished)
+		{
+			return OF_STATUS_OK;
+		}
+	k = ofcb->nb_source_symbols;
+	n = ofcb->nb_encoding_symbols;
+	//int *tmp_esi = (int*)malloc(ofcb->field_size*sizeof(int));
+	//char ** tmp_buf = (char**)malloc(n*sizeof(char*)); // ???? WRT RS(255)
+	if (ofcb->nb_available_symbols < k)
+	{
+		OF_PRINT_ERROR(("ERROR: nb received symbols < nb source symbols\n"))
+			OF_EXIT_FUNCTION
+			return OF_STATUS_FAILURE;
+	}
+	if (ofcb->nb_available_source_symbols == k)
+	{
+		/* we received all the k source symbols, so it's finished */
+		ofcb->decoding_finished = true;
+		OF_EXIT_FUNCTION
+			return OF_STATUS_OK;
 	}
 	/*
 	 * Copy available source and repair symbols in a single large buffer first.
@@ -359,8 +462,8 @@ of_status_t	of_rs_2_m_finish_decoding (of_rs_2_m_cb_t*	ofcb)
 				ars_buf++;
 			}
 			OF_TRACE_LVL(2, ("of_rs_finish_decoding: copy repair with esi=%d in tmp_buf[%d]\n",
-					ars_esi, tmp_idx))
-			memcpy(tmp_buf[tmp_idx], *ars_buf, ofcb->encoding_symbol_length);
+						ars_esi, tmp_idx))
+				memcpy(tmp_buf[tmp_idx], *ars_buf, ofcb->encoding_symbol_length);
 			tmp_esi[tmp_idx] = ars_esi;
 			ars_esi++;
 			ars_buf++;
@@ -368,9 +471,9 @@ of_status_t	of_rs_2_m_finish_decoding (of_rs_2_m_cb_t*	ofcb)
 		else
 		{
 			OF_TRACE_LVL(2, ("of_rs_finish_decoding: copy source with esi=%d in tmp_buf[%d]\n",
-					ars_esi, tmp_idx))
+						ars_esi, tmp_idx))
 
-			int i;
+				int i;
 			for (i=0;i<ofcb->encoding_symbol_length;i++) {
 			}
 			memcpy(tmp_buf[tmp_idx], *ass_buf, ofcb->encoding_symbol_length);
@@ -389,14 +492,14 @@ of_status_t	of_rs_2_m_finish_decoding (of_rs_2_m_cb_t*	ofcb)
 	{
 		if (of_rs_2m_build_encoding_matrix((of_galois_field_code_cb_t*)ofcb) != OF_STATUS_OK)
 		{
-			OF_PRINT_ERROR(("of_rs_finish_decoding: Error, creating encoding matrix failed"))
-			goto error;
+			OF_PRINT_ERROR(("ERROR: creating encoding matrix failed\n"))
+				goto error;
 		}
 	}
 	if (of_rs_2m_decode ((of_galois_field_code_cb_t*)ofcb, (gf**)tmp_buf, (int*)tmp_esi, ofcb->encoding_symbol_length) != OF_STATUS_OK)
 	{
-		OF_PRINT_ERROR(("of_rs_finish_decoding: Error, of_rs_decode failure\n"))
-		goto error;
+		OF_PRINT_ERROR(("ERROR: of_rs_decode failure\n"))
+			goto error;
 	}
 	ofcb->decoding_finished = true;
 #if 0
@@ -426,7 +529,7 @@ of_status_t	of_rs_2_m_finish_decoding (of_rs_2_m_cb_t*	ofcb)
 		if (ofcb->decoded_source_symbol_callback != NULL)
 		{
 			*ass_buf = ofcb->decoded_source_symbol_callback (ofcb->context_4_callback,
-									ofcb->encoding_symbol_length, tmp_idx);
+					ofcb->encoding_symbol_length, tmp_idx);
 		}
 		else
 		{
@@ -438,19 +541,20 @@ of_status_t	of_rs_2_m_finish_decoding (of_rs_2_m_cb_t*	ofcb)
 		}
 		memcpy(*ass_buf, tmp_buf[tmp_idx], ofcb->encoding_symbol_length);
 		OF_TRACE_LVL(2, ("of_rs_finish_decoding: decoded source symbol esi=%d from tmp_buf[%d]\n",
-				tmp_idx, tmp_idx))
+					tmp_idx, tmp_idx))
 	}
 	of_free(large_buf MEM_STATS_ARG);
 	OF_EXIT_FUNCTION
-	return OF_STATUS_OK;
+		return OF_STATUS_OK;
 
 no_mem:
-	OF_PRINT_ERROR(("of_rs_finish_decoding: out of memory.\n"))
+	OF_PRINT_ERROR(("ERROR: out of memory.\n"))
 
-error:
-	OF_EXIT_FUNCTION
-	return OF_STATUS_ERROR;
+		error:
+		OF_EXIT_FUNCTION
+		return OF_STATUS_ERROR;
 }
+#endif
 
 
 bool	of_rs_2_m_is_decoding_complete (of_rs_2_m_cb_t* ofcb)
@@ -461,13 +565,13 @@ bool	of_rs_2_m_is_decoding_complete (of_rs_2_m_cb_t* ofcb)
 }
 
 
-of_status_t	of_rs_2_m_get_source_symbols_tab   (of_rs_2_m_cb_t*	ofcb,
-						void*		source_symbols_tab[])
+of_status_t	of_rs_2_m_get_source_symbols_tab (of_rs_2_m_cb_t*	ofcb,
+						  void*			source_symbols_tab[])
 {
 	OF_ENTER_FUNCTION
 	if (of_rs_2_m_is_decoding_complete(ofcb) == false)
 	{
-		OF_PRINT_ERROR(("of_rs_get_source_symbols_tab: Error, decoding not complete.\n"))
+		OF_PRINT_ERROR(("ERROR: decoding not complete.\n"))
 		OF_EXIT_FUNCTION
 		return OF_STATUS_ERROR;
 	}
@@ -490,36 +594,32 @@ of_status_t	of_rs_2_m_get_source_symbols_tab   (of_rs_2_m_cb_t*	ofcb,
 
 #endif  //OF_USE_DECODER
 
-of_status_t	of_rs_2_m_set_control_parameter    (of_rs_2_m_cb_t*	ofcb,
-						UINT32		type,
-						void*		value,
-						UINT32		length)
+of_status_t	of_rs_2_m_set_control_parameter (of_rs_2_m_cb_t*	ofcb,
+						 UINT32			type,
+						 void*			value,
+						 UINT32			length)
 {
+	UINT16		m;
+
 	OF_ENTER_FUNCTION
-	UINT16 bit_size;
 	switch (type) {
 		case OF_RS_CTRL_SET_FIELD_SIZE:
 			if (value == NULL || length != sizeof(UINT16)) {
-				OF_PRINT_ERROR(("%s: OF_CTRL_SET_FIELD_SIZE ERROR: null value or bad length (got %d, expected %ld)\n",__FUNCTION__,length,sizeof(UINT16)))
+				OF_PRINT_ERROR(("OF_CTRL_SET_FIELD_SIZE ERROR: null value or bad length (got %d, expected %ld)\n", length, sizeof(UINT16)))
 				goto error;
 			}
-			bit_size=*(UINT16*)value;
-			/**
-			 *	this test is not necessary. So, we do not use it.
-			 *  if a bad value for field_size is used in set_fec_parameter,
-			 *  the codec return an error.
-			 */
-			/*if (bit_size != 4 && bit_size != 8) {
-				OF_PRINT_ERROR(("of_rs_set_fec_parameters: ERROR, invalid bit_size parameter (must be 4 or 8)"));
+			m = *(UINT16*)value;
+			if (m != 4 && m != 8) {
+				OF_PRINT_ERROR(("ERROR: invalid m=%d parameter (must be 4 or 8)\n", m));
 				goto error;
 			}
-			 */
-			ofcb->nb_bits=bit_size;
-			ofcb->field_size = (1<<ofcb->nb_bits)-1;			
-			ofcb->max_nb_encoding_symbols = ofcb->max_nb_source_symbols = ofcb->field_size;			
+			ofcb->m = m;
+			ofcb->field_size = (1 << ofcb->m) - 1;
+			ofcb->max_nb_encoding_symbols = ofcb->max_nb_source_symbols = ofcb->field_size;
 			break;
+
 		default:
-			OF_PRINT_ERROR(("%s: unknown type (%d)\n", __FUNCTION__, type))
+			OF_PRINT_ERROR(("ERROR: unknown type (%d)\n", type))
 			break;
 	}
 	OF_EXIT_FUNCTION
@@ -531,22 +631,20 @@ error:
 }
 
 
-of_status_t	of_rs_2_m_get_control_parameter    (of_rs_2_m_cb_t*	ofcb,
-						UINT32		type,
-						void*		value,
-						UINT32		length)
+of_status_t	of_rs_2_m_get_control_parameter (of_rs_2_m_cb_t*	ofcb,
+						 UINT32			type,
+						 void*			value,
+						 UINT32			length)
 {
 	OF_ENTER_FUNCTION
 	switch (type) {
 	case OF_CTRL_GET_MAX_K:
 		if (value == NULL || length != sizeof(UINT32)) {
-			OF_PRINT_ERROR(("%s: OF_CTRL_GET_MAX_K ERROR: null value or bad length (got %d, expected %ld)\n",
-				__FUNCTION__, length, sizeof(UINT32)))
+			OF_PRINT_ERROR(("OF_CTRL_GET_MAX_K ERROR: null value or bad length (got %d, expected %ld)\n", length, sizeof(UINT32)))
 			goto error;
 		}
 		if (ofcb->max_nb_source_symbols == 0) {
-			OF_PRINT_ERROR(("%s: OF_CTRL_GET_MAX_K ERROR: this parameter is not initialized."
-							" Use the of_rs_2_m_set_fec_parameters function to initialize it or of_rs_2_m_set_control_parameter.\n",__FUNCTION__))
+			OF_PRINT_ERROR(("OF_CTRL_GET_MAX_K ERROR: this parameter is not initialized. Use the of_rs_2_m_set_fec_parameters function to initialize it or of_rs_2_m_set_control_parameter.\n"))
 			goto error;
 		}
 		*(UINT32*)value = ofcb->max_nb_source_symbols;
@@ -555,13 +653,11 @@ of_status_t	of_rs_2_m_get_control_parameter    (of_rs_2_m_cb_t*	ofcb,
 
 	case OF_CTRL_GET_MAX_N:
 		if (value == NULL || length != sizeof(UINT32)) {
-			OF_PRINT_ERROR(("%s: OF_CTRL_GET_MAX_N ERROR: null value or bad length (got %d, expected %ld)\n",
-				__FUNCTION__, length, sizeof(UINT32)))
+			OF_PRINT_ERROR(("OF_CTRL_GET_MAX_N ERROR: null value or bad length (got %d, expected %ld)\n", length, sizeof(UINT32)))
 			goto error;
 		}
 		if (ofcb->max_nb_encoding_symbols == 0) {
-			OF_PRINT_ERROR(("%s: OF_CTRL_GET_MAX_N ERROR: this parameter is not initialized."
-							" Use the of_rs_2_m_set_fec_parameters function to initialize it or of_rs_2_m_set_control_parameter.\n",__FUNCTION__))
+			OF_PRINT_ERROR(("OF_CTRL_GET_MAX_N ERROR: this parameter is not initialized. Use the of_rs_2_m_set_fec_parameters function to initialize it or of_rs_2_m_set_control_parameter.\n"))
 			goto error;
 		}
 		*(UINT32*)value = ofcb->max_nb_encoding_symbols;
@@ -569,7 +665,7 @@ of_status_t	of_rs_2_m_get_control_parameter    (of_rs_2_m_cb_t*	ofcb,
 		break;
 
 	default:
-		OF_PRINT_ERROR(("%s: unknown type (%d)\n", __FUNCTION__, type))
+		OF_PRINT_ERROR(("ERROR: unknown type (%d)\n", type))
 		goto error;
 	}
 	OF_EXIT_FUNCTION

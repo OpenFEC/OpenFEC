@@ -55,8 +55,10 @@
 #include "../src/lib_common/of_openfec_api.h"
 #include "../src/lib_common/of_debug.h"
 
+#define MIN(a,b)	((a) <= (b) ? (a) : (b))
+
 #define MAX_CODEC_ID	11
-#define MAX_ITER	500		/* MAX_ITER iterations per code/codec */
+#define MAX_ITER	100		/* MAX_ITER iterations per code/codec */
 #define SYMBOL_LEN	1024
 
 int main()
@@ -84,6 +86,12 @@ int main()
 			break;
 			}
 #endif
+#ifdef OF_USE_REED_SOLOMON_2_M_CODEC
+		case OF_CODEC_REED_SOLOMON_GF_2_M_STABLE: {
+			printf("(OF_CODEC_REED_SOLOMON_GF_2_M_STABLE):\n\t");
+			break;
+			}
+#endif
 #ifdef OF_USE_LDPC_STAIRCASE_CODEC
 		case OF_CODEC_LDPC_STAIRCASE_STABLE: {
 			printf("(OF_CODEC_LDPC_STAIRCASE_STABLE):\n\t");
@@ -103,36 +111,43 @@ int main()
 			printf("(OF_CODEC_LDPC_FROM_FILE_ADVANCED):\n\tSkipped...\n");
 			continue;
 #endif
-#ifdef OF_USE_LDPC_STAIRCASE_ADVANCED_CODEC
-		case OF_CODEC_LDPC_STAIRCASE_ADVANCED: {
-			printf("(OF_CODEC_LDPC_STAIRCASE_ADVANCED):\n\t");
-			break;
-			}
-#endif
 		default:
 			printf("unknown codec:\n\tIgnored...\n");
 			continue;
 		}
-	
-		if (ret = of_create_codec_instance(&ses, codec_id, OF_ENCODER, 0) != OF_STATUS_OK)
-		{
-			printf("of_create_codec_instance: ERROR for codec %d\n", codec_id);
-			goto error;
-		}
-		if (of_get_control_parameter(ses,OF_CTRL_GET_MAX_K, (void*)&max_k, sizeof(max_k)) != OF_STATUS_OK)
-		{
-			printf("of_get_control_parameter(): ERROR for codec %d \n", codec_id);
-			goto error;			
-		}
-		if (of_get_control_parameter(ses,OF_CTRL_GET_MAX_N, (void*)&max_n, sizeof(max_n)) != OF_STATUS_OK)
-		{
-			printf("of_get_control_parameter(): ERROR for codec %d \n", codec_id);
-			goto error;				
-		}	
+
+		/* create, initalize and release MAX_ITER codec instances in sequence */
 		for (iter = 0; iter <= MAX_ITER; iter++)
 		{
 			printf("%d ", iter);
 			fflush(stdout);
+			if (ret = of_create_codec_instance(&ses, codec_id, OF_ENCODER, 0) != OF_STATUS_OK)
+			{
+				printf("of_create_codec_instance: ERROR for codec %d\n", codec_id);
+				goto error;
+			}
+	#ifdef OF_USE_REED_SOLOMON_2_M_CODEC
+			if (codec_id == OF_CODEC_REED_SOLOMON_GF_2_M_STABLE)
+			{
+				UINT16	fs = 8;	/* let's use GF(2^8) */
+				/* in this particular case, we need to set the field parameter first before accessing MAX_K or MAX_N! */
+				if (of_set_control_parameter(ses, OF_RS_CTRL_SET_FIELD_SIZE, (void*)&fs, sizeof(fs)) != OF_STATUS_OK)
+				{
+					printf("of_set_control_parameter(): ERROR for codec %d, OF_RS_CTRL_SET_FIELD_SIZE failed\n", codec_id);
+					goto error;			
+				}
+			}
+	#endif
+			if (of_get_control_parameter(ses, OF_CTRL_GET_MAX_K, (void*)&max_k, sizeof(max_k)) != OF_STATUS_OK)
+			{
+				printf("of_get_control_parameter(): ERROR for codec %d\n", codec_id);
+				goto error;			
+			}
+			if (of_get_control_parameter(ses, OF_CTRL_GET_MAX_N, (void*)&max_n, sizeof(max_n)) != OF_STATUS_OK)
+			{
+				printf("of_get_control_parameter(): ERROR for codec %d\n", codec_id);
+				goto error;				
+			}	
 			/* code/codec specific code follows (this is the only place) */
 			switch ((int)codec_id)
 			{
@@ -140,8 +155,8 @@ int main()
 			case OF_CODEC_REED_SOLOMON_GF_2_8_STABLE: {
 				of_rs_parameters_t	*my_params;
 
-				k = max_k+1;
-				n = max_n+1;
+				n = max_n;
+				k = MIN(max_k, n * 0.5); /* test with code rate 1/2 */
 				my_params = (of_rs_parameters_t *)calloc(1, sizeof(* my_params));
 				if (my_params == NULL)
 				{
@@ -152,12 +167,29 @@ int main()
 				break;
 				}
 #endif
+#ifdef OF_USE_REED_SOLOMON_2_M_CODEC
+		case OF_CODEC_REED_SOLOMON_GF_2_M_STABLE: {
+				of_rs_2_m_parameters_t	*my_params;
+
+				n = max_n;
+				k = MIN(max_k, n * 0.5); /* test with code rate 1/2 */
+				my_params = (of_rs_2_m_parameters_t *)calloc(1, sizeof(* my_params));
+				if (my_params == NULL)
+				{
+					printf("calloc: ERROR, no memory for codec %d\n", codec_id);
+					goto error;
+				}
+				my_params->m = 8;
+				params = (of_parameters_t *) my_params;
+				break;
+				}
+#endif
 #ifdef OF_USE_LDPC_STAIRCASE_CODEC
 			case OF_CODEC_LDPC_STAIRCASE_STABLE: {
 				of_ldpc_parameters_t	*my_params;
 
-				k = max_k+1;
-				n = max_n+1;
+				n = max_n;
+				k = MIN(max_k, n * 0.5); /* test with code rate 1/2 */
 				my_params = (of_ldpc_parameters_t *)calloc(1, sizeof(* my_params));
 				if (my_params == NULL)
 				{
@@ -174,32 +206,15 @@ int main()
 			case OF_CODEC_2D_PARITY_MATRIX_STABLE: {
 				of_2d_parity_parameters_t	*my_params;
 
-				k = max_k+1;
-				n = max_n+1;
+				/* there are very few possibilities here, so stick with what was returned */
+				n = max_n;
+				k = max_k;
 				my_params = (of_2d_parity_parameters_t *)calloc(1, sizeof(* my_params));
 				if (my_params == NULL)
 				{
 					printf("calloc: ERROR, no memory for codec %d\n", codec_id);
 					goto error;
 				}
-				params = (of_parameters_t *) my_params;
-				break;
-				}
-#endif
-#ifdef OF_USE_LDPC_STAIRCASE_ADVANCED_CODEC
-			case OF_CODEC_LDPC_STAIRCASE_ADVANCED: {
-				of_ldpc_staircase_advanced_parameters_t	*my_params;
-
-				k = max_k+1;
-				n = max_n+1;
-				my_params = (of_ldpc_staircase_advanced_parameters_t *)calloc(1, sizeof(* my_params));
-				if (my_params == NULL)
-				{
-					printf("calloc: ERROR, no memory for codec %d\n", codec_id);
-					goto error;
-				}
-				my_params->prng_seed	= rand();
-				my_params->N1		= 5;
 				params = (of_parameters_t *) my_params;
 				break;
 				}
@@ -211,21 +226,21 @@ int main()
 			params->nb_source_symbols	= k;
 			params->nb_repair_symbols	= n - k;
 			params->encoding_symbol_length	= SYMBOL_LEN;
-
-			if ((ret = of_set_fec_parameters(ses, params)) == OF_STATUS_OK)
+			if ((ret = of_set_fec_parameters(ses, params)) != OF_STATUS_OK)
 			{
-				printf("of_set_fec_parameters(): \nFAIL to detect error %d \n", codec_id);
+				printf("ERROR, of_set_fec_parameters() failed for codec=%d \n", codec_id);
 				goto error;
 			}
+			/*
+			 * release everything to finish.
+			 */
+			if (ret = of_release_codec_instance(ses) != OF_STATUS_OK)
+			{
+				printf("ERROR, of_release_codec_instance() failed for codec=%d \n", codec_id);
+				goto error;
+			}
+			free(params);
 		}
-		/*
-		 * release everything to finish.
-		 */
-		if (ret = of_release_codec_instance(ses) != OF_STATUS_OK)
-		{
-			printf("of_release_codec_instance: ");continue;
-			goto error;
-		}								
 	}
 	printf("code_params_test: OK\n");
 	return 0;

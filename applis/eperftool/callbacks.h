@@ -1,4 +1,4 @@
-/* $Id: callbacks.h 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: callbacks.h 100 2013-11-07 02:54:55Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009-2011 INRIA - All rights reserved
@@ -32,6 +32,11 @@
  */
 #ifndef CALLBACKS_H
 #define CALLBACKS_H
+
+
+/** Number of times the decode_source_symbol_callback() function is called. */
+extern UINT32	nb_decoded_src_symb_callback_calls;
+
 
 /** This callback can be called by the OpenFEC library to allocate memory for a new source symbol. */
 void* decode_source_symbol_callback(void *context,unsigned int size, unsigned int esi);

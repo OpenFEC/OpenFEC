@@ -1,4 +1,4 @@
-/* $Id: receiver.c 62 2011-11-22 08:45:31Z roca $ */
+/* $Id: receiver.c 100 2013-11-07 02:54:55Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009-2011 INRIA - All rights reserved
@@ -112,8 +112,8 @@ receive_and_decode (void)
 			OF_TRACE_LVL(1, ("receive_and_decode: new repair symbol available (sbn=%d, esi=%d)\n",
 				new_symb_cb->sbn, new_symb_cb->esi))
 		}
-		if (blk->is_decoded) {
-			/* block already decoded, ignore */
+		if (blk->is_decoded || blk->is_abandoned) {
+			/* block already decoded or skipped (e.g. after an error), ignore new packets for it */
 			continue;
 		}
 		avail_symb[new_symb_idx] = orig_symb[new_symb_idx];
@@ -154,6 +154,7 @@ receive_and_decode (void)
 		}
 
 		if (of_decode_with_new_symbol(blk->ses, avail_symb[new_symb_idx], new_symb_cb->esi) == OF_STATUS_ERROR) {
+			/* an error occured, stop everything */
 			of_release_codec_instance(blk->ses);
 			OF_PRINT_ERROR(("receive_and_decode: ERROR: of_decode_with_new_symbol() failed\n"))
 			goto error;
@@ -195,7 +196,8 @@ receive_and_decode (void)
 		 * ML decoding...
 		 */
 		for (sbn = 0, blk = blk_cb_tab; sbn < tot_nb_blocks; sbn++, blk++) {
-			if (blk->is_decoded == true) {
+			of_status_t	ret;
+			if (blk->is_decoded == true || blk->is_abandoned == true) {
 				continue;
 			}
 			if (blk->nb_symbols_received == 0) {
@@ -204,8 +206,9 @@ receive_and_decode (void)
 				continue;
 			}
 			ASSERT(blk->ses);
-			if (of_finish_decoding(blk->ses) != OF_STATUS_OK) {
-				OF_PRINT_ERROR(("ERROR: of_finish_decoding() failed\n"))
+			ret = of_finish_decoding(blk->ses);
+			if (ret == OF_STATUS_ERROR || ret == OF_STATUS_FATAL_ERROR) {
+				OF_PRINT_ERROR(("ERROR: of_finish_decoding() failed with error (%d)\n", ret))
 				if (of_release_codec_instance(blk->ses) != OF_STATUS_OK) {
 					OF_PRINT_ERROR(("ERROR: of_release_codec_instance() failed\n"))
 					goto error;
@@ -222,7 +225,7 @@ receive_and_decode (void)
 				/* get a copy of the source symbols, those received (that we already know)
 				 * and those decoded */
 				if (of_get_source_symbols_tab(blk->ses, (void**)&(avail_symb[blk->first_src_symbol_idx])) != OF_STATUS_OK) {
-					OF_PRINT_ERROR(("ERROR: of_release_codec_instance() failed\n"))
+					OF_PRINT_ERROR(("ERROR: of_get_source_symbols_tab() failed\n"))
 					goto error;
 				}
 				/* then release the codec */
@@ -239,10 +242,29 @@ receive_and_decode (void)
 							tot_nb_blocks, tot_nb_recvd_symbols))
 					break;
 				}
+			} else {
+				/*
+				 * decoding did not succeed for this block, but we need to release everything.
+				 */
+				OF_TRACE_LVL(1, ("receive_and_decode: block sbn=%d decoding failed after calling of_finish_decoding()\n", sbn))
+				/* get a copy of the source symbols, those received (that we already know)
+				 * and those decoded (even if some of them have not been decoded) */
+					if (of_get_source_symbols_tab(blk->ses, (void**)&(avail_symb[blk->first_src_symbol_idx])) != OF_STATUS_OK) {
+						OF_PRINT_ERROR(("ERROR: of_get_source_symbols_tab() failed\n"))
+						goto error;
+					}
+				/* then release the codec */
+				if (of_release_codec_instance(blk->ses) != OF_STATUS_OK) {
+					OF_PRINT_ERROR(("ERROR: of_release_codec_instance() failed\n"))
+					goto error;
+				}
+				blk->ses = NULL;
+				blk->is_decoded = false;
 			}
 		}
 	}
 	if (tot_nb_decoded_blocks == tot_nb_blocks) {
+
 		/* decoding successful */
 #ifdef WIN32
 		QueryPerformanceCounter(&tv1);
@@ -263,6 +285,8 @@ receive_and_decode (void)
 		 * check that data received/recovered is the
 		 * same as data sent
 		 */
+		{
+		bool	integrity = true;
 		OF_TRACE_LVL(1, ("receive_and_decode: now checking object integrity...\n"))
 		for (new_symb_idx = 0; new_symb_idx < tot_nb_source_symbols; new_symb_idx++) {
 			/*printf("### %i ###\n",new_symb_idx);
@@ -272,19 +296,22 @@ receive_and_decode (void)
 			if (orig_symb[new_symb_idx] == NULL)
 			{
 				OF_PRINT_ERROR(("orig_symb[%d] NULL whereas decoding is finished.\n", new_symb_idx))
-				goto error;
+				integrity = false;
 			}
 			if (avail_symb[new_symb_idx] == NULL)
 			{
 				OF_PRINT_ERROR(("avail_symb[%d] NULL whereas decoding is finished.\n", new_symb_idx))
-				goto error;
+				integrity = false;
 			}
 			if (memcmp(orig_symb[new_symb_idx], avail_symb[new_symb_idx], symbol_size) != 0 ) {
 				OF_PRINT_ERROR(("receive_and_decode: ERROR: symbol %d received/rebuilt doesn\'t match original\n", new_symb_idx))		
-				goto error;
+				integrity = false;
 			}
 		}
+		if (integrity == false)
+			goto error;
 		OF_TRACE_LVL(1, ("receive_and_decode: finished, all source symbols are okay :-) ...\n"))
+		}
 #else  // CHECK_INTEGRITY
 		OF_PRINT(("receive_and_decode: WARNING: decoding integrity is not checked (set CHECK_INTEGRITY for that)\n"))
 #endif // CHECK_INTEGRITY
@@ -292,6 +319,10 @@ receive_and_decode (void)
 		/* decoding failure */
 		OF_PRINT(("FAILURE, did not manage to finish decoding even after receiving %d symbols, inefficiency_ratio>%.6f\n",
 			tot_nb_recvd_symbols, (double)tot_nb_recvd_symbols / (double)tot_nb_source_symbols))
+	}
+	if (use_callback) {
+		OF_TRACE_LVL(1, ("decode_source_symbol_callback has been called %i times\n",
+				nb_decoded_src_symb_callback_calls))
 	}
 
 	/*
@@ -310,6 +341,7 @@ receive_and_decode (void)
 	/* free all data and FEC packets created by the source */
 	for (new_symb_idx = 0; new_symb_idx < tot_nb_encoding_symbols; new_symb_idx++) {
 		free(orig_symb[new_symb_idx]);
+		orig_symb[new_symb_idx] = NULL;
 	}
 	free(orig_symb);
 	free(blk_cb_tab);

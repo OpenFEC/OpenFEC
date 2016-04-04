@@ -1,7 +1,7 @@
-/* $Id: of_ldpc_includes.h 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: of_ldpc_includes.h 72 2012-04-13 13:27:26Z detchart $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009 INRIA - All rights reserved
+ * (c) Copyright 2009 - 2012 INRIA - All rights reserved
  * Main authors:	Mathieu Cunche (INRIA)
  *			Jonathan Detchart (INRIA)
  *			Julien Laboure (INRIA)

@@ -1,4 +1,4 @@
-/* $Id: of_statistics.c 72 2012-04-13 13:27:26Z detchart $ */
+/* $Id: of_statistics.c 126 2014-05-06 08:15:25Z kchaumon $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -40,7 +40,7 @@ void of_print_memory_statistics(of_memory_usage_stats_t* mem) {
 	{
 		if (mem->hash != NULL)
 		{
-			OF_TRACE_LVL (0, ("Memory stats:\n\tmaximum_mem=%i, current_mem=%i\n\tmalloc=%u, calloc=%u, realloc=%u, free=%u (*alloc-free=%i missed blocks)\n",
+			OF_TRACE_LVL (0, ("Memory stats:\n\tmaximum_mem=%i  current_mem=%i\n\tmalloc=%u  calloc=%u  realloc=%u  free=%u (*alloc-free=%i missed blocks)\n",
 				mem->maximum_mem, mem->current_mem,
 				mem->nb_malloc, mem->nb_calloc,
 				mem->nb_realloc, mem->nb_free,

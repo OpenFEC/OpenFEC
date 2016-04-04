@@ -1,7 +1,7 @@
-/* $Id: of_galois_field_code.h 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: of_galois_field_code.h 148 2014-07-08 08:01:56Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009 - 2011 INRIA - All rights reserved
+ * (c) Copyright 2009 - 2012 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and
@@ -33,12 +33,10 @@
 
 #ifndef GALOIS_FIELD_CODE_H
 #define GALOIS_FIELD_CODE_H
-#include <stdint.h>
-#include <strings.h>
 
-#include "../../../lib_common/of_debug.h"
-#include "../../../lib_common/of_mem.h"
-#include "../../../lib_common/of_openfec_api.h"
+#include "../of_reed-solomon_gf_2_m_includes.h"
+
+#define bcmp(s1 ,s2, n) memcmp((s1), (s2), (size_t)(n))
 
 #ifdef OF_USE_REED_SOLOMON_2_M_CODEC
 
@@ -49,6 +47,7 @@
  * Primitive polynomials - see Lin & Costello, Appendix A,
  * and  Lee & Messerschmitt, p. 453.
  */
+#if 0
 static const char *of_rs_allPp[] =      /* GF_BITS	polynomial		*/
 {
 	NULL,				/*  0	no code			*/
@@ -69,54 +68,18 @@ static const char *of_rs_allPp[] =      /* GF_BITS	polynomial		*/
 	"1100000000000001",		/* 15	1+x+x^15		*/
 	"11010000000010001"		/* 16	1+x+x^3+x^12+x^16	*/
 };
+#endif
 
 /**
  * Galois-Field-Code stable codec specific control block structure.
  */
-typedef struct of_galois_field_code_cb
-{
-/*****************************************************************************
-*                              of_cb_t                                       *
-******************************************************************************/
-	of_codec_id_t		codec_id;		/* must begin with fec_codec_id          */
-	of_codec_type_t		codec_type;		/* must be 2nd item                      */
-	UINT32			nb_source_symbols;	/** k parameter (AKA code dimension).    */
-	UINT32			nb_repair_symbols;	/** r = n - k parameter.                 */
-	UINT32			encoding_symbol_length;	/** symbol length.                   */
-/*****************************************************************************/
-
-	/** Memory usage statistics, for this codec instance. */
-	of_memory_usage_stats_t	*stats;
-
-	UINT16			nb_bits; 	/* between 2..16 */
-	UINT16			field_size; 	/* 2^nb_bits */
-	gf*			of_rs_gf_exp;	/* index->poly form conversion table	*/
-	int*			of_rs_gf_log;	/* Poly->index form conversion table	*/
-	gf*			of_rs_inverse;	/* inverse of field elem.		*/
-	gf**			of_gf_mul_table; /* table of 2 numbers multiplication */
-
-#ifdef OF_USE_ENCODER
-	/**
-	 * Encoding matrix (G).
-	 * The encoding matrix is computed starting with a Vandermonde matrix,
-	 * and then transforming it into a systematic matrix.
-	 */
-	gf			*enc_matrix ;
-#endif
-#ifdef OF_USE_DECODER
-	/**
-	 * Decoding matrix (k*k).
-	 */
-	gf			*dec_matrix;
-#endif
-	UINT32			magic;
-} of_galois_field_code_cb_t;
-
+typedef	of_rs_2_m_cb_t	of_galois_field_code_cb_t;	/* XXX: the two types are synonymous in fact! */
 
 /**
  * just a helper to init all we need to use GF
  */
 of_status_t	of_rs_2m_init(of_galois_field_code_cb_t* ofcb);
+
 /**
  * and the helper to release memory
  */

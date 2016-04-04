@@ -132,12 +132,6 @@ int main()
 			printf("(OF_CODEC_LDPC_FROM_FILE_ADVANCED):\n\tSkipped...\n");
 			continue;
 #endif
-#ifdef OF_USE_LDPC_STAIRCASE_ADVANCED_CODEC
-		case OF_CODEC_LDPC_STAIRCASE_ADVANCED: {
-			printf("(OF_CODEC_LDPC_STAIRCASE_ADVANCED):\n\t");
-			break;
-			}
-#endif
 		default:
 			printf("unknown codec:\n\tIgnored...\n");
 			continue;
@@ -204,24 +198,7 @@ int main()
 				break;
 				}
 #endif
-#ifdef OF_USE_LDPC_STAIRCASE_ADVANCED_CODEC
-			case OF_CODEC_LDPC_STAIRCASE_ADVANCED: {
-				of_ldpc_staircase_advanced_parameters_t	*my_params;
 
-				k = 500;
-				n = 750;
-				my_params = (of_ldpc_staircase_advanced_parameters_t *)calloc(1, sizeof(* my_params));
-				if (my_params == NULL)
-				{
-					printf("calloc: ERROR, no memory for codec %d\n", codec_id);
-					goto error;
-				}
-				my_params->prng_seed	= rand();
-				my_params->N1		= 5;
-				params = (of_parameters_t *) my_params;
-				break;
-				}
-#endif
 			default:
 				printf("ERROR, unknown codec %d", codec_id);
 				goto error;

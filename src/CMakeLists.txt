@@ -1,8 +1,6 @@
 file (GLOB_RECURSE openfec_sources *)
 
-add_library(openfec  SHARED ${openfec_sources})
-#FIND_LIBRARY(MAGICK_LIB  NAMES Magick PATH /usr/lib/)
-
+add_library(openfec  SHARED  ${openfec_sources})
 
 # Feel free to edit as appropriate the "target_link_libraries".
 #
@@ -14,5 +12,8 @@ add_library(openfec  SHARED ${openfec_sources})
 # library if needed.
 # Otherwise remove the IL library.
 
-target_link_libraries(openfec pthread IL)
+target_link_libraries(openfec m)
+#target_link_libraries(openfec m IL)
+
+#target_link_libraries(openfec pthread IL)
 #target_link_libraries(openfec pthread)

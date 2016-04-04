@@ -1,7 +1,7 @@
-/* $Id: of_ldpc_ff_api.h 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: of_ldpc_ff_api.h 89 2012-05-23 15:15:36Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009 - 2011 INRIA - All rights reserved
+ * (c) Copyright 2009 - 2012 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and
@@ -30,12 +30,13 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
+#ifdef OF_USE_LDPC_FROM_FILE_CODEC
+
 #ifndef OF_CODEC_STABLE_LDPC_FF_API
 #define OF_CODEC_STABLE_LDPC_FF_API
 
-
-
 #include "../../lib_common/of_types.h"
+
 
 /**
  * @struct of_ldpc_ff_parameters_t
@@ -56,4 +57,6 @@ typedef struct of_ldpc_ff_parameters
 	char	*pchk_file;
 } of_ldpc_ff_parameters_t;
 
+
 #endif  /* OF_CODEC_STABLE_LDPC_FF_API */
+#endif

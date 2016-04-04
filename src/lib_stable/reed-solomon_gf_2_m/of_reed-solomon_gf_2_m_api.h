@@ -1,7 +1,7 @@
-/* $Id: of_reed-solomon_gf_2_m_api.h 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: of_reed-solomon_gf_2_m_api.h 115 2014-04-09 14:00:27Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009 - 2011 INRIA - All rights reserved
+ * (c) Copyright 2009 - 2012 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and
@@ -51,7 +51,7 @@ typedef struct of_rs_2_m_parameters
 	/*
 	* FEC codec id specific attributes follow...
 	*/
-	UINT16		bit_size;
+	UINT16		m;			/* WARNING: was bit_size */
 
 } of_rs_2_m_parameters_t;
 

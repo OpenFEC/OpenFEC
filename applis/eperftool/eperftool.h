@@ -1,4 +1,4 @@
-/* $Id: eperftool.h 62 2011-11-22 08:45:31Z roca $ */
+/* $Id: eperftool.h 100 2013-11-07 02:54:55Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009-2011 INRIA - All rights reserved
@@ -38,6 +38,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #ifdef WIN32		/* Windows specific includes */
 #include <Winsock2.h>
@@ -55,6 +57,7 @@
 #define OF_USE_ENCODER
 #define OF_USE_DECODER
 #include "../../src/lib_common/of_openfec_api.h"
+#include "../../src/lib_common/of_mem.h"	/* for of_dump_buffer declaration only */
 
 #ifdef WIN32
 #include "../src/getopt.h"
@@ -104,6 +107,8 @@ typedef struct block_cb {
 	 */
 	/** used by a rx: true once it has been decoded. */
 	bool		is_decoded;
+	/** used by a rx: true if the decoding for this block is abandonned (no need to consider additional symbols then). */
+	bool		is_abandoned;
 	/** number of symbols received for this block until decoding succeeded. */
 	UINT32		nb_symbols_received;
 	/** decoder session, closed once the block has been decoded. */
@@ -114,8 +119,8 @@ typedef struct block_cb {
 	 */
 	UINT32		ldpc_seed;	/** PRNG seed (see RFC 5170). */
 	UINT32		ldpc_N1;	/** N1 parameter of LDPC-* codes (see RFC 5170). */
-	bool		ldpc_dont_send_last_repair;	/** with ldpc-staircase, if N1 is even, this symbol
-					* is often null, so do not sent it, the codec already knows it */
+	bool		ldpc_dont_send_last_repair;	/** with ldpc-staircase, if N1 is even, this symbol is often
+							 * null, so do not sent it, the codec already knows it */
 } block_cb_t;
 
 
@@ -136,6 +141,11 @@ typedef struct symbol_cb {
  * Function prototypes
  */
 
+
+/**
+ * Returns the decoding status: -1 in case of fatal error, 0 if decoding successful, 1 if decoding failed.
+ */
+int		start_enc_dec_test ();
 
 /**
  * Print the command line arguments and some information about the OpenFEC library.
@@ -165,21 +175,16 @@ of_status_t	init_tx_simulator	(void);
 
 symbol_cb_t *	get_next_symbol_received (void);
 
+of_status_t	close_tx_simulator	(void);
+
 #ifdef OF_DEBUG
 void		print_rx_stats		(void);
 #endif
 
-//of_status_t	final_checks		(void);
-
-//of_status_t	print_final_stats	(void);
-
 of_status_t	print_usage		(char *cmdName);
 
-//void		randomize_array		(UINT32 *array, UINT32 arrayLen);
-
-//UINT32		define_symbol_tx_order	(UINT32 *array);
-
-// UINT32 		random_loss		(void);
-
-// UINT32		loss_oracle		(double p);
-
+/** 
+ * Define our own PRNG function in order to have predictable results
+ * that do not depend on the target OS/platform.
+ */
+UINT32		myrand			(void);

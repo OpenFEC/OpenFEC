@@ -1,7 +1,7 @@
-/* $Id: globals.c 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: globals.c 95 2013-04-26 07:09:39Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009-2011 INRIA - All rights reserved
+ * (c) Copyright 2009-2012 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and
@@ -84,6 +84,10 @@ tx_mode_t	tx_mode	= TX_MODE_ALL_RANDOM; /* transmission mode */
 UINT32	suggested_seed	= 0;		  /* by default seed is choosen randomly*/
 
 INT32	max_decoding_steps = -1;
+
+bool	find_min_overhead_mode = false;
+
+INT32	find_min_overhead_nb_rx_pkts = -1;
 
 bool use_callback=false; /* by default, we don't use callbacks */
 

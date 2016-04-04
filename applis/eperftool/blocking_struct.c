@@ -1,7 +1,7 @@
-/* $Id: blocking_struct.c 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: blocking_struct.c 148 2014-07-08 08:01:56Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009-2011 INRIA - All rights reserved
+ * (c) Copyright 2009-2012 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and
@@ -56,13 +56,13 @@ of_compute_blocking_struct (UINT32			B,
 	A		= (double)T/(double)bs->nb_blocks; /* average block size; non integer */
 	bs->A_large	= (UINT32)ceil((double)A);
 	bs->A_small	= (UINT32)floor((double)A);
-	ASSERT(bs->A_large <= B);
 	A_fraction	= A - bs->A_small;
 	bs->I		= double_to_closest_int(A_fraction * (double)bs->nb_blocks);
-#if 0
-	PRINT_OUT((mcl_stdout, "of_compute_blocking_struct: B=%d, L=%d, E=%d\n\t\tnb_blocks=%d, I=%d, A_large=%d, A_small=%d\n",
-		B, L, E, bs->nb_blocks, bs->I, bs->A_large, bs->A_small))
+#if 1
+	printf("of_compute_blocking_struct: B=%d, L=%d, E=%d\n\t\tnb_blocks=%d, I=%d, A_large=%d, A_small=%d\n",
+		B, L, E, bs->nb_blocks, bs->I, bs->A_large, bs->A_small);
 #endif
+	ASSERT(bs->A_large <= B);
 }
 
 

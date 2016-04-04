@@ -1,4 +1,4 @@
-/* $Id: callbacks.c 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: callbacks.c 100 2013-11-07 02:54:55Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009-2011 INRIA - All rights reserved
@@ -31,9 +31,14 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-#include "callbacks.h"
+#include "eperftool.h"
 
-void* decode_source_symbol_callback(void *context,unsigned int size, unsigned int esi) 
+UINT32	nb_decoded_src_symb_callback_calls = 0;
+
+
+void* decode_source_symbol_callback(void *context, unsigned int size, unsigned int esi) 
 {
+	OF_TRACE_LVL(1, ("src symbol callback: esi %i decoded\n", esi))
+	nb_decoded_src_symb_callback_calls++;
 	return malloc(size);
 }

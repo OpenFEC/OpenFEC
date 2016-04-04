@@ -1,7 +1,7 @@
-/* $Id: codec_instance_mgmt.c 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: codec_instance_mgmt.c 115 2014-04-09 14:00:27Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009-2011 INRIA - All rights reserved
+ * (c) Copyright 2009-2012 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and
@@ -75,7 +75,7 @@ create_and_init_codec_instance (of_codec_id_t	codec_id,
 		params.nb_source_symbols	= k;
 		params.nb_repair_symbols	= n - k;
 		params.encoding_symbol_length	= symbol_size;
-		params.bit_size			= rs_m_param;
+		params.m			= rs_m_param;
 		if (of_set_fec_parameters(ses, (of_parameters_t*)&params) != OF_STATUS_OK) {
 			OF_PRINT_ERROR(("ERROR: of_set_fec_parameters() failed for codec_id %d\n", codec_id))
 			goto error;
@@ -95,7 +95,7 @@ create_and_init_codec_instance (of_codec_id_t	codec_id,
 				params.prng_seed = suggested_seed;
 			} else {
 				/* else use a new seed (and therefore new FEC code) each time */
-				params.prng_seed = rand();
+				params.prng_seed = myrand();
 			}
 			params.N1			= ldpc_N1;
 			blk->ldpc_seed			= params.prng_seed;	/* remember... */

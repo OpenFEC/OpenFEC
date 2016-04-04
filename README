@@ -10,26 +10,22 @@ the various applications. In order to compile:
 - Create a "build" directory, if not already present
   (NB: you can change the directory name, "build" is not mandatory).
 
-- Enter this directory, then call cmake with the ".." keyword:
-	bash$ cmake ..
-  You can also specify options to cmake, using the general form:
-	-DDEBUG:STRING=ON|OFF : specify the build type.
-  In particular, in order to generate the Release version (i.e. maximum speed, no
-  debug code):
+- Enter this directory, then call cmake (i.e. the build tool we're using) with
+  the appropriate option:
+  . to generate the Release version (i.e. maximum speed, no debug code):
 	bash$ cmake .. -DDEBUG:STRING=OFF
-  In order to generate the Debug version:
+  . to generate the Debug version:
 	bash$ cmake .. -DDEBUG:STRING=ON
 
 - Then, run make command to compile library from the "build" directory.
-  The target is then created in the "bin/{Debug|Release}/" folder.
+  The target is created in the "../bin/{Debug|Release}/" folder.
 
 
 Comments:
 ---------
 
-- There is no Makefile by default in the distribution. This is normal!
-
-- This project relies on cmake, available on all current platforms, to produce
+- There is no Makefile by default in the distribution. This is normal, as this
+  project relies on the cmake tool, available on all current platforms, to produce
   all the required makefiles. For more information on cmake, please see:
 	http://www.cmake.org/
 
@@ -42,7 +38,8 @@ Comments:
 - Add the DevIL library if you want to have the possibility to produce H/G matrix
   images with LDPC codes. See http://openil.sourceforge.net/
   Please install it on your machine before compiling the OpenFEC library if needed.
-  Otherwise please edit and remove the IL library from the src/CMakeLists.txt file.
+  Otherwise please edit and remove the IL library from the src/CMakeLists.txt file
+  and from any src/lib_stable/*/of_codec_profile.h file.
 
 
 2- HOW-TO CHECK THE BUILD BEFORE USING IT?
@@ -69,7 +66,9 @@ Basically:
 - Enter the "perf_eval" directory.
 - Edit the params.txt ASCII file, that describes the tests to carry out.
 - Launch the tests with the following PERL file:
-	openfec_test.pl
+	./run_tests.pl params.txt
+  (you may give any name you want to the params.txt file, to better reflect the
+   nature of the tests being run)
 - Analyze the results and generates the associated curves with:
 	generate_curves -curve=<curve_id>
 

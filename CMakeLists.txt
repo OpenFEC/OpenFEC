@@ -12,16 +12,15 @@ else(PROFILING STREQUAL "ON")
 endif(PROFILING STREQUAL "ON")
 
 if (DEBUG STREQUAL "ON")
-
+# Debug mode
 ADD_DEFINITIONS(-DOF_DEBUG)
 set(CMAKE_BUILD_TYPE Debug) 
 message(STATUS "Debug mode ON" )
 
 else(DEBUG STREQUAL "ON")
-
+# Release mode
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_C_FLAGS "-O4")
-#set(CMAKE_EXE_LINKER_FLAGS "-Os")
 message(STATUS "Debug mode OFF")
 
 endif (DEBUG STREQUAL "ON")

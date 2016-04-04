@@ -1,7 +1,7 @@
-/* $Id: of_reed-solomon_gf_2_m_includes.h 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: of_reed-solomon_gf_2_m_includes.h 148 2014-07-08 08:01:56Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009 - 2011 INRIA - All rights reserved
+ * (c) Copyright 2009 - 2012 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and
@@ -52,10 +52,13 @@
 #include "../../lib_common/of_openfec_api.h"
 #include "../../lib_common/of_cb.h"
 #include "../../lib_common/of_mem.h"
+#include "../../lib_common/linear_binary_codes_utils/of_symbol.h"
 
-#include "galois_field_codes_utils/of_galois_field_code.h"
 #include "of_reed-solomon_gf_2_m_api.h"
 #include "of_reed-solomon_gf_2_m.h"
+#include "galois_field_codes_utils/of_galois_field_code.h"
 
+#include "galois_field_codes_utils/algebra_2_4.h"
+#include "galois_field_codes_utils/algebra_2_8.h"
 
 #endif //OF_REED_SOLOMON_INCLUDES_H

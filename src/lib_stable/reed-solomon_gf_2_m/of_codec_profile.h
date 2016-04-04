@@ -1,7 +1,7 @@
-/* $Id: of_codec_profile.h 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: of_codec_profile.h 152 2014-07-08 14:01:42Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009 - 2011 INRIA - All rights reserved
+ * (c) Copyright 2009 - 2012 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and
@@ -54,12 +54,8 @@
 
 
 /**
- * Default maximum number of source and encoding symbols for this codec.
- * This value depends in particular on the Finite Field size used (here GF(2^8)).
- * To this  limit, codec implementation details might add other limits (e.g. if
- * the ESI values are stored in UINT16 instead of UINT32...).
+ * Maximum m value for the GF(2^m) field.
+ * WARNING: for the moment, only m=4 and 8 are supported!
  */
-//#define OF_REED_SOLOMON_2_M_MAX_NB_SOURCE_SYMBOLS_DEFAULT		255
-//#define OF_REED_SOLOMON_2_M_MAX_NB_ENCODING_SYMBOLS_DEFAULT		255
+#define OF_REED_SOLOMON_2_M_MAX_M					8
 
-#define OF_REED_SOLOMON_2_M_MAX_BIT_SIZE			16

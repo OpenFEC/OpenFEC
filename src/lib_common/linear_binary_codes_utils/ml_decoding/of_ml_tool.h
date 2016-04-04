@@ -1,4 +1,4 @@
-/* $Id: of_ml_tool.h 72 2012-04-13 13:27:26Z detchart $ */
+/* $Id: of_ml_tool.h 149 2014-07-08 10:21:50Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -40,9 +40,12 @@
 #ifdef OF_USE_LINEAR_BINARY_CODES_UTILS
 #ifdef ML_DECODING
 
+#include <math.h>
+#include <string.h>
 #include "../../of_types.h"
-#include "../../of_openfec_api.h" 	
-#include "of_ml_decoding.h"
+#include "../../of_openfec_api.h"
+#include "../of_linear_binary_code.h"
+
 
 #ifdef OF_DEBUG
 #define OP_ARGS ,UINT32* op

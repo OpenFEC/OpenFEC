@@ -1,4 +1,4 @@
-/* $Id: of_openfec_api.c 72 2012-04-13 13:27:26Z detchart $ */
+/* $Id: of_openfec_api.c 148 2014-07-08 08:01:56Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -51,7 +51,10 @@
 UINT32	of_verbosity;
 
 
-of_status_t	of_create_codec_instance (of_session_t**	ses, of_codec_id_t	codec_id,  of_codec_type_t	codec_type,  UINT32	verbosity)
+of_status_t	of_create_codec_instance (of_session_t**	ses,
+					  of_codec_id_t		codec_id, 
+					  of_codec_type_t	codec_type, 
+					  UINT32		verbosity)
 {
 	of_status_t	status;
 	
@@ -219,20 +222,17 @@ of_status_t	of_set_fec_parameters  (of_session_t* ses,	of_parameters_t*	params)
 #endif
 #ifdef OF_USE_LDPC_STAIRCASE_CODEC	
 		case OF_CODEC_LDPC_STAIRCASE_STABLE:
-			status = of_ldpc_staircase_set_fec_parameters ( (of_ldpc_staircase_cb_t*) ses,
-														   (of_ldpc_parameters_t*) params);
+			status = of_ldpc_staircase_set_fec_parameters ( (of_ldpc_staircase_cb_t*) ses, (of_ldpc_parameters_t*) params);
 			break;
 #endif
 #ifdef OF_USE_2D_PARITY_MATRIX_CODEC		
 		case OF_CODEC_2D_PARITY_MATRIX_STABLE:
-			status = of_2d_parity_set_fec_parameters( (of_2d_parity_cb_t*) ses,
-													 (of_2d_parity_parameters_t*) params);
+			status = of_2d_parity_set_fec_parameters( (of_2d_parity_cb_t*) ses, (of_2d_parity_parameters_t*) params);
 			break;
 #endif	
 #ifdef OF_USE_LDPC_FROM_FILE_CODEC		
 		case OF_CODEC_LDPC_FROM_FILE_ADVANCED:
-			status = of_ldpc_ff_set_fec_parameters ((of_ldpc_ff_cb_t*) ses,
-													(of_ldpc_ff_parameters_t*) params);
+			status = of_ldpc_ff_set_fec_parameters ((of_ldpc_ff_cb_t*) ses, (of_ldpc_ff_parameters_t*) params);
 			break;
 #endif
 		default:
@@ -249,13 +249,13 @@ error:
 
 
 of_status_t	of_set_callback_functions (of_session_t	*ses,
-									   void* (*decoded_source_symbol_callback) (void	*context,
-																				UINT32	size,
-																				UINT32	esi),
-									   void* (*decoded_repair_symbol_callback) (void	*context,
-																				UINT32	size,
-																				UINT32	esi),
-									   void*	context_4_callback)
+					void* (*decoded_source_symbol_callback) (void	*context,
+										UINT32	size,
+										UINT32	esi),
+					void* (*decoded_repair_symbol_callback) (void	*context,
+										UINT32	size,
+										UINT32	esi),
+					void*	context_4_callback)
 {
 	of_status_t	status;
 	
@@ -275,42 +275,42 @@ of_status_t	of_set_callback_functions (of_session_t	*ses,
 #ifdef OF_USE_REED_SOLOMON_CODEC
 		case OF_CODEC_REED_SOLOMON_GF_2_8_STABLE:
 			status = of_rs_set_callback_functions((of_rs_cb_t*) ses,
-												  decoded_source_symbol_callback,
-												  decoded_repair_symbol_callback,
-												  context_4_callback);
+							decoded_source_symbol_callback,
+							decoded_repair_symbol_callback,
+							context_4_callback);
 			break;
 #endif
 #ifdef OF_USE_REED_SOLOMON_2_M_CODEC
 		case OF_CODEC_REED_SOLOMON_GF_2_M_STABLE:
 			status = of_rs_2_m_set_callback_functions((of_rs_2_m_cb_t*) ses,
-													  decoded_source_symbol_callback,
-													  decoded_repair_symbol_callback,
-													  context_4_callback);
+							decoded_source_symbol_callback,
+							decoded_repair_symbol_callback,
+							context_4_callback);
 			break;
 #endif
 #ifdef OF_USE_LDPC_STAIRCASE_CODEC
 		case OF_CODEC_LDPC_STAIRCASE_STABLE:
 			status = of_ldpc_staircase_set_callback_functions((of_ldpc_staircase_cb_t*) ses,
-															  decoded_source_symbol_callback,
-															  decoded_repair_symbol_callback,
-															  context_4_callback);
-			break;		
+							decoded_source_symbol_callback,
+							decoded_repair_symbol_callback,
+							context_4_callback);
+			break;
 #endif
 #ifdef OF_USE_2D_PARITY_MATRIX_CODEC
 		case OF_CODEC_2D_PARITY_MATRIX_STABLE:
 			status = of_2d_parity_set_callback_functions( (of_2d_parity_cb_t*) ses,
-														 decoded_source_symbol_callback,
-														 decoded_repair_symbol_callback,
-														 context_4_callback);
+							decoded_source_symbol_callback,
+							decoded_repair_symbol_callback,
+							context_4_callback);
 			break;
 #endif	
 #ifdef OF_USE_LDPC_FROM_FILE_CODEC	
 		case OF_CODEC_LDPC_FROM_FILE_ADVANCED:
 			status = of_ldpc_staircase_set_callback_functions((of_ldpc_staircase_cb_t*) ses,
-															  decoded_source_symbol_callback,
-															  decoded_repair_symbol_callback,
-															  context_4_callback);
-			break;		
+							decoded_source_symbol_callback,
+							decoded_repair_symbol_callback,
+							context_4_callback);
+			break;
 #endif
 		default:
 			OF_PRINT_ERROR ( ("Error, codec %d non available\n", ((of_cb_t*)ses)->codec_id))
@@ -326,19 +326,17 @@ error:
 
 
 of_status_t	of_more_about (of_session_t*	ses,
-						   char**		version_str,
-						   char**		copyrights_str)
+				char**		version_str,
+				char**		copyrights_str)
 {
 	OF_ENTER_FUNCTION
-	static char	of_version_string[] = "OpenFEC.org - Version 1.3.0, April 13th, 2012\n";
+	static char	of_version_string[] = "OpenFEC.org - Version 1.4.0, July 9th, 2014\n";
 	static char	of_copyrights_string[] ="\n\
     OpenFEC.org - Because free, open source AL-FEC codes and codecs matter\n\
-    Copyright (c) 2003-2012 INRIA - All rights reserved\n\
-    Copyright (c) 2009-2012 ISAE - All rights reserved\n\
-    Copyright (c) 2009-2012 CEA-LETI - All rights reserved\n\
+    Copyright (c) 2003-2014 INRIA - All rights reserved\n\
 	\n\
     LDPC codecs:\n\
-	Copyright (c) 2003-2012 INRIA - All rights reserved\n\
+	Copyright (c) 2003-2014 INRIA - All rights reserved\n\
 	This library contains code from R. Neal:\n\
 	Copyright (c) 1995-2003 by Radford M. Neal\n\
 	\n\
@@ -395,20 +393,17 @@ of_status_t	of_build_repair_symbol (of_session_t*	ses, void*	encoding_symbols_ta
 #endif
 #ifdef OF_USE_LDPC_STAIRCASE_CODEC
 		case OF_CODEC_LDPC_STAIRCASE_STABLE:
-			status = of_ldpc_staircase_build_repair_symbol ((of_ldpc_staircase_cb_t*) ses, encoding_symbols_tab,
-															esi_of_symbol_to_build);
+			status = of_ldpc_staircase_build_repair_symbol ((of_ldpc_staircase_cb_t*) ses, encoding_symbols_tab, esi_of_symbol_to_build);
 			break;
 #endif
 #ifdef OF_USE_2D_PARITY_MATRIX_CODEC
 		case OF_CODEC_2D_PARITY_MATRIX_STABLE:
-			status = of_2d_parity_build_repair_symbol( (of_2d_parity_cb_t*) ses, encoding_symbols_tab,
-													  esi_of_symbol_to_build);
+			status = of_2d_parity_build_repair_symbol( (of_2d_parity_cb_t*) ses, encoding_symbols_tab, esi_of_symbol_to_build);
 			break;
 #endif
 #ifdef OF_USE_LDPC_FROM_FILE_CODEC
 		case OF_CODEC_LDPC_FROM_FILE_ADVANCED:
-			status = of_ldpc_ff_build_repair_symbol ((of_ldpc_ff_cb_t*) ses, encoding_symbols_tab,
-													 esi_of_symbol_to_build);
+			status = of_ldpc_ff_build_repair_symbol ((of_ldpc_ff_cb_t*) ses, encoding_symbols_tab, esi_of_symbol_to_build);
 			break;
 #endif
 		default:
@@ -466,8 +461,7 @@ of_status_t	of_decode_with_new_symbol (of_session_t*	ses,
 #endif
 #ifdef OF_USE_LDPC_STAIRCASE_CODEC
 		case OF_CODEC_LDPC_STAIRCASE_STABLE:
-			status = of_ldpc_staircase_decode_with_new_symbol ( (of_ldpc_staircase_cb_t*) ses,
-															   new_symbol_buf, new_symbol_esi);
+			status = of_ldpc_staircase_decode_with_new_symbol ( (of_ldpc_staircase_cb_t*) ses, new_symbol_buf, new_symbol_esi);
 			break;
 #endif
 #ifdef OF_USE_2D_PARITY_MATRIX_CODEC
@@ -477,8 +471,7 @@ of_status_t	of_decode_with_new_symbol (of_session_t*	ses,
 #endif
 #ifdef OF_USE_LDPC_FROM_FILE_CODEC
 		case OF_CODEC_LDPC_FROM_FILE_ADVANCED:
-			status = of_ldpc_staircase_decode_with_new_symbol ( (of_ldpc_staircase_cb_t*) ses,
-															   new_symbol_buf, new_symbol_esi);
+			status = of_ldpc_staircase_decode_with_new_symbol ( (of_ldpc_staircase_cb_t*) ses, new_symbol_buf, new_symbol_esi);
 			break;
 #endif
 		default:
@@ -724,9 +717,9 @@ error:
 
 
 of_status_t	of_set_control_parameter (of_session_t*	ses,
-									  UINT32	type,
-									  void*		value,
-									  UINT32	length)
+					  UINT32	type,
+					  void*		value,
+					  UINT32	length)
 {
 	of_status_t status;
 	

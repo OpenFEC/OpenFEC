@@ -1,7 +1,7 @@
-/* $Id: codec_instance_mgmt.h 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: codec_instance_mgmt.h 73 2012-04-13 13:27:48Z detchart $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009-2011 INRIA - All rights reserved
+ * (c) Copyright 2009-2012 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and

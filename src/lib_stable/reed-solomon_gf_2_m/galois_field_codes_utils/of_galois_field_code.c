@@ -1,7 +1,7 @@
-/* $Id: of_galois_field_code.c 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: of_galois_field_code.c 148 2014-07-08 08:01:56Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009 - 2011 INRIA - All rights reserved
+ * (c) Copyright 2009 - 2012 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and
@@ -31,12 +31,11 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-#include "of_galois_field_code.h"
+#include "../of_reed-solomon_gf_2_m_includes.h"
+
 
 #ifdef OF_USE_REED_SOLOMON_2_M_CODEC
 
-#include "algebra_2_4.h"
-#include "algebra_2_8.h"
 
 gf of_modnn(of_galois_field_code_cb_t* ofcb,INT32 x)
 {
@@ -44,7 +43,7 @@ gf of_modnn(of_galois_field_code_cb_t* ofcb,INT32 x)
 	while (x >= field_size)
 	{
 		x -= field_size;
-		x = (x >> ofcb->nb_bits) + (x & field_size);
+		x = (x >> ofcb->m) + (x & field_size);
 	}
 	return x;
 }
@@ -141,7 +140,7 @@ of_status_t of_rs_2m_build_encoding_matrix(of_galois_field_code_cb_t* ofcb)
 	for (p = tmp_m + k, row = 0; row < k+r - 1 ; row++, p += k)
 	{
 		for (col = 0 ; col < k ; col ++)
-			switch(ofcb->nb_bits) {
+			switch(ofcb->m) {
 				case 4:
 					p[col] = of_gf_2_4_exp[of_modnn (ofcb,row*col) ];
 					break;
@@ -156,13 +155,13 @@ of_status_t of_rs_2m_build_encoding_matrix(of_galois_field_code_cb_t* ofcb)
 	 * k*k vandermonde matrix, multiply right the bottom n-k rows
 	 * by the inverse, and construct the identity matrix at the top.
 	 */
-	switch(ofcb->nb_bits) {
+	switch(ofcb->m) {
 		case 4:
-			of_galois_field_2_4_invert_vdm(tmp_m,k);
+			of_galois_field_2_4_invert_vdm(ofcb, tmp_m, k);
 			of_galois_field_2_4_matmul(tmp_m + k*k, tmp_m, ofcb->enc_matrix + k*k, r, k, k);
 			break;
 		case 8:
-			of_galois_field_2_8_invert_vdm(tmp_m,k);
+			of_galois_field_2_8_invert_vdm(ofcb, tmp_m, k);
 			of_galois_field_2_8_matmul(tmp_m + k*k, tmp_m, ofcb->enc_matrix + k*k, r, k, k);
 			break;			
 	}
@@ -186,7 +185,7 @@ of_status_t of_rs_2m_build_encoding_matrix(of_galois_field_code_cb_t* ofcb)
 
 
 #ifdef OF_USE_DECODER
-of_status_t of_rs_2m_build_decoding_matrix(of_galois_field_code_cb_t* ofcb,int *index)
+of_status_t of_rs_2m_build_decoding_matrix(of_galois_field_code_cb_t* ofcb, int *index)
 {
 	OF_ENTER_FUNCTION
 	UINT32 k,r,i;
@@ -219,13 +218,13 @@ of_status_t of_rs_2m_build_decoding_matrix(of_galois_field_code_cb_t* ofcb,int *
 			}
 	}
 	int result;
-	switch (ofcb->nb_bits)
+	switch (ofcb->m)
 	{
 	case 4:
-		result = of_galois_field_2_4_invert_mat(ofcb->dec_matrix, k);
+		result = of_galois_field_2_4_invert_mat(ofcb, ofcb->dec_matrix, k);
 		break;
 	case 8:
-		result = of_galois_field_2_8_invert_mat(ofcb->dec_matrix, k);
+		result = of_galois_field_2_8_invert_mat(ofcb, ofcb->dec_matrix, k);
 		break;			
 	}
 	if (result)
@@ -251,9 +250,8 @@ of_status_t of_rs_2m_decode (of_galois_field_code_cb_t* ofcb, gf *_pkt[], int in
 	gf **new_pkt ;
 	int row, col, k = ofcb->nb_source_symbols ;
 
-	if (ofcb->nb_bits > 8)
+	if (ofcb->m > 8)
 		sz /= 2 ;
-
 	if (of_rs_2m_shuffle (pkt, index, k))
 	{
 		/* error if true */
@@ -275,12 +273,11 @@ of_status_t of_rs_2m_decode (of_galois_field_code_cb_t* ofcb, gf *_pkt[], int in
 		if (index[row] >= k)
 		{
 			new_pkt[row] = (gf *) of_calloc (sz, sizeof (gf) MEM_STATS_ARG);
-			//bzero (new_pkt[row], sz * sizeof (gf)) ;
 			for (col = 0 ; col < k ; col++)
 			{
-				if (ofcb->dec_matrix[row*k + col] !=0)
+				if (ofcb->dec_matrix[row*k + col] != 0)
 				{
-					switch (ofcb->nb_bits)
+					switch (ofcb->m)
 					{
 					case 4:
 						of_galois_field_2_4_addmul1_compact(new_pkt[row], pkt[col], ofcb->dec_matrix[row*k + col], sz);
@@ -289,11 +286,12 @@ of_status_t of_rs_2m_decode (of_galois_field_code_cb_t* ofcb, gf *_pkt[], int in
 						// no addmul1 compact form for GF(2^8)
 						of_galois_field_2_8_addmul1(new_pkt[row], pkt[col], ofcb->dec_matrix[row*k + col], sz);
 						break;							
-					}			
+					}
 				}
 			}
 		}
 	}
+//#if 0
 	/*
 	 * move pkts to their final destination
 	 * Warning: this function does not update the index[] table to contain
@@ -307,14 +305,16 @@ of_status_t of_rs_2m_decode (of_galois_field_code_cb_t* ofcb, gf *_pkt[], int in
 			of_free (new_pkt[row] MEM_STATS_ARG);
 		}
 	}
+//#endif
 	of_free (new_pkt MEM_STATS_ARG);
 	of_free(ofcb->dec_matrix MEM_STATS_ARG);
-	ofcb->dec_matrix=NULL;
+	ofcb->dec_matrix = NULL;
 	OF_EXIT_FUNCTION
 	return OF_STATUS_OK;
-	error:
-		OF_EXIT_FUNCTION
-		return OF_STATUS_FATAL_ERROR;
+
+error:
+	OF_EXIT_FUNCTION
+	return OF_STATUS_FATAL_ERROR;
 }
 #endif
 
@@ -328,25 +328,32 @@ of_status_t	of_rs_2m_encode(of_galois_field_code_cb_t* ofcb,gf *_src[], gf *_fec
 	int i, k = ofcb->nb_source_symbols ;
 	gf *p ;
 
-	if (ofcb->nb_bits > 8)
+	if (ofcb->m > 8)
 		sz /= 2 ;
 
 	if (index < k)
-		bcopy (src[index], fec, sz*sizeof (gf)) ;
-	else if (index < (ofcb->nb_source_symbols+ofcb->nb_repair_symbols))
+	{
+		bcopy (src[index], fec, sz * sizeof(gf));
+	}
+	else if (index < (ofcb->nb_source_symbols + ofcb->nb_repair_symbols))
 	{
 		p = & (ofcb->enc_matrix[index*k]);
-		bzero (fec, sz*sizeof (gf));
+		bzero (fec, sz * sizeof (gf));
 		for (i = 0; i < k ; i++)
+		{
 			if (p[i] != 0 )
-				switch(ofcb->nb_bits) {
-					case 4:
-						of_galois_field_2_4_addmul1_compact(fec, src[i], p[i], sz);
-						break;
-					case 8:
-						of_galois_field_2_8_addmul1(fec, src[i], p[i], sz);
-						break;						
+			{
+				switch(ofcb->m)
+				{
+				case 4:
+					of_galois_field_2_4_addmul1_compact(fec, src[i], p[i], sz);
+					break;
+				case 8:
+					of_galois_field_2_8_addmul1(fec, src[i], p[i], sz);
+					break;						
 				}
+			}
+		}
 		return OF_STATUS_OK;
 	}
 	else

@@ -1,7 +1,7 @@
-/* $Id: sender.c 62 2011-11-22 08:45:31Z roca $ */
+/* $Id: sender.c 148 2014-07-08 08:01:56Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009-2011 INRIA - All rights reserved
+ * (c) Copyright 2009-2012 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and
@@ -60,12 +60,14 @@ init_sender (void)
 	UINT32		max_n_4_any_blk;/* maximum n value for any block */
 
 
+#if 0
 #ifdef WIN32
 	QueryPerformanceCounter(&tv0);
 	OF_PRINT(("init_start=%lI64f\n", (double)tv0.QuadPart/(double)freq.QuadPart))
 #else
 	gettimeofday(&tv0, NULL);
 	OF_PRINT(("init_start=%ld.%ld\n", tv0.tv_sec, tv0.tv_usec))
+#endif
 #endif
 	/*
 	 * determine the blocking structure, which requires to create a temporary FEC session.
@@ -92,16 +94,32 @@ init_sender (void)
 		OF_PRINT_ERROR(("init_sender: ERROR: of_release_codec_instance() failed\n"))
 		goto error;
 	}
+#if 0
+#ifdef WIN32
+	QueryPerformanceCounter(&tv1);
+	OF_PRINT(("init_end=%I64f  init_time=%I64f\n",
+		(double)tv1.QuadPart / (double)freq.QuadPart,
+		(double)(tv1.QuadPart-tv0.QuadPart) / (double)freq.QuadPart ))
+#else
+	gettimeofday(&tv1, NULL);
+	timersub(&tv1, &tv0, &tv_delta);
+	OF_PRINT(("init_end=%ld.%ld  init_time=%ld.%06ld\n",
+		tv1.tv_sec, tv1.tv_usec, tv_delta.tv_sec, tv_delta.tv_usec))
+#endif
+#endif
 
 	/*
 	 * determine the practical maximum k and n parameters, taking into
 	 * account the code/codec limitations and the desired code_rate.
 	 * The idea is to have max_k maximum, given max_n and code_rate, for
 	 * optimal erasure recovery performances.
+	 * In any case, do not go below 1.
 	 */
  	tmp_max_k = (UINT32)floor((double)max_n * code_rate);
 	max_k = min(tmp_max_k, max_k);
+	max_k = max(1, max_k);
 	max_n = min((UINT32)((double)max_k / code_rate), max_n);
+	max_n = max(1, max_n);
 	/* we can now compute the required blocking structure */
 	of_compute_blocking_struct(max_k, object_size, symbol_size, &bs);
 	tot_nb_blocks = bs.nb_blocks;
@@ -215,17 +233,6 @@ init_sender (void)
 		OF_PRINT_ERROR(("init_sender: ERROR: out of memory\n"))
 		goto no_mem;
 	}
-#ifdef WIN32
-	QueryPerformanceCounter(&tv1);
-	OF_PRINT(("init_end=%I64f  init_time=%I64f\n",
-		(double)tv1.QuadPart / (double)freq.QuadPart,
-		(double)(tv1.QuadPart-tv0.QuadPart) / (double)freq.QuadPart ))
-#else
-	gettimeofday(&tv1, NULL);
-	timersub(&tv1, &tv0, &tv_delta);
-	OF_PRINT(("init_end=%ld.%ld  init_time=%ld.%06ld\n",
-		tv1.tv_sec, tv1.tv_usec, tv_delta.tv_sec, tv_delta.tv_usec))
-#endif
 	return OF_STATUS_OK;
 no_mem:
 error:
@@ -316,7 +323,7 @@ encode (void)
 
 			if (of_get_control_parameter(ses, OF_CRTL_LDPC_STAIRCASE_IS_LAST_SYMBOL_NULL,
 							(void*)&lib_says_its_null, sizeof(lib_says_its_null)) != OF_STATUS_OK) {
-				OF_PRINT_ERROR(("init_sender: ERROR: of_get_control_parameter() failed\n"))
+				OF_PRINT_ERROR(("ERROR: of_get_control_parameter() failed\n"))
 				goto error;
 			}
 			if (lib_says_its_null) {

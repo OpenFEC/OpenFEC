@@ -1,7 +1,7 @@
-/* $Id: of_ldpc_staircase_api.h 67 2012-04-13 12:21:07Z detchart $ */
+/* $Id: of_ldpc_staircase_api.h 72 2012-04-13 13:27:26Z detchart $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009 - 2011 INRIA - All rights reserved
+ * (c) Copyright 2009 - 2012 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL license under French law and

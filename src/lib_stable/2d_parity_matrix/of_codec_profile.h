@@ -1,7 +1,7 @@
-/* $Id: of_codec_profile.h 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: of_codec_profile.h 152 2014-07-08 14:01:42Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009 - 2011 INRIA - All rights reserved
+ * (c) Copyright 2009 - 2012 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and
@@ -63,7 +63,6 @@
 #ifdef ML_DECODING
 #define OF_2D_PARITY_ML_DECODING
 #endif
-
 
 
 /**

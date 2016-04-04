@@ -23,11 +23,9 @@
 /* ALLOCATE SPACE FOR A DENSE MOD2 MATRIX. */
 
 
-of_mod2dense *of_mod2dense_allocate
-(UINT32 n_rows,		/* Number of rows in matrix */
- UINT32 n_cols,		/* Number of columns in matrix */
- of_memory_usage_stats_t* stats
-)
+of_mod2dense *of_mod2dense_allocate	(UINT32 n_rows,		/* Number of rows in matrix */
+					 UINT32 n_cols,		/* Number of columns in matrix */
+					 of_memory_usage_stats_t* stats)
 {
 	OF_ENTER_FUNCTION
 	of_mod2dense *m;
@@ -35,7 +33,7 @@ of_mod2dense *of_mod2dense_allocate
 
 	if (n_rows <= 0 || n_cols <= 0)
 	{
-		OF_PRINT_ERROR(("mod2dense_allocate: Invalid number of rows or columns\n"))
+		OF_PRINT_ERROR(("mod2dense_allocate: Invalid number of rows (%d) or columns (%d)\n", n_rows, n_cols))
 		return NULL;
 	}
 
@@ -70,10 +68,8 @@ of_mod2dense *of_mod2dense_allocate
 
 /* FREE SPACE OCCUPIED BY A DENSE MOD2 MATRIX. */
 
-void of_mod2dense_free
-(of_mod2dense *m,		/* Matrix to free */
- of_memory_usage_stats_t* stats
-)
+void of_mod2dense_free (of_mod2dense *m,		/* Matrix to free */
+			of_memory_usage_stats_t* stats)
 {
 	OF_ENTER_FUNCTION
 	of_free (m->bits MEM_STATS);
@@ -90,9 +86,7 @@ void of_mod2dense_free
 
 /* CLEAR A DENSE MOD2 MATRIX. */
 
-void of_mod2dense_clear
-(of_mod2dense *r
-)
+void of_mod2dense_clear (of_mod2dense *r)
 {
 	OF_ENTER_FUNCTION
 	UINT32 k, j;
@@ -291,10 +285,8 @@ void of_mod2dense_copycols
 
 /* PRINT A DENSE MOD2 MATRIX IN HUMAN-READABLE FORM. */
 
-void of_mod2dense_print
-(FILE *f,
- of_mod2dense *m
-)
+void of_mod2dense_print (FILE		*f,
+			 of_mod2dense	*m)
 {
 	OF_ENTER_FUNCTION
 	UINT32 i, j;
@@ -302,37 +294,38 @@ void of_mod2dense_print
 	for (i = 0; i < of_mod2dense_rows (m); i++)
 	{
 		for (j = 0; j < of_mod2dense_cols (m); j++)
+		{
+			if( of_mod2dense_get (m, i, j) !=0)
 			{
-				if( of_mod2dense_get (m, i, j) !=0){
-					fprintf (f, " %d", of_mod2dense_get (m, i, j));
-				}else{
-					fprintf (f, "  "/*, of_mod2dense_get (m, i, j)*/);	
-				}
+				fprintf (f, " %d", of_mod2dense_get (m, i, j));
 			}
+			else
+			{
+				fprintf (f, "  "/*, of_mod2dense_get (m, i, j)*/);	
+			}
+		}
 		fprintf (f, "\n");
 	}
 	OF_EXIT_FUNCTION
 }
 
-/* PRINT A DENSEMOD2 MATRIX IN HUMAN-READABLE FORM. */
-void of_mod2dense_print_bitmap
-(of_mod2dense *m
-)
-{
-	OF_ENTER_FUNCTION
 
-	UINT32 i, j;
-	UINT32 x,y;
+/* PRINT A DENSEMOD2 MATRIX IN HUMAN-READABLE FORM. */
+void of_mod2dense_print_bitmap (of_mod2dense	*m,
+				char		*fname)
+{
 #ifdef IL_SUPPORT	
-	ILuint lImage;	
+	UINT32	i, j;
+	UINT32	x,y;
+	ILuint	lImage;	
+	char	cmd[100];
 	
-	
+	OF_ENTER_FUNCTION
 	ilInit();
 	ilGenImages(1, &lImage);
 	ilBindImage(lImage);
 	//of_mod2dense_print_stats(stdout,m);
 	ilTexImage(of_mod2dense_cols (m),of_mod2dense_rows (m)  , 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL);
-#endif
 	UINT32 val =1;
 	y=of_mod2dense_rows (m);
 	x=of_mod2dense_cols (m);
@@ -342,25 +335,29 @@ void of_mod2dense_print_bitmap
 		{
 			if (of_mod2dense_get (m, i, j))
 			{
-				val = 0xFFFFFF;
-			}else{
-				val = 0;
+				val = 0x00FF00;	/* bit is set, use green */
+			}
+			else
+			{
+				val = 0xFFFFFF;	/* bit is not set, use white */
 			}
 			x=j;
 			y=of_mod2dense_rows (m)-i-1;
-#ifdef IL_SUPPORT	
 			ilSetPixels(x ,y, 0, 1, 1, 1, IL_RGBA, IL_UNSIGNED_BYTE, &val);
-#endif
 		}
 	}
-
-#ifdef IL_SUPPORT	
+	if (fname == NULL)
+	{
+		fname = "dense.bmp";
+	}
+	/* use open on MacOS machines, EOG (Eye of Gnome) in Linux machines, and something else if needed... */
+	//snprintf(cmd, 99, "open %s", fname);
 	ilEnable(IL_FILE_OVERWRITE);
-	ilSaveImage("dense.bmp");
-	system("open dense.bmp");
-#endif
+	ilSaveImage(fname);
+	//system(cmd);
 	OF_EXIT_FUNCTION
 	return;
+#endif
 }
 
 
@@ -370,10 +367,7 @@ void of_mod2dense_print_bitmap
    with a different byte-ordering.  At present, this assumes that the words
    used to pack bits into are no longer than 32 bits. */
 
-UINT32 of_mod2dense_write
-(FILE *f,
- of_mod2dense *m
-)
+UINT32 of_mod2dense_write (FILE *f, of_mod2dense *m)
 {
 	OF_ENTER_FUNCTION
 	UINT32 j, k;
@@ -425,9 +419,7 @@ UINT32 of_mod2dense_write
 
 /* READ A DENSE MOD2 MATRIX STORED IN MACHINE-READABLE FORM FROM A FILE. */
 
-of_mod2dense *of_mod2dense_read
-(FILE *f
-)
+of_mod2dense *of_mod2dense_read (FILE *f)
 {
 	OF_ENTER_FUNCTION
 	UINT32 n_rows, n_cols;
@@ -485,20 +477,23 @@ of_mod2dense *of_mod2dense_read
 
 /* GET AN ELEMENT FROM A DENSE MOD2 MATRIX. */
 
+inline
 UINT32 of_mod2dense_get
 (of_mod2dense *m, 	/* Matrix to get element from */
  UINT32 row,		/* Row of element (starting with zero) */
  UINT32 col		/* Column of element (starting with zero) */
 )
 {
-	OF_ENTER_FUNCTION
+	//OF_ENTER_FUNCTION
+#ifdef OF_DEBUG
 	if ( row >= of_mod2dense_rows (m) || col >= of_mod2dense_cols (m))
 	{
-
-		OF_PRINT_ERROR(("mod2dense_get: row or column index out of bounds\n"))
+		OF_PRINT_ERROR(("mod2dense_get: row (%d) or column index (%d) out of bounds (resp. %d and %d)\n", row, col,
+				of_mod2dense_rows (m), of_mod2dense_cols (m)))
 		OF_EXIT_FUNCTION
 		return -1;
 	}
+#endif
 #ifdef COL_ORIENTED
 	return of_mod2_getbit (m->col[col][row>>of_mod2_wordsize_shift],
 			    row&of_mod2_wordsize_mask);
@@ -506,27 +501,28 @@ UINT32 of_mod2dense_get
 	return of_mod2_getbit (m->row[row][col>>of_mod2_wordsize_shift],
 			    col&of_mod2_wordsize_mask);
 #endif
-	OF_EXIT_FUNCTION
+	//OF_EXIT_FUNCTION
 }
 
 
 /* SET AN ELEMENT IN A DENSE MOD2 MATRIX. */
 
-void of_mod2dense_set
+INT32 of_mod2dense_set
 (of_mod2dense *m, 	/* Matrix to modify element of */
  UINT32 row,		/* Row of element (starting with zero) */
  UINT32 col,		/* Column of element (starting with zero) */
  UINT32 value		/* New value of element (0 or 1) */
 )
 {
-	OF_ENTER_FUNCTION
+	//OF_ENTER_FUNCTION
 	of_mod2word *w;
 
 	if (row >= of_mod2dense_rows (m) || col >= of_mod2dense_cols (m))
 	{
-		OF_PRINT_ERROR(("mod2dense_set: row or column index out of bounds\n"))
+		OF_PRINT_ERROR(("mod2dense_set: row (%d) or column index (%d) out of bounds (resp. %d and %d)\n", row, col,
+				of_mod2dense_rows (m), of_mod2dense_cols (m)))
 		OF_EXIT_FUNCTION
-		return;
+		return -1;
 	}
 #ifdef COL_ORIENTED
 	w = &m->col[col][row>>of_mod2_wordsize_shift];
@@ -539,7 +535,8 @@ void of_mod2dense_set
 	*w = value ? of_mod2_setbit1 (*w, col & of_mod2_wordsize_mask)
 	     : of_mod2_setbit0 (*w, col & of_mod2_wordsize_mask);
 #endif
-	OF_EXIT_FUNCTION
+	//OF_EXIT_FUNCTION
+	return 0;
 }
 
 
@@ -557,7 +554,8 @@ UINT32 of_mod2dense_flip
 
 	if (row >= of_mod2dense_rows (m) || col >= of_mod2dense_cols (m))
 	{
-		OF_PRINT_ERROR(("mod2dense_flip: row or column index out of bounds\n"))
+		OF_PRINT_ERROR(("mod2dense_flip: row (%d) or column index (%d) out of bounds (resp. %d and %d)\n", row, col,
+				of_mod2dense_rows (m), of_mod2dense_cols (m)))
 		OF_EXIT_FUNCTION
 		return -1;
 	}
@@ -995,6 +993,8 @@ UINT32 of_mod2dense_invert
 	OF_EXIT_FUNCTION
 	return 1;
 }
+
+
 /* TRIANGULARIZE A DENSE MOD2 MATRIX. */
 
 UINT32 of_mod2dense_triangularize
@@ -1353,8 +1353,6 @@ UINT32 of_mod2dense_invert_selected
 		for (k = 0; k < w; k++)
 			s[k] = 0;
 	}
-
-
 #endif
 	OF_EXIT_FUNCTION
 	return R;
@@ -1373,7 +1371,7 @@ UINT32 of_mod2dense_forcibly_invert
 	OF_ENTER_FUNCTION
 	//  of_mod2word *s, *t;
 
-	UINT32  c;
+	UINT32  c = 0;
 #ifdef COL_ORIENTED
 	if (of_mod2dense_rows (m) != of_mod2dense_cols (m))
 	{
@@ -1507,21 +1505,50 @@ double of_mod2dense_density (of_mod2dense *m)
 		}
 	}
 #endif
-
-
 	nb_entry = of_mod2dense_rows (m) * of_mod2dense_cols (m);
-	//printf("nb_one=%d nb_entry=%d\n",nb_one,nb_entry);
 	density = (double) nb_one / nb_entry;
+	//printf("%s: nb_ones=%d tot_nb_entries=%d, density=%f\n", __FUNCTION__, nb_one, nb_entry, density);
 	OF_EXIT_FUNCTION
 	return density;
 }
 
 
+/* RETURNS TRUE IF THE SPECIFIED ROW IS EMPTY */
+
+bool of_mod2dense_row_is_empty (of_mod2dense	*m,
+				UINT32		row)
+{
+	UINT32		i;
+	UINT32		n_w;	// number of of_mod2word in the row
+	of_mod2word	*w;	// pointer to the current word of the row
+
+	OF_ENTER_FUNCTION
+#ifdef OF_DEBUG
+	if (row >= of_mod2dense_rows (m))
+	{
+		OF_EXIT_FUNCTION
+		exit(-1);
+	}
+#endif
+	//n_w = of_mod2dense_cols (m) >> (of_mod2_wordsize_shift);
+	n_w = m->n_words;
+ 	for (i = 0, w = m->row[row]; i < n_w; i++, w++)
+	{
+		if (*w != 0)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+
+#if 0
 UINT32 of_mod2word_weight (of_mod2word word)
 {
 	OF_ENTER_FUNCTION
 	UINT32 weight = 0;
-// 	       	char *v = (char*)&word;
+// 	char *v = (char*)&word;
 // 	int size=sizeof(of_mod2word);
 // 	for(int i=0;i<size){
 // 		weight=char_weight[v*];
@@ -1530,81 +1557,67 @@ UINT32 of_mod2word_weight (of_mod2word word)
 
 	OF_EXIT_FUNCTION
 	return weight;
-
 }
-
-
-
+#endif
 
 
 UINT32 of_mod2dense_row_weight (of_mod2dense *m, UINT32 i)
 {
+	UINT32		weight = 0;
+
 	OF_ENTER_FUNCTION
-	UINT32 weight = 0;
 	if (i >= of_mod2dense_rows (m))
 	{
 		OF_EXIT_FUNCTION
 		return -1;
 	}
 	//of_mod2dense_print_memory_info(m);
+#define SLOW_HAMMING_WEIGHT_CALCULATION
+#ifdef  SLOW_HAMMING_WEIGHT_CALCULATION
+	UINT32		j;
+	UINT32		nwords;			/* number of of_mod2word in a row */
+	//UINT32		weight1 = 0;
 
-	UINT32 i0;
-	i0 = of_mod2dense_cols (m) >> (of_mod2_wordsize_shift);     // number of of_mod2word in a row
+	nwords = of_mod2dense_cols (m) >> (of_mod2_wordsize_shift);     // number of of_mod2word in a row
 
+ 	for (j = 0; j < of_mod2dense_cols(m); j++)
+ 	{
+		if (of_mod2dense_get(m, i, j))
+ 		{
+			weight++;
+ 		}
+ 	}
+ 	//printf("weight method2=%d (standard)\n",weight);
+#else
+	weight = of_hweight_array ((UINT32 *) m->row[i], of_mod2dense_cols (m));
+#endif
 
-	weight = of_hweight_array ( (UINT32 *) m->row[i], of_mod2dense_cols (m));
-
-// 	for (j = 0; j<=i0;j++)
-// 		{
-// 			//weight+= of_mod2word_weight(m->row[i][j]);
-// 			//weight+=hweight32_naive(m->row[i][j]);
-// 			//printf("hweight32_table(m->row[%d][%d])\n",i,j);
-// 			weight1+=hweight32_table(m->row[i][j]);
-// 			//weight1+=popcount_3(m->row[i][j]);
-// 		}
-
-	//printf("weight method1=%d (standard)\n",weight1);
-
-
-// 	for (j = 0; j<of_mod2dense_cols(m); j++)
-// 		{ if (mod2dense_get(m,i,j))
-// 				{
-// 					weight++;
-// 				}
-// 		}
-// 	//printf("weight method2=%d (standard)\n",weight);
-// 	if(weight!=weight1){
-// 		printf("weight method1=%d !=  weight method2=%d(standard)\n",weight1,weight);
-
-// 	}
 	OF_EXIT_FUNCTION
 	return weight;
-
 }
+
 
 UINT32 of_mod2dense_row_weight_ignore_first (of_mod2dense *m, UINT32 i, UINT32 nb_ignore)
 {
+	UINT32		weight = 0;
+	//UINT32	nwords;
+	UINT32		start0;
 
 	OF_ENTER_FUNCTION
-	UINT32 weight = 0;
 	if (i >= of_mod2dense_rows (m))
 	{
 		OF_EXIT_FUNCTION
 		return -1;
 	}
 
-
-	UINT32 i0, start0;
-
-	i0 = of_mod2dense_cols (m) >> of_mod2_wordsize_shift;   // number of of_mod2word in a row
+	//nwords = of_mod2dense_cols (m) >> of_mod2_wordsize_shift;   // number of of_mod2word in a row
 	start0 = nb_ignore >> (of_mod2_wordsize_shift - 1);
 
 	UINT32 offset32 = nb_ignore >> of_mod2_wordsize_shift; // number of 32bits words that must be ignored
 	UINT32 rem = of_mod2dense_cols (m) - (offset32 << of_mod2_wordsize_shift);     // number of remaining bits to consider
 
 	weight = of_hweight_array ( (UINT32 *) & m->row[i][offset32], rem);
-
-// 	for (j = start0; j<=i0; j++)
+// 	for (j = start0; j<=nwords; j++)
 // 		{
 // 			//weight+= of_mod2word_weight(m->row[i][j]);
 // 			//weight+=hweight32_naive(m->row[i][j]);
@@ -1612,8 +1625,7 @@ UINT32 of_mod2dense_row_weight_ignore_first (of_mod2dense *m, UINT32 i, UINT32 n
 // 			weight1+=hweight32_table(m->row[i][j]);
 // 			//weight+=popcount_3(m->row[i][j]);
 // 		}
-	//printf("weight method1=%d (ignore first)\n",weight1);
-
+//printf("weight method1=%d (ignore first)\n",weight1);
 // 	// check with standard method
 // 	for (j = 0; j<of_mod2dense_cols(m); j++)
 // 		{ if (mod2dense_get(m,i,j))
@@ -1624,14 +1636,10 @@ UINT32 of_mod2dense_row_weight_ignore_first (of_mod2dense *m, UINT32 i, UINT32 n
 // 	//printf("weight method2=%d (ignore first)\n",weight);
 // 			if(weight!=weight1){
 // 		printf("weight method1=%d !=  weight method2=%d(standard)\n",weight1,weight);
-
 // 	}
-
 	OF_EXIT_FUNCTION
 	return weight;
-
 }
-
 
 
 UINT32 of_mod2dense_col_weight (of_mod2dense *m, UINT32 i)
@@ -1656,26 +1664,27 @@ UINT32 of_mod2dense_col_weight (of_mod2dense *m, UINT32 i)
 
 }
 
+
 void of_mod2dense_print_stats (FILE *f, of_mod2dense *m)
 {
 	OF_ENTER_FUNCTION
-	UINT32 i;
-	float density = 0;
-	float row_density = 0;
-	float col_density = 0;
+	UINT32		i;
+	float		density = 0;
+	float		row_density = 0;
+	float		col_density = 0;
+
 	/* rows stats*/
-	float aver_nb_entry_per_row = 0;
-	UINT32 max_entry_per_row = 0;
-	UINT32 min_entry_per_row = 9999999;
-	UINT32 nb_entry_row[ROW_MAX_ENTRY];
+	float		aver_nb_entry_per_row = 0;
+	UINT32		max_entry_per_row = 0;
+	UINT32		min_entry_per_row = 9999999;
+	UINT32		nb_entry_row[ROW_MAX_ENTRY];
+	UINT32		nb_entry_current_row = 0;
+	UINT32		ctr = 0;
 
 	for (i = 0;i < ROW_MAX_ENTRY;i++)
 	{
 		nb_entry_row[i] = 0;
 	}
-	UINT32 nb_entry_current_row = 0;
-	UINT32 ctr = 0;
-
 	for (i = 0; i < of_mod2dense_rows (m); i++)
 	{
 		nb_entry_current_row = of_mod2dense_row_weight (m, i);
@@ -1689,32 +1698,25 @@ void of_mod2dense_print_stats (FILE *f, of_mod2dense *m)
 			max_entry_per_row = nb_entry_current_row;
 		}
 		ctr += nb_entry_current_row;
-
-
 	}
-
 	aver_nb_entry_per_row = ( (float) ctr) / of_mod2dense_rows (m);
 	row_density = aver_nb_entry_per_row / (of_mod2dense_cols (m));
 
-
 	/* cols stats*/
-	float aver_nb_entry_per_col = 0;
-	UINT32 max_entry_per_col = 0;
-	UINT32 min_entry_per_col = 9999999;
+	float		aver_nb_entry_per_col = 0;
+	UINT32		max_entry_per_col = 0;
+	UINT32		min_entry_per_col = 9999999;
+	UINT32		nb_entry_col[COL_MAX_ENTRY];
+	UINT32		nb_entry_current_col = 0;
 
-	UINT32 nb_entry_col[COL_MAX_ENTRY];
-	UINT32 nb_entry_current_col = 0;
 	ctr = 0;
 	for (i = 0;i < COL_MAX_ENTRY;i++)
 	{
 		nb_entry_col[i] = 0;
-
 	}
-
 	for (i = 0; i < of_mod2dense_cols (m); i++)
 	{
 		nb_entry_current_col = of_mod2dense_col_weight (m, i);
-
 		nb_entry_col[nb_entry_current_col]++;
 		if (nb_entry_current_col == 1)
 		{
@@ -1724,9 +1726,6 @@ void of_mod2dense_print_stats (FILE *f, of_mod2dense *m)
 		{
 			//fprintf(f," Warning: col %d is empty!! \n",i);
 		}
-
-
-
 		if (nb_entry_current_col < min_entry_per_col)
 		{
 			min_entry_per_col = nb_entry_current_col;
@@ -1735,22 +1734,13 @@ void of_mod2dense_print_stats (FILE *f, of_mod2dense *m)
 		{
 			max_entry_per_col = nb_entry_current_col;
 		}
-
 		ctr += nb_entry_current_col;
-
 	}
-
 	aver_nb_entry_per_col = ( (float) ctr) / of_mod2dense_cols (m);
-
-
 	col_density = aver_nb_entry_per_col / (of_mod2dense_rows (m));
-
 	density = col_density;
 
-
-
 	/* print result */
-
 	fprintf (f, " nb_col=%d  nb_row=%d \n", of_mod2dense_cols (m), of_mod2dense_rows (m));
 	fprintf (f, " row_density=%f \n", row_density);
 
@@ -1761,8 +1751,6 @@ void of_mod2dense_print_stats (FILE *f, of_mod2dense *m)
 	{
 		fprintf (f, " nb_entry_row[%d]=%d \n", i, nb_entry_row[i]);
 	}
-
-
 	fprintf (f, "------------------ \n");
 	fprintf (f, " col_density=%f \n", col_density);
 	fprintf (f, " aver_nb_entry_per_col=%f \n", aver_nb_entry_per_col);
@@ -1775,17 +1763,11 @@ void of_mod2dense_print_stats (FILE *f, of_mod2dense *m)
 			fprintf (f, " nb_entry_col[%d]=%d \n", i, nb_entry_col[i]);
 		}
 	}
-
-
 	fprintf (f, "------------------ \n");
-
-
-
 	fprintf (f, " matrix_density=%f \n", density);
-
 	OF_EXIT_FUNCTION
-
 }
+
 
 void of_mod2dense_print_memory_info (of_mod2dense *m)
 {
@@ -1806,16 +1788,19 @@ void of_mod2dense_print_memory_info (of_mod2dense *m)
 	OF_EXIT_FUNCTION
 }
 
-void of_mod2dense_xor_rows(of_mod2dense *m,UINT16 from,UINT16 to)
+
+void of_mod2dense_xor_rows(of_mod2dense *m, UINT16 from, UINT16 to)
 {
-    of_mod2word i;
-    of_mod2word *s, *t;
-    s = m->row[from];
-    t = m->row[to];
-    for (i=0;i<m->n_words;i++)
-    {
-        t[i] ^= s[i];
-    }
+	UINT32		i;
+	of_mod2word	*f;
+	of_mod2word	*t;
+
+	f = m->row[from];
+	t = m->row[to];
+	for (i = 0; i < m->n_words; i++)
+	{
+		t[i] ^= f[i];
+	}
 }
 
 #endif //OF_USE_LINEAR_BINARY_CODES_UTILS

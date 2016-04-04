@@ -1,7 +1,7 @@
-/* $Id: of_ldpc_ff_api.c 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: of_ldpc_ff_api.c 96 2013-10-04 19:51:25Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009 - 2011 INRIA - All rights reserved
+ * (c) Copyright 2009 - 2012 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and
@@ -34,7 +34,6 @@
 #include "of_ldpc_ff_includes.h"
 
 #ifdef OF_USE_LDPC_FROM_FILE_CODEC
-
 
 
 of_status_t of_ldpc_ff_create_codec_instance(of_ldpc_ff_cb_t**	of_cb)
@@ -123,14 +122,8 @@ of_status_t	of_ldpc_ff_set_fec_parameters (of_ldpc_ff_cb_t*	cb,
 		goto error;
 	}
 
-
-
-
 	params->nb_source_symbols=ofcb->nb_source_symbols;
 	params->nb_repair_symbols=ofcb->nb_repair_symbols;
-
-
-
 
 	/*set ofcb attribute non-specific to from file code */
 	ofcb->encoding_symbol_length = params->encoding_symbol_length;
@@ -145,8 +138,6 @@ of_status_t	of_ldpc_ff_set_fec_parameters (of_ldpc_ff_cb_t*	cb,
 	if ((ofcb->encoding_symbols_tab = (void**) of_calloc (ofcb->nb_total_symbols, sizeof (void*) MEM_STATS_ARG)) == NULL) {
 		goto no_mem;
 	}
-
-
 
 #ifdef OF_USE_DECODER
 	if (ofcb->codec_type & OF_DECODER)
@@ -277,6 +268,7 @@ error:
 	OF_EXIT_FUNCTION
 	return OF_STATUS_ERROR;
 }
+
 
 of_status_t  of_get_pck_matrix_dimensions_from_file(char * matrix_file,UINT32 * n_rows, UINT32 *n_cols){
 

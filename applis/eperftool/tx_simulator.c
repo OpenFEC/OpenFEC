@@ -1,4 +1,4 @@
-/* $Id: tx_simulator.c 62 2011-11-22 08:45:31Z roca $ */
+/* $Id: tx_simulator.c 95 2013-04-26 07:09:39Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009-2011 INRIA - All rights reserved
@@ -54,8 +54,27 @@ static UINT32*	tx_order_tab = NULL;
 /** This table indicates which of the symbols are lost. */
 static bool*	is_lost_tab = NULL;
 
-/** Do not transmit this ESI (last repair symbol) in case of LDPC-Staircase with N1 even */
-static UINT32	skip_this_esi_with_ldpc_sc;
+/** control the number of received symbols in find_min_overhead_mode. We need a counter for that. */
+static UINT32	tot_nb_recvd_symbols;
+
+/* This is the index for next symbol sent and perhaps received, unless it has been lost */
+static UINT32	next_idx = 0;
+
+/** PRNG state. */
+static unsigned long next = 1;
+
+void mysrand (UINT32 seed)
+{
+	next = seed;
+}
+
+
+/* RAND_MAX assumed to be 32767 */
+UINT32 myrand ()
+{
+	next = next * 1103515245 + 12345;
+	return(next & 0x7fffffff);
+}
 
 
 of_status_t
@@ -123,6 +142,10 @@ init_tx_simulator()
 		OF_PRINT_ERROR(("loss model (%d) is not supported\n", loss_model))
 		goto error;
 	}
+	/* reset the number of received symbol counter and next_idx counter (required to
+	 * supportfind_min_overhead_mode) */
+	tot_nb_recvd_symbols = 0;
+	next_idx = 0;
 	OF_TRACE_LVL(1, ("init_tx_simulator: %d symbols can be received\n", max_decoding_steps))
 	return OF_STATUS_OK;
 
@@ -164,8 +187,6 @@ close_tx_simulator ()
 symbol_cb_t *
 get_next_symbol_received ()
 {
-	/* This is the index for next symbol sent and perhaps received, unless it has been lost */
-	static UINT32		next_idx = 0;
 	symbol_cb_t		*symb;
 
 	while (next_idx < max_decoding_steps) {
@@ -175,9 +196,18 @@ get_next_symbol_received ()
 			continue;
 		} else {
 			/* this symbol is received, return it */
-			if (loss_model == 4) {
-				symb = &(symb_cb_tab[tx_order_tab[rand() % max_decoding_steps]]);
-			} else {
+			if ((find_min_overhead_mode == true) &&
+			    (tot_nb_recvd_symbols >= find_min_overhead_nb_rx_pkts)) {
+				/* stop test in find_min_overhead mode if we achieved the maximum value */
+				break;
+			}
+			tot_nb_recvd_symbols++;
+			if (loss_model == 4)
+			{
+				symb = &(symb_cb_tab[tx_order_tab[myrand() % max_decoding_steps]]);
+			}
+			else
+			{
 				symb = &(symb_cb_tab[tx_order_tab[next_idx]]);
 			}
 			OF_TRACE_LVL(1, ("%s: next_idx: %u, tx_order_tab: %u, symb esi: %u, sbn: %u\n",
@@ -186,7 +216,8 @@ get_next_symbol_received ()
 			return symb;
 		}
 	}
-	OF_TRACE_LVL(1, ("%s: no symbol available any more...\n", __FUNCTION__))
+	OF_TRACE_LVL(1, ("%s: no symbol available any more after receiving %d symbols...\n",
+			__FUNCTION__, tot_nb_recvd_symbols))
 	return NULL;
 }
 
@@ -207,7 +238,7 @@ randomize_array (UINT32		*array,
 	}
 	for (i = 0; i < array_len; i++) {
 		backup = array[i];
-		rand_idx = rand() % array_len;
+		rand_idx = myrand() % array_len;
 		array[i] = array[rand_idx];
 		array[rand_idx] = backup;
 	}
@@ -219,7 +250,6 @@ define_symbol_tx_order (UINT32	*array)
 {
 	UINT32	max_steps;	// total number of packets received
 	UINT32	i;
-	UINT32	j;
 
 	switch (tx_mode) {
 	case TX_MODE_ALL_RANDOM:		// random permutation of all symbols
@@ -391,6 +421,7 @@ define_symbol_tx_order (UINT32	*array)
 
 #if 0
 	case TX_MODE_PKT_INTERLEAVING:
+		UINT32	j;
 		OF_TRACE_LVL(1, ("Send source and repair symbol in an interleaved way...\n"))
 		max_steps = tot_nb_encoding_symbols;
 		for (i = 0; i < (UINT32)floor((double)bs.A_large * fec_ratio); i++ ) {
@@ -442,13 +473,13 @@ int	random_loss(void)
 
 	switch (state) {
 	case 0: /* last packet was sent OK. */
-		if (((double)rand() * 100.0 / (double)RAND_MAX) < (double)p_loss_when_ok) {
+		if (((double)myrand() * 100.0 / (double)RAND_MAX) < (double)p_loss_when_ok) {
 			is_lost = 1;
 			state = 1;
 		}
 		break;
 	case 1: /* last packet was lost */
-		if (((double)rand() * 100.0 / (double)RAND_MAX) < (double)p_success_when_losses) {
+		if (((double)myrand() * 100.0 / (double)RAND_MAX) < (double)p_success_when_losses) {
 			state = 0;
 		} else {
 			is_lost = 1;
@@ -498,7 +529,7 @@ create_loss_array_from_erasure_nb (UINT32	size,
 	actual_loss_nb = 0;
 	for (i = 0; i < desired_loss_nb; i++) {
 		do {
-			j = rand() % size;
+			j = myrand() % size;
 		} while (is_lost_array[j] == true);
 		actual_loss_nb++;
 		is_lost_array[j] = true;
@@ -530,7 +561,7 @@ create_loss_array_from_erasure_proba (UINT32	size,
 	actual_loss_nb = 0;
 	for (i = 0; i < desired_loss_nb; i++) {
 		do {
-			j = rand() % size;
+			j = myrand() % size;
 		} while (array[j] != 0);
 		actual_loss_nb++;
 		array[j] = 1;
@@ -549,7 +580,7 @@ loss_oracle (double	p)
 {
 	double	r;
 
-	r = ((double)rand() / (double)RAND_MAX);
+	r = ((double)myrand() / (double)RAND_MAX);
 	if (r < p)
 		return 1;	/* lost */
 	else
@@ -566,7 +597,7 @@ loss_oracle (double	p)
 of_status_t
 init_prng_with_seed (UINT32	suggested_seed)
 {
-	UINT32	seed = 0;	/* random seed for the srand() function */
+	UINT32	seed = 0;	/* random seed for the mysrand() function */
 
 	if (suggested_seed != 0) {
 		seed = suggested_seed;
@@ -597,8 +628,8 @@ init_prng_with_seed (UINT32	suggested_seed)
 		}
 #endif /* OS */
 	}
-	srand(seed);
-	OF_PRINT(("random seed=%u\n", seed))
+	mysrand(seed);
+	OF_PRINT(("prng seed=%u\n", seed))
 	return OF_STATUS_OK;
 }
 

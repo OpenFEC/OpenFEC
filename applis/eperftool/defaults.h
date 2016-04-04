@@ -1,7 +1,12 @@
-/* $Id: defaults.h 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: defaults.h 99 2013-11-07 02:20:38Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009-2011 INRIA - All rights reserved
+ * (c) Copyright 2009-2010 INRIA - All rights reserved
+ * Main authors:	Mathieu Cunche (INRIA)
+ *			Jonathan Detchart (INRIA)
+ *			Julien Laboure (INRIA)
+ *			Christoph Neumann (INRIA)
+ *			Vincent Roca (INRIA)
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and
@@ -31,7 +36,6 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-
 /*
  * Default parameter values.
  */
@@ -56,11 +60,13 @@
  */
 
 /** Target M parameter for RS codes over GF(2^M) (See RFC 5510). */
-#define DFLT_RS_M_PARAM	4	
+#define DFLT_RS_M_PARAM		8	
 
 /** Default LDPC N1 parameter (see RFC 5170). */
 #define DFLT_LDPC_N1		5
 
+/** Default code rate for ldpc in case gldpc code  */
+#define	DFLT_CODE_RATE_LDPC_STAIRCASE_FOR_GLDPC 0.5
 
 /** Reed-Solomon over GF(2^8) constant. */
 #define MAX_N_FOR_RS_GF_2_8	255

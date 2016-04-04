@@ -1,7 +1,7 @@
-/* $Id: of_2d_parity_includes.h 5 2011-03-07 10:33:59Z detchart $ */
+/* $Id: of_2d_parity_includes.h 72 2012-04-13 13:27:26Z detchart $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009 - 2011 INRIA - All rights reserved
+ * (c) Copyright 2009 - 2012 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and

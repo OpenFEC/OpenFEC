@@ -1,4 +1,4 @@
-/* $Id: of_rand.h 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: of_rand.h 104 2014-04-08 07:26:27Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved

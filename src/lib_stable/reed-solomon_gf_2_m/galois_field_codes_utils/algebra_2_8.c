@@ -1,4 +1,4 @@
-/* $Id: algebra_2_8.c 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: algebra_2_8.c 85 2012-05-11 08:06:09Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (C) 1997-98 Luigi Rizzo (luigi@iet.unipi.it)
@@ -51,7 +51,7 @@ void 	of_galois_field_2_8_addmul1(gf *dst1, gf *src1, gf c, int sz) {
 	USE_GF_MULC ;
 	register gf *dst = dst1, *src = src1 ;
 	gf *lim = &dst[sz - UNROLL + 1] ;
-#if ((defined (__LP64__) || (__WORDSIZE == 64)) && defined OF_RS_2M_USE_32BITS)	
+#if ((defined (__LP64__) || (__WORDSIZE == 64)) && !defined (OF_RS_2M_USE_32BITS))	
 	UINT64 tmp;
 	UINT64 *dst_64 = (UINT64*)dst1;
 #else
@@ -65,7 +65,7 @@ void 	of_galois_field_2_8_addmul1(gf *dst1, gf *src1, gf c, int sz) {
 	//for (; dst < lim ; dst += UNROLL, src += UNROLL)
 	for (; dst < lim ;dst += UNROLL, src += UNROLL)
 	{
-#if ((defined (__LP64__) || (__WORDSIZE == 64)) && defined OF_RS_2M_USE_32BITS)		
+#if ((defined (__LP64__) || (__WORDSIZE == 64)) && !defined (OF_RS_2M_USE_32BITS))		
 		tmp = ((UINT64)__gf_mulc_[src[0]]) | ((UINT64)__gf_mulc_[src[1]]<<8) | ((UINT64)__gf_mulc_[src[2]]<<16) |
 		((UINT64)__gf_mulc_[src[3]]<<24) | ((UINT64)__gf_mulc_[src[4]]<<32) | ((UINT64)__gf_mulc_[src[5]]<<40) |
 		((UINT64)__gf_mulc_[src[6]]<<48) | ((UINT64)__gf_mulc_[src[7]]<<56) ;
@@ -123,17 +123,17 @@ void 	of_galois_field_2_8_matmul (gf *a, gf *b, gf *c, int n, int k, int m) {
 	OF_EXIT_FUNCTION
 }
 
-int	of_galois_field_2_8_invert_mat (gf *src, int k) {
+int	of_galois_field_2_8_invert_mat (of_galois_field_code_cb_t* ofcb, gf *src, int k) {
 	OF_ENTER_FUNCTION
 	gf c, *p ;
 	int irow, icol, row, col, i, ix ;
-	
+
 	int error = 1 ;
-	int *indxc = (int*) malloc (k * sizeof (int));
-	int *indxr = (int*) malloc (k * sizeof (int));
-	int *ipiv = (int*) malloc (k * sizeof (int));
-	gf *id_row = (gf*)malloc( 1*k*sizeof(gf));
-	gf *temp_row = (gf*)malloc( 1*k*sizeof(gf));
+	int *indxc =	(int*) of_malloc (k * sizeof (int) MEM_STATS_ARG);
+	int *indxr =	(int*) of_malloc (k * sizeof (int) MEM_STATS_ARG);
+	int *ipiv =	(int*) of_malloc (k * sizeof (int) MEM_STATS_ARG);
+	gf  *id_row =	(gf*)  of_malloc (1 * k * sizeof(gf) MEM_STATS_ARG);
+	gf  *temp_row =	(gf*)  of_malloc (1 * k * sizeof(gf) MEM_STATS_ARG);
 	
 	bzero (id_row, k*sizeof (gf));
 	/*
@@ -171,12 +171,11 @@ int	of_galois_field_2_8_invert_mat (gf *src, int k) {
 							goto found_piv ;
 						}
 					}
-					else
-						if (ipiv[ix] > 1)
-						{
-							//			PRINT_ERR((mcl_stderr, "singular matrix\n"))
-							goto fail ;
-						}
+					else if (ipiv[ix] > 1)
+					{
+						// PRINT_ERR((mcl_stderr, "singular matrix\n"))
+						goto fail ;
+					}
 				}
 			}
 		}
@@ -247,30 +246,28 @@ int	of_galois_field_2_8_invert_mat (gf *src, int k) {
 	{
 		if (indxr[col] < 0 || indxr[col] >= k)
 			OF_PRINT_ERROR(("AARGH, indxr[col] %d\n", indxr[col]))
-			else
-				if (indxc[col] < 0 || indxc[col] >= k)
-					OF_PRINT_ERROR(( "AARGH, indxc[col] %d\n", indxc[col]))
-					else
-						if (indxr[col] != indxc[col])
-						{
-							for (row = 0 ; row < k ; row++)
-							{
-								SWAP (src[row*k + indxr[col]], src[row*k + indxc[col]], gf) ;
-							}
-						}
+		else if (indxc[col] < 0 || indxc[col] >= k)
+			OF_PRINT_ERROR(( "AARGH, indxc[col] %d\n", indxc[col]))
+		else if (indxr[col] != indxc[col])
+		{
+			for (row = 0 ; row < k ; row++)
+			{
+				SWAP (src[row*k + indxr[col]], src[row*k + indxc[col]], gf) ;
+			}
+		}
 	}
 	error = 0 ;
 fail:
-	free (indxc);
-	free (indxr);
-	free (ipiv);
-	free (id_row);
-	free (temp_row);
+	of_free (indxc MEM_STATS_ARG);
+	of_free (indxr MEM_STATS_ARG);
+	of_free (ipiv MEM_STATS_ARG);
+	of_free (id_row MEM_STATS_ARG);
+	of_free (temp_row MEM_STATS_ARG);
 	OF_EXIT_FUNCTION
 	return error ;
 }
 
-int 	of_galois_field_2_8_invert_vdm (gf *src, int k) {
+int 	of_galois_field_2_8_invert_vdm (of_galois_field_code_cb_t* ofcb, gf *src, int k) {
 	OF_ENTER_FUNCTION
 	int i, j, row, col ;
 	gf *b, *c, *p;
@@ -282,11 +279,10 @@ int 	of_galois_field_2_8_invert_vdm (gf *src, int k) {
 	 * c holds the coefficient of P(x) = Prod (x - p_i), i=0..k-1
 	 * b holds the coefficient for the matrix inversion
 	 */
-	c = (gf*)malloc( 1*k*sizeof(gf));
-	b = (gf*)malloc( 1*k*sizeof(gf));
-	
-	p = (gf*)malloc( 1*k*sizeof(gf));
-	
+	c = (gf*) of_malloc(1 * k * sizeof(gf) MEM_STATS_ARG);
+	b = (gf*) of_malloc(1 * k * sizeof(gf) MEM_STATS_ARG);
+	p = (gf*) of_malloc(1 * k * sizeof(gf) MEM_STATS_ARG);
+
 	for (j = 1, i = 0 ; i < k ; i++, j += k)
 	{
 		c[i] = 0 ;
@@ -323,9 +319,9 @@ int 	of_galois_field_2_8_invert_vdm (gf *src, int k) {
 		for (col = 0 ; col < k ; col++)
 			src[col*k + row] = of_gf_2_8_mul_table [of_gf_2_8_inv[t]][ b[col]];
 	}
-	free (c) ;
-	free (b) ;
-	free (p) ;
+	of_free (c MEM_STATS_ARG);
+	of_free (b MEM_STATS_ARG);
+	of_free (p MEM_STATS_ARG);
 	OF_EXIT_FUNCTION
 	return 0 ;
 }

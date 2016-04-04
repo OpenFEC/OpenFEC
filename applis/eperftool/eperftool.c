@@ -1,4 +1,4 @@
-/* $Id: eperftool.c 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: eperftool.c 99 2013-11-07 02:20:38Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009-2011 INRIA - All rights reserved
@@ -37,13 +37,14 @@
 #include "eperftool.h"
 
 
+int
 print_params()
 {
 	OF_TRACE_LVL(1, ("eperftool params:\n"))
 	OF_TRACE_LVL(1, ("\tcodec_id:\t\t%i\n", codec_id))
 	OF_TRACE_LVL(1, ("\ttot_nb_source_symbols:\t%i\n", tot_nb_source_symbols))
 	OF_TRACE_LVL(1, ("\ttot_nb_repair_symbols:\t%i\n", tot_nb_repair_symbols))
-	OF_TRACE_LVL(1, ("\tcode_rate:\t\t%i\n", code_rate))
+	OF_TRACE_LVL(1, ("\tcode_rate:\t\t%f\n", code_rate))
 	OF_TRACE_LVL(1, ("\tfec_ratio:\t\t%f\n", fec_ratio))
 	OF_TRACE_LVL(1, ("\tsrc_pkt_ratio:\t\t%i\n", src_pkt_ratio))
 	OF_TRACE_LVL(1, ("\tuse_src_pkt_ratio:\t%s\n", use_src_pkt_ratio ? "true" : "false"))
@@ -60,12 +61,15 @@ print_params()
 	return 0;
 }
 
-
 int
 main   (int	argc,
 	char	**argv )
 {
 	of_status_t	ret;
+	INT32		dec_status;	/** decoding status: -1 in case of fatal error,
+					 * 0 if decoding successful, 1 if decoding failed. */
+
+//sleep(5); // for leaks analysis only...
 
 #ifdef WIN32
 	QueryPerformanceFrequency(&freq);	/* finish time variable init */
@@ -81,6 +85,167 @@ main   (int	argc,
 		OF_PRINT_ERROR(("ERROR, finish_init_command_line_params() failed\n"))
 		goto error;
 	}
+	if (find_min_overhead_mode == false) {
+		dec_status = start_enc_dec_test ();
+		if (dec_status < 0) {
+			goto error;
+		}
+	} else {
+#define DEFAULT_INCREMENT_TO_FIND_MIN_OVERHEAD		10
+		INT32		lower_bound_with_failure;	/* highest known value of the nb of rcvd pkts that made decoding to fail */
+		INT32		upper_bound_with_success;	/* lowest known value of the nb of rcvd pkts that enabled decoding */
+		int		bak, new;			/* resp. the backup and new stdin file descriptors */
+		
+		/* use eperftool iteratively to find the mininum decoding overhead.
+		 * We start with k received symbols and assume there's a single block.
+		 * The algorithm used to find this minimum overhead consists in testing
+		 * overhead values spaced by DEFAULT_INCREMENT_TO_FIND_MIN_OVERHEAD,
+		 * and when the interval is found, to go further by sequentially increasing
+		 * the overhead (start at lower_bound_with_failure + 1, up to a maximum of
+		 * upper_bound_with_success, stop earlier if the minimum overhead is below.
+		 * It's a better strategy than a dichotomic search as there's a high
+		 * probability that the overhead is low.
+		 *
+		 * Note that the tx model and the loss model are both applied BEFORE we
+		 * search for the minimum overhead. Said differently, given the ordered
+		 * set of symbols that arrive at a receiver, we determine when we can stop
+		 * considering received symbols while having a successful decoding.
+		 *
+		 * If of_verbosity is 0, no matter whether in Debug or Release mode,
+		 * we suppress all the traces to stdout while searching the min overhead.
+		 * In that case we only print the final traces, once the minimum overhead
+		 * has been found.
+		 */
+		ASSERT(find_min_overhead_nb_rx_pkts > 0);
+		/* step 1: fast search, using big jumps */
+		lower_bound_with_failure = tot_nb_source_symbols - 1;
+		upper_bound_with_success = -1;
+		for (find_min_overhead_nb_rx_pkts = tot_nb_source_symbols; ; ) {
+			OF_PRINT(("===> (1) test with %d recvd symbols (overhead %d) and %d lost symbols... ",
+					find_min_overhead_nb_rx_pkts, find_min_overhead_nb_rx_pkts - tot_nb_source_symbols,
+					tot_nb_encoding_symbols - find_min_overhead_nb_rx_pkts))
+			if (of_verbosity == 0) {
+				/* switch off stdout, sending everything to /dev/null, temporarilly */
+				fflush(stdout);
+				bak = dup(1);
+				new = open("/dev/null", O_WRONLY);
+				dup2(new, 1);
+				close(new);
+			}
+			/* launch the test now... */
+			dec_status = start_enc_dec_test ();
+			if (of_verbosity == 0) {
+				/* switch on stdout, using the saved value */
+				fflush(stdout);
+				dup2(bak, 1);
+				close(bak);
+				OF_PRINT(("\t%s\n", dec_status == 0 ? "OK" : "failed"))
+			} else {
+				OF_PRINT(("\n"))
+			}
+			if (dec_status == 0) {
+				/* decoding is successful, stop the test */
+				upper_bound_with_success = find_min_overhead_nb_rx_pkts;
+				break;
+			}
+			if (dec_status < 0) {
+				goto error;
+			}
+			/* else this number of packets is just not sufficient. Continue... */
+			lower_bound_with_failure = find_min_overhead_nb_rx_pkts;
+			if (find_min_overhead_nb_rx_pkts == tot_nb_encoding_symbols) {
+				/* no test succeded, even after receiving all symbols! That's an error... */
+				/* nb: max_decoding_steps is not yet known... Use tot_nb_encoding_symbols instead */
+				OF_PRINT_ERROR(("ERROR, all tests failed to find min overhead, even after receiving %d symbols\n",
+					find_min_overhead_nb_rx_pkts))
+				goto error;
+			}
+			/* increment the number of packets to test, but no more than what is available */
+			find_min_overhead_nb_rx_pkts += DEFAULT_INCREMENT_TO_FIND_MIN_OVERHEAD;
+			find_min_overhead_nb_rx_pkts = min(find_min_overhead_nb_rx_pkts, tot_nb_encoding_symbols);
+			/* nb: max_decoding_steps is not yet known... Use tot_nb_encoding_symbols instead */
+		}
+		/* step 2: refine, from the first number where it's known to fail, incrementing one by one */
+		ASSERT(upper_bound_with_success != -1);
+		if (upper_bound_with_success == lower_bound_with_failure + 1) {
+			/* we found the minimum overhead, nothing else to do */
+			ASSERT(find_min_overhead_nb_rx_pkts == upper_bound_with_success);
+		} else {
+			for (find_min_overhead_nb_rx_pkts = lower_bound_with_failure + 1;
+			     find_min_overhead_nb_rx_pkts <= upper_bound_with_success;
+			     find_min_overhead_nb_rx_pkts++) {
+				OF_PRINT(("===> (2) test with %d recvd symbols (overhead %d) and %d lost symbols... ",
+						find_min_overhead_nb_rx_pkts, find_min_overhead_nb_rx_pkts - tot_nb_source_symbols,
+						tot_nb_encoding_symbols - find_min_overhead_nb_rx_pkts))
+				if (of_verbosity == 0) {
+					/* switch off stdout, sending everything to /dev/null, temporarilly */
+					fflush(stdout);
+					bak = dup(1);
+					new = open("/dev/null", O_WRONLY);
+					dup2(new, 1);
+					close(new);
+				}
+				/* launch the test now... */
+				dec_status = start_enc_dec_test ();
+				if (of_verbosity == 0) {
+					/* switch on stdout, using the saved value */
+					fflush(stdout);
+					dup2(bak, 1);
+					close(bak);
+					OF_PRINT(("\t%s\n", dec_status == 0 ? "OK" : "failed"))
+				} else {
+					OF_PRINT(("\n"))
+				}
+				if (dec_status == 0) {
+					/* decoding is successful, stop the test */
+					break;
+				}
+				if (dec_status < 0) {
+					goto error;
+				}
+			}
+		}
+		if (of_verbosity == 0) {
+			/* do one more time to record the output to stdout */
+			dec_status = start_enc_dec_test ();
+			ASSERT(dec_status == 0);
+		}
+#if 0
+		/* use eperftool iteratively to find the mininum decoding overhead. */
+		ASSERT(find_min_overhead_nb_rx_pkts > 0);
+		while (find_min_overhead_nb_rx_pkts <= tot_nb_encoding_symbols) {
+			/* nb: in above test, max_decoding_steps is not yet known...
+			 * Use the tot_nb_encoding_symbols variable instead */
+			OF_PRINT(("===> test with %d recvd symbols and %d lost symbols...\n",
+					find_min_overhead_nb_rx_pkts, tot_nb_encoding_symbols - find_min_overhead_nb_rx_pkts))
+			dec_status = start_enc_dec_test ();
+			if (dec_status == 0) {
+				/* decoding is successful, stop the test */
+				break;
+			}
+			if (dec_status < 0) {
+				goto error;
+			}
+			find_min_overhead_nb_rx_pkts++;
+		}
+#endif
+	}
+	return 0;
+
+error:
+	OF_PRINT(("decoding_status=2\n"))
+	return -1;
+}
+
+
+/** returns the decoding status: -1 in case of fatal error, 0 if decoding successful, 1 if decoding failed. */
+int
+start_enc_dec_test ()
+{
+	of_status_t	ret;
+	INT32		dec_status = -1;	/** decoding status: -1 in case of fatal error,
+						 * 0 if decoding successful, 1 if decoding failed. */
+
 	ret = init_sender();
 	if (ret != OF_STATUS_OK) {
 		OF_PRINT_ERROR(("ERROR, init_sender() failed\n"))
@@ -103,7 +268,7 @@ main   (int	argc,
 	 * standard receive_and_decode() function. Reason is that get_next_symbol_received
 	 * is not re-entrant. */
 	print_params();
-	//print_rx_stats();
+	print_rx_stats();
 #endif /* OF_DEBUG */
 #endif
 	ret = encode();
@@ -111,6 +276,7 @@ main   (int	argc,
 		OF_PRINT_ERROR(("ERROR, encode() failed\n"))
 		goto error;
 	}
+//return;
 	ret = receive_and_decode();
 	switch (ret)
 	{
@@ -122,10 +288,12 @@ main   (int	argc,
 	case OF_STATUS_FAILURE:
 		OF_PRINT(("eperf_tool: decoding failure\n")) /* do not change message, automatic tests depend on it */
 		OF_PRINT(("decoding_status=1\n"))
+		dec_status = 1;
 		break;
 	case OF_STATUS_OK:
 		OF_PRINT(("eperf_tool: decoding ok\n")) /* do not change message, automatic tests depend on it */
 		OF_PRINT(("decoding_status=0\n"))
+		dec_status = 0;
 		break;
 	}
 	ret = close_tx_simulator();
@@ -133,7 +301,8 @@ main   (int	argc,
 		OF_PRINT_ERROR(("ERROR, close_tx_simulator() failed\n"))
 		goto error;
 	}
-	return 0;
+//sleep(10); // for leaks analysis only...
+	return dec_status;
 
 error:
 	OF_PRINT(("decoding_status=2\n"))
@@ -147,7 +316,7 @@ print_preamble (char *command_line)
 	char		*version;	/* pointer to version string */
 	char		*copyrights;	/* pointer to copyrights string */
 
-	OF_PRINT((command_line))
+	OF_PRINT(("%s", command_line))
 	OF_PRINT(("eperf_tool: an extended AL-FEC performance evaluation tool\n"))
 	/* NB: since session pointer is null, we only get a generic string for the
 	 * OpenFEC.org project, not specific to the codec itself */

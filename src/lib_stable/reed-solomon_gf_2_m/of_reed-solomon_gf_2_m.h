@@ -1,7 +1,7 @@
-/* $Id: of_reed-solomon_gf_2_m.h 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: of_reed-solomon_gf_2_m.h 129 2014-05-19 16:06:36Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009 - 2011 INRIA - All rights reserved
+ * (c) Copyright 2009 - 2012 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and
@@ -43,55 +43,54 @@
  */
 typedef struct of_rs_2_m_cb
 {
-	/************************************************************************************
-	 * 				of_rs_2_m_cb					    *
-	 ************************************************************************************/
-	/*****************************************************************************		*
-	*                              of_cb_t                                       *		*
-	******************************************************************************/
-		of_codec_id_t	codec_id;		/* must begin with fec_codec_id          */
-		of_codec_type_t	codec_type;		/* must be 2nd item                      */
-		UINT32		nb_source_symbols;	/** k parameter (AKA code dimension).    */
-		UINT32		nb_repair_symbols;	/** r = n - k parameter.                 */
-		UINT32		encoding_symbol_length;	/** symbol length.                   */
-	/*****************************************************************************/
+/************************************************************************************
+ * 				of_rs_2_m_cb					    *
+ ***********************************************************************************/
+/************************************************************************************
+ *                              of_cb_t                                             *
+ ***********************************************************************************/
+	of_codec_id_t		codec_id;		/* must begin with fec_codec_id          */
+	of_codec_type_t		codec_type;		/* must be 2nd item                      */
+	UINT32			nb_source_symbols;	/** k parameter (AKA code dimension).    */
+	UINT32			nb_repair_symbols;	/** r = n - k parameter.                 */
+	UINT32			encoding_symbol_length;	/** symbol length.                       */
+/***********************************************************************************/
 
-		/** Memory usage statistics, for this codec instance. *	*************************/
-		of_memory_usage_stats_t	*stats;
+	/** Memory usage statistics for this codec instance. */
+	of_memory_usage_stats_t	*stats;
 
+	UINT16			m;		/* in theory between 2..16. Currently only values 4 and 8 are supported */
+	UINT16			field_size; 	/* 2^m */
+	gf*			of_rs_gf_exp;	/* index->poly form conversion table. */
+	int*			of_rs_gf_log;	/* Poly->index form conversion table. */
+	gf*			of_rs_inverse;	/* inverse of field elem. */
+	gf**			of_gf_mul_table; /* table of 2 numbers multiplication. */
 
-		UINT16	nb_bits; 	/* between 2..16 */
-		UINT16	field_size; 	/* 2^nb_bits */
-		gf*	of_rs_gf_exp;	/* index->poly form conversion table. */
-		int*	of_rs_gf_log;	/* Poly->index form conversion table. */
-		gf*	of_rs_inverse;	/* inverse of field elem. */
-
-		gf** of_gf_mul_table; 	/* table of 2 numbers multiplication. */
-
-#ifdef OF_USE_ENCODER
-		/** Encoding matrix.
-		 * The encoding matrix is computed starting with a Vandermonde matrix,
-		 * and then transforming it into a systematic matrix.
-		 */
-		gf *enc_matrix ;
-#endif
+//#ifdef OF_USE_ENCODER
+	/**
+	 * Encoding matrix (G).
+	 * The encoding matrix is computed starting with a Vandermonde matrix,
+	 * and then transforming it into a systematic matrix.
+	 */
+	gf			*enc_matrix ;
+//#endif
 #ifdef OF_USE_DECODER
-		/**
-		 * decoding matrix (k*k)
-		 */
-		gf *dec_matrix;
+	/**
+	 * Decoding matrix (k*k).
+	 */
+	gf			*dec_matrix;
 #endif
-    /*************************************************************************************/
+/***********************************************************************************/
 
-		UINT32 magic;
+	UINT32			magic;
 
-		/** Maximum number of source symbols supported by this codec for practical reasons. */
-		UINT32		max_nb_source_symbols;
-		/** Maximum number of encoding symbols supported by this codec for practical reasons. */
-		UINT32		max_nb_encoding_symbols;
-		/* maximum field size supported by the codec */
-		UINT16		max_bit_size;
-		UINT32 		nb_encoding_symbols;
+	/** Maximum number of source symbols supported by this codec for practical reasons. */
+	UINT32			max_nb_source_symbols;
+	/** Maximum number of encoding symbols supported by this codec for practical reasons. */
+	UINT32			max_nb_encoding_symbols;
+	/* maximum m value in GF(2^m) supported by the codec */
+	UINT16			max_m;
+	UINT32 			nb_encoding_symbols;
 #ifdef OF_USE_DECODER
 	/*
 	 * decoder specific variables.
@@ -100,13 +99,13 @@ typedef struct of_rs_2_m_cb
 	 * Table of available source and repair symbols. This table is ordered, no matter
 	 * the symbol arrival order.
 	 */
-	void 		** available_symbols_tab;
+	void 			** available_symbols_tab;
 	/** Number of available source and repair symbols. This is the number of entries in
 	 * the available_symbols_tab tables. */
-	UINT32 		nb_available_symbols;
+	UINT32 			nb_available_symbols;
 	/** Number of available source symbols. */
-	UINT32		nb_available_source_symbols;
-	bool 		decoding_finished;	/** true as soon as decoding completed. */
+	UINT32			nb_available_source_symbols;
+	bool 			decoding_finished;	/** true as soon as decoding completed. */
 #endif /* OF_USE_DECODER */
 
 

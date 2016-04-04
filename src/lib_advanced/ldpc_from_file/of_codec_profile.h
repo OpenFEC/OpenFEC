@@ -1,4 +1,4 @@
-/* $Id: of_codec_profile.h 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: of_codec_profile.h 72 2012-04-13 13:27:26Z detchart $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved

@@ -1,4 +1,4 @@
-/* $Id: of_openfec_profile.h 81 2012-04-13 14:34:01Z detchart $ */
+/* $Id: of_openfec_profile.h 148 2014-07-08 08:01:56Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -52,7 +52,7 @@
 #include "../lib_stable/reed-solomon_gf_2_8/of_codec_profile.h"
 #include "../lib_stable/reed-solomon_gf_2_m/of_codec_profile.h"
 #include "../lib_stable/ldpc_staircase/of_codec_profile.h"
-//#include "../lib_stable/2d_parity_matrix/of_codec_profile.h"
+#include "../lib_stable/2d_parity_matrix/of_codec_profile.h"
 #include "../lib_advanced/ldpc_from_file/of_codec_profile.h"
 
 /*

@@ -1,4 +1,4 @@
-/* $Id: of_openfec_api.h 72 2012-04-13 13:27:26Z detchart $ */
+/* $Id: of_openfec_api.h 149 2014-07-08 10:21:50Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -355,8 +355,8 @@ of_status_t	of_set_callback_functions (of_session_t	*ses,
  * @return			Error status.
  */
 of_status_t	of_build_repair_symbol (of_session_t*	ses,
-				    void* 		encoding_symbols_tab[],
-				    UINT32		esi_of_symbol_to_build);
+					void* 		encoding_symbols_tab[],
+					UINT32		esi_of_symbol_to_build);
 
 #endif /* OF_USE_ENCODER */
 
@@ -420,7 +420,7 @@ of_status_t	of_decode_with_new_symbol (of_session_t*	ses,
  * @return			Error status.
  */
 of_status_t	of_set_available_symbols (of_session_t*	ses,
-				      void* const	encoding_symbols_tab[]);
+					  void* const	encoding_symbols_tab[]);
 
 
 #if 0		/* NOT YET */
