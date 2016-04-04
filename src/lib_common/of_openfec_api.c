@@ -1,4 +1,4 @@
-/* $Id: of_openfec_api.c 189 2014-07-16 08:53:50Z roca $ */
+/* $Id: of_openfec_api.c 214 2014-12-12 23:14:02Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -318,7 +318,7 @@ of_status_t	of_more_about (of_session_t*	ses,
 				char**		copyrights_str)
 {
 	OF_ENTER_FUNCTION
-	static char	of_version_string[] = "OpenFEC.org - Version 1.4.1, July 16th, 2014\n";
+	static char	of_version_string[] = "OpenFEC.org - Version 1.4.2, December 16th, 2014\n";
 	static char	of_copyrights_string[] ="\n\
     OpenFEC.org - Because free, open source AL-FEC codes and codecs matter\n\
     Copyright (c) 2003-2014 INRIA - All rights reserved\n\

@@ -1,4 +1,4 @@
-/* $Id: command_line.c 95 2013-04-26 07:09:39Z roca $ */
+/* $Id: command_line.c 207 2014-12-10 19:47:50Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009-2012 INRIA - All rights reserved
@@ -122,6 +122,8 @@ printUsage (char *cmdName)
 	printf("                                  of losses (rather than probability)\n");
 	printf("                  -loss=4         randomly choose one packet to send out of the n possibles\n");
 	printf("                                  at each step, with possible duplicates (overwrites transmission type)\n");
+	printf("                  -loss=5:<n1>    simulate reception of the first target number of packets and trim whatever follows\n");
+	printf("                                  (WARNING: this is a number of packets to receive, not to erase)\n");
 	printf("    -tx_type=<n>\n");
 	printf("                set the transmission type:\n");
 	printf("                  0: randomly send all source + repair symbols (default)\n");
@@ -252,7 +254,10 @@ of_status_t	parse_command_line (int argc, char *argv[])
 				loss_model	= 3;
 				nb_loss		= atoi(optarg + 6);
 			} else if (!strncmp(optarg, "oss=4", 5)) {
-				loss_model=4;
+				loss_model	= 4;
+			} else if (!strncmp(optarg, "oss=5:", 6) && isdigit((int)*(optarg + 6))) {
+				loss_model	= 5;
+				trim_after_this_nb_rx_pkts	= atoi(optarg + 6);
 			} else if (!strncmp(optarg, "dpc_N1=", 7) && isdigit((int)*(optarg + 7))) {
 				ldpc_N1 = atoi(optarg + 7);
 			} else {
@@ -297,8 +302,8 @@ of_status_t	parse_command_line (int argc, char *argv[])
 				tot_nb_repair_symbols	= atoi(optarg + 7);
 				updated_tot_nb_repair_symbols = true;
 			} else if (!strncmp(optarg, "x_type=", 7) && isdigit((int)*(optarg + 7))) {
-				if (loss_model != 2)
-					tx_mode = (tx_mode_t)atoi(optarg + 7);
+				//if (loss_model != 2)
+				tx_mode = (tx_mode_t)atoi(optarg + 7);
 			} else {
 				OF_PRINT_ERROR(("bad argument -t%s\n", optarg))
 				return OF_STATUS_FATAL_ERROR;
@@ -430,13 +435,14 @@ finish_init_command_line_params ()
 	if (find_min_overhead_mode == true) {
 		/* when eperftool is used iteratively in order to find the mininum decoding overhead,
 		 * start with k, assuming there's a single block... */
-		find_min_overhead_nb_rx_pkts = tot_nb_source_symbols;
+		trim_after_this_nb_rx_pkts = tot_nb_source_symbols;
 		if (suggested_seed == 0) {
 			OF_PRINT_ERROR(("ERROR: seed must be specified in find_min_overhead mode\n"))
 			goto error;
 		}
 	}
-	OF_PRINT(("tot_nb_source_symbols=%i  tot_nb_repair_symbols=%i  symbol_size=%i  ldpc_N1=%i  rs_m=%i\n",tot_nb_source_symbols,tot_nb_repair_symbols,symbol_size,ldpc_N1,rs_m_param))
+	OF_PRINT(("tot_nb_source_symbols=%i  tot_nb_repair_symbols=%i  symbol_size=%i  ldpc_N1=%i  rs_m=%i\n",
+		tot_nb_source_symbols, tot_nb_repair_symbols, symbol_size, ldpc_N1, rs_m_param))
 	OF_PRINT(("codec_id=%d\n",codec_id))
 
 	switch (tx_mode)
@@ -465,8 +471,11 @@ finish_init_command_line_params ()
 		case 7:
 			OF_PRINT(("transmission_type=sequentially_send_all_repair_symbols_first_then_randomly_src_symbols\n"))
 			break;
+		case 8:
+			OF_PRINT(("simulate broadcast transmission with unicast repair\n"))
+			break;
 	}
-	/* Warning: the tot_nb_encoding_symbols depends on the * blocking structure, which means
+	/* Warning: the tot_nb_encoding_symbols depends on the blocking structure, which means
 	 * it will probably change... */
 	return OF_STATUS_OK;
 

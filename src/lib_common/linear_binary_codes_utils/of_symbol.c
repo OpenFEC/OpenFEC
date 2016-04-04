@@ -1,4 +1,4 @@
-/* $Id: of_symbol.c 186 2014-07-16 07:17:53Z roca $ */
+/* $Id: of_symbol.c 206 2014-12-10 04:47:09Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -35,51 +35,6 @@
 
 
 #ifdef OF_USE_LINEAR_BINARY_CODES_UTILS
-
-inline bool	of_is_source_symbol	(of_cb_t*	ofcb,
-					 INT32		new_symbol_esi)
-{
-	if (new_symbol_esi < ofcb->nb_source_symbols)
-		return true;
-	else
-		return false;
-}
-
-
-inline bool	of_is_repair_symbol	(of_cb_t*	ofcb,
-					 INT32		new_symbol_esi)
-{
-	if (new_symbol_esi < ofcb->nb_source_symbols)
-		return false;
-	else
-		return true;
-}
-
-
-inline INT32	of_get_symbol_col	(of_cb_t*	ofcb,
-					 INT32		esi)
-{
-	if (esi < ofcb->nb_source_symbols)
-		return esi + ofcb->nb_repair_symbols;
-	else
-		return esi - ofcb->nb_source_symbols;
-}
-
-
-inline INT32	of_get_symbol_esi	(of_cb_t*	ofcb,
-					 INT32		matrix_col)
-{
-	if (matrix_col < ofcb->nb_repair_symbols)
-	{
-		/* parity symbol */
-		return (matrix_col + ofcb->nb_source_symbols);
-	}
-	else
-	{
-		/* source symbol */
-		return (matrix_col - ofcb->nb_repair_symbols);
-	}
-}
 
 
 #ifndef OF_DEBUG
@@ -334,7 +289,7 @@ void	of_add_to_multiple_symbols	(void		**to,
 	OF_ENTER_FUNCTION
 #ifdef OF_DEBUG
 	if (op != NULL)
-		(*op)+=to_size;
+		(*op) += to_size;
 #endif
 	UINT32	i;
 	//#ifndef ASSEMBLY_SSE_OPT /* { */
@@ -348,13 +303,13 @@ void	of_add_to_multiple_symbols	(void		**to,
 	/*
 	 * 64-bit machines
 	 */
-	
 	UINT32		symbolSize64;		// Size of symbols in 64-bit unit
 	// symbol_size is not necessarily a multiple of 8, but >> 3 will divide
 	// it by 8 and keep the integral part automatically.
 	symbolSize64	= symbol_size >> 3;
-	UINT64 *pt1,*pt2,*pt3,*pt4,*pt5,*pt6,*pt7,*pt8,*from_s,from_value;
-	while (to_size >=8)
+	UINT64		*pt1, *pt2, *pt3, *pt4, *pt5, *pt6, *pt7, *pt8, *from_s, from_value;
+
+	while (to_size >= 8)
 	{
 		from_s = (UINT64*) from;	// to pointer to 64-bit integers
 		pt1 = (UINT64*)to[0];
@@ -365,8 +320,8 @@ void	of_add_to_multiple_symbols	(void		**to,
 		pt6 = (UINT64*)to[5];
 		pt7 = (UINT64*)to[6];
 		pt8 = (UINT64*)to[7];
-		to+=8;
-		to_size-=8;
+		to += 8;
+		to_size -= 8;
 		for (i = symbolSize64; i > 0; i--)
 		{
 			from_value = *from_s;
@@ -389,25 +344,18 @@ void	of_add_to_multiple_symbols	(void		**to,
 			pt8++;			
 		}
 		UINT32* from_s32 = (UINT32*) from_s;	// to pointer to 32-bit integers
-		/* then perform a 32-bit XOR if needed... */
+                /* then perform a 32-bit XOR if needed... */
+		from_s32 = (UINT32*) from_s;    // pointer to 32-bit integers
 		if ( (symbolSize64 << 1) < symbolSize32)
-		{
-			(* (UINT32*) pt1) ^= *from_s32;
-			(* (UINT32*) pt2) ^= *from_s32;
-			(* (UINT32*) pt3) ^= *from_s32;
-			(* (UINT32*) pt4) ^= *from_s32;
-			(* (UINT32*) pt5) ^= *from_s32;
-			(* (UINT32*) pt6) ^= *from_s32;
-			(* (UINT32*) pt7) ^= *from_s32;
-			(* (UINT32*) pt8) ^= *from_s32;
-			(UINT32*)pt1++;
-			(UINT32*)pt2++;
-			(UINT32*)pt3++;
-			(UINT32*)pt4++;
-			(UINT32*)pt5++;
-			(UINT32*)pt6++;
-			(UINT32*)pt7++;
-			(UINT32*)pt8++;
+		{               
+			(* (UINT32*) pt1++) ^= *from_s32;
+			(* (UINT32*) pt2++) ^= *from_s32;
+			(* (UINT32*) pt3++) ^= *from_s32;
+			(* (UINT32*) pt4++) ^= *from_s32;
+			(* (UINT32*) pt5++) ^= *from_s32;
+			(* (UINT32*) pt6++) ^= *from_s32;
+			(* (UINT32*) pt7++) ^= *from_s32;
+			(* (UINT32*) pt8++) ^= *from_s32;
 			from_s32++;
 		}
 		if (symbolSize32rem > 0)
@@ -426,16 +374,18 @@ void	of_add_to_multiple_symbols	(void		**to,
 				(* (UINT8*) ( (UINT8*) pt8 + i)) ^= * (UINT8*) s8;	 
 			}
 		}
-	}	
-	while (to_size >=4)
+	}
+	while (to_size >= 4)
 	{
+		UINT32	*from_s32;		// to pointer to 32-bit integers
+
 		from_s = (UINT64*) from;	// to pointer to 64-bit integers
 		pt1 = (UINT64*)to[0];
 		pt2 = (UINT64*)to[1];
 		pt3 = (UINT64*)to[2];
 		pt4 = (UINT64*)to[3];
-		to+=4;
-		to_size-=4;
+		to += 4;
+		to_size -= 4;
 		for (i = symbolSize64; i > 0; i--)
 		{
 			from_value = *from_s;
@@ -449,23 +399,19 @@ void	of_add_to_multiple_symbols	(void		**to,
 			pt3++;
 			pt4++;		
 		}
-		UINT32* from_s32 = (UINT32*) from_s;	// to pointer to 32-bit integers
-		/* then perform a 32-bit XOR if needed... */
-		if ( (symbolSize64 << 1) < symbolSize32)
-		{
-			(* (UINT32*) pt1) ^= *from_s32;
-			(* (UINT32*) pt2) ^= *from_s32;
-			(* (UINT32*) pt3) ^= *from_s32;
-			(* (UINT32*) pt4) ^= *from_s32;			
-			(UINT32*)pt1++;
-			(UINT32*)pt2++;
-			(UINT32*)pt3++;
-			(UINT32*)pt4++;
-			from_s32++;
-		}
+		/* then perform a 32-bit XOR if needed... */ 
+		from_s32 = (UINT32*) from_s;
+		if ( (symbolSize64 << 1) < symbolSize32) 
+		{ 
+			(* (UINT32*) pt1++) ^= *from_s32; 
+			(* (UINT32*) pt2++) ^= *from_s32; 
+			(* (UINT32*) pt3++) ^= *from_s32; 
+			(* (UINT32*) pt4++) ^= *from_s32;                        
+			from_s32++; 
+		} 
 		if (symbolSize32rem > 0)
 		{
-			UINT8* s8;
+			UINT8	*s8;
 			for (i = 0; i < symbolSize32rem; i++)
 			{
 				s8  = ( (UINT8*) from_s32 + i);
@@ -476,13 +422,16 @@ void	of_add_to_multiple_symbols	(void		**to,
 			}
 		}
 	}
-	while (to_size >=2)
+	while (to_size >= 2)
 	{
-		UINT64	*from_s = (UINT64*) from;	// to pointer to 64-bit integers
-		UINT64	*pt1 = (UINT64*)to[0];
-		UINT64	*pt2 = (UINT64*)to[1];
-		to+=2;
-		to_size-=2;
+		UINT32	*from_s32;			// to pointer to 32-bit integers
+
+		from_s = (UINT64*) from;	// to pointer to 64-bit integers
+		pt1 = (UINT64*)to[0];
+		pt2 = (UINT64*)to[1];
+
+		to += 2;
+		to_size -= 2;
 		for (i = symbolSize64; i > 0; i--)
 		{
 			*pt1 ^= *from_s ;
@@ -491,19 +440,17 @@ void	of_add_to_multiple_symbols	(void		**to,
 			pt1++;	
 			pt2++;
 		}
-		UINT32	*from_s32 = (UINT32*) from_s;	// to pointer to 32-bit integers
-		/* then perform a 32-bit XOR if needed... */
-		if ( (symbolSize64 << 1) < symbolSize32)
-		{
-			(* (UINT32*) pt1) ^= *from_s32;
-			(* (UINT32*) pt2) ^= *from_s32;
-			(UINT32*)pt1++;
-			(UINT32*)pt2++;
-			from_s32++;
-		}
+                /* then perform a 32-bit XOR if needed... */
+                from_s32 = (UINT32*) from_s;    // pointer to 32-bit integers
+                if ( (symbolSize64 << 1) < symbolSize32) 
+                { 
+                        (* (UINT32*) pt1++) ^= *from_s32; 
+                        (* (UINT32*) pt2++) ^= *from_s32; 
+                        from_s32++; 
+                }
 		if (symbolSize32rem > 0)
 		{
-			UINT8* s8;
+			UINT8	*s8;
 			for (i = 0; i < symbolSize32rem; i++)
 			{
 				s8  = ( (UINT8*) from_s32 + i);

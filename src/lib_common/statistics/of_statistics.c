@@ -1,4 +1,4 @@
-/* $Id: of_statistics.c 186 2014-07-16 07:17:53Z roca $ */
+/* $Id: of_statistics.c 207 2014-12-10 19:47:50Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -43,8 +43,8 @@
  
 void of_print_symbols_stats(of_symbols_stats_t* stats)
 {
-	OF_TRACE_LVL(0,("nb source symbols received: %hu\n", stats->nb_source_symbols_received))
-	OF_TRACE_LVL(0,("nb repair symbols received: %hu\n", stats->nb_repair_symbols_received));
+	OF_TRACE_LVL(0,("nb source symbols received: %u\n", stats->nb_source_symbols_received))
+	OF_TRACE_LVL(0,("nb repair symbols received: %u\n", stats->nb_repair_symbols_received));
 	OF_TRACE_LVL(0,("nb source symbols built during IT decoding: %i\n", stats->nb_source_symbols_built_with_it));
 	OF_TRACE_LVL(0,("nb repair symbols built during IT decoding: %i\n", stats->nb_repair_symbols_built_with_it));
 	OF_TRACE_LVL(0,("nb source symbols built during ML decoding: %i\n", stats->nb_source_symbols_built_with_ml));

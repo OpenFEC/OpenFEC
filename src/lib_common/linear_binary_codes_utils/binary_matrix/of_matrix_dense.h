@@ -1,4 +1,4 @@
-/* $Id: of_matrix_dense.h 186 2014-07-16 07:17:53Z roca $ */
+/* $Id: of_matrix_dense.h 197 2014-07-16 15:21:56Z roca $ */
 
 /* Copyright (c) 1996, 2000, 2001 by Radford M. Neal
  *
@@ -102,7 +102,7 @@ void of_mod2dense_print (FILE *, of_mod2dense *);
 UINT32  of_mod2dense_write (FILE *, of_mod2dense *);
 of_mod2dense *of_mod2dense_read (FILE *);
 
-inline UINT32  of_mod2dense_get (of_mod2dense *, UINT32, UINT32);
+UINT32  of_mod2dense_get (of_mod2dense *, UINT32, UINT32);
 INT32   of_mod2dense_set (of_mod2dense *, UINT32, UINT32, UINT32);
 UINT32  of_mod2dense_flip (of_mod2dense *, UINT32, UINT32);
 

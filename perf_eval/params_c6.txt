@@ -1,5 +1,5 @@
 ################# Performance Evaluation Config file #################
-# $Id: params_c6.txt 161 2014-07-09 09:48:59Z roca $
+# $Id: params_c6.txt 201 2014-10-21 15:37:06Z roca $
 
 #
 # This is the file that gathers all the parameters that control performance
@@ -7,7 +7,7 @@
 # generation. Feel free to edit this file as appropriate.
 #
 
-# NB: this version is for curves 1 or 2:
+# NB: this version is for curve 6:
 #	-curve=6    number of XOR operations W.R.T. object size
 # Here it is essential to use the Debug version of eperftool since the Release
 # version does not collect XOR statistics. Also, the find_min_overhead must be

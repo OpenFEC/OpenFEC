@@ -1,4 +1,4 @@
-/* $Id: simple_server.c 180 2014-07-11 13:34:11Z roca $ */
+/* $Id: simple_server.c 216 2014-12-13 13:21:07Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009-2014 INRIA - All rights reserved
@@ -132,7 +132,7 @@ main(int argc, char* argv[])
 	params->encoding_symbol_length	= SYMBOL_SIZE;
 
 	/* Open and initialize the openfec session now... */
-	if (ret = of_create_codec_instance(&ses, codec_id, OF_ENCODER, VERBOSITY) != OF_STATUS_OK)
+	if ((ret = of_create_codec_instance(&ses, codec_id, OF_ENCODER, VERBOSITY)) != OF_STATUS_OK)
 	{
 		OF_PRINT_ERROR(("of_create_codec_instance() failed\n"))
 		ret = -1;
@@ -262,6 +262,9 @@ main(int argc, char* argv[])
 			ret = -1;
 			goto end;
 		}
+		/* Perform a short usleep() to slow down transmissions and avoid UDP socket saturation at the receiver.
+		 * Note that the true solution consists in adding some rate control mechanism here, like a leaky or token bucket. */
+		usleep(500);
 	}
 	printf( "\nCompleted! %d packets sent successfully.\n", i);
 	ret = 1;
@@ -293,6 +296,10 @@ end:
 			}
 		}
 		free(enc_symbols_tab);
+	}
+	if (pkt_with_fpi)
+	{
+		free(pkt_with_fpi);
 	}
 	return ret;
 }

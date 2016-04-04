@@ -90,12 +90,12 @@ int main()
 			printf("unknown codec:\n\tIgnored...\n");
 			continue;
 		}
-		if (ret = of_create_codec_instance(&ses,codec_id,OF_ENCODER,1) != OF_STATUS_OK)
+		if ((ret = of_create_codec_instance(&ses, codec_id, OF_ENCODER, 1)) != OF_STATUS_OK)
 		{
 			printf("ERROR: of_create_codec_instance()");
 			//goto error;
 		}
-		if (ret = of_release_codec_instance(ses) != OF_STATUS_OK)
+		if ((ret = of_release_codec_instance(ses)) != OF_STATUS_OK)
 		{
 			printf("ERROR: of_release_codec_instance()");
 			//goto error;

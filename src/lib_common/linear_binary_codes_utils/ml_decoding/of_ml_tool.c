@@ -1,7 +1,7 @@
-/* $Id: of_ml_tool.c 183 2014-07-15 09:38:55Z roca $ */
+/* $Id: of_ml_tool.c 213 2014-12-12 22:36:41Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009 - 2012 INRIA - All rights reserved
+ * (c) Copyright 2009 - 2011 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and
@@ -38,85 +38,111 @@
 #ifdef ML_DECODING
 
 
-INT32	of_linear_binary_code_solve_dense_system (of_mod2dense *		m,
-					          void **			constant_member,
-					          void **			variables,
-					          of_linear_binary_code_cb_t *	ofcb)
+/******  Static Functions  ****************************************************/
+
+
+/**
+ * This function transforms the matrix into a triangular matrix. It goes through each column and calls of_linear_binary_code_col_forward_elimination()
+ * to find the pivot and eliminate '1's below the pivot.
+ *
+ * @brief			triangularize the dense system
+ * @param m			(IN/OUT) address of the dense matrix.
+ * @param constant_tab		(IN/OUT)
+ * @param ofcb			(IN) Linear-Binary-Code control-block.
+ * @return			1 if it's OK, or 0 if an error took place.
+ */
+static INT32
+of_linear_binary_code_triangularize_dense_system (of_linear_binary_code_cb_t	*ofcb,
+						  of_mod2dense			*m,
+						  void				**constant_tab);
+
+
+/**
+ * This function finds the pivot for this column and eliminates '1's below this pivot.
+ *
+ * @brief			eliminates "1" entries in parity check matrix
+ * @param m 			(IN/OUT) address of the dense matrix.
+ * @param constant_tab		(IN/OUT) pointer to all constant members
+ * @param ofcb			(IN/OUT) Linear-Binary-Code control-block.
+ * @param col_idx		(IN) column index
+ * @param stats			(IN)
+ * @return			1 if it's OK, or 0 if an error took place.
+ */
+static INT32
+of_linear_binary_code_col_forward_elimination  (of_linear_binary_code_cb_t	*ofcb,
+						of_mod2dense			*m,
+						void				**constant_tab,
+						INT32				col_idx);
+
+
+/**
+ * This function computes the actual values of the symbols, starting from the bottom row up to the first one. It assumes the parity check matrix has
+ * already been transformed into a triangular matrix.
+ *
+ * @brief			solve system with backward substitution
+ * @param variable_tab		(IN/OUT) address of the dense matrix.
+ * @param constant_tab
+ * @param m 			(IN/OUT) address of the dense matrix.
+ * @param ofcb			(IN/OUT) Linear-Binary-Code control-block.
+ * @return			1 if it's OK, or 0 if an error took place.
+ */
+static INT32
+of_linear_binary_code_backward_substitution (of_linear_binary_code_cb_t	*ofcb,
+					     of_mod2dense		*m,
+					     void			*variable_tab[],
+					     void			*constant_tab[]);
+
+
+/******************************************************************************/
+
+
+
+/**
+ * This function solves the system: first triangularize the system, then for each column,
+ * do a forward elimination, then do the backward elimination.
+ */
+of_status_t
+of_linear_binary_code_solve_dense_system (of_linear_binary_code_cb_t	*ofcb,
+					  of_mod2dense			*m,
+					  void				**constant_tab,
+					  void				**variable_tab)
 {
 	OF_ENTER_FUNCTION
-	if (!of_linear_binary_code_triangularize_dense_system (m, constant_member, ofcb))
+	if (!of_linear_binary_code_triangularize_dense_system (ofcb, m, constant_tab))
 	{
-		OF_TRACE_LVL(0,("SolveDenseSystem: Triangularize_Dense_System  failed\n"))
-        //of_mod2dense_print_bitmap(m);
+		OF_TRACE_LVL(0,("%s: triangularize_dense_system failed for system with %d rows, %d cols\n",
+				__FUNCTION__, of_mod2dense_rows(m), of_mod2dense_cols(m)))
 		OF_EXIT_FUNCTION
-		return 0;
+		return OF_STATUS_FAILURE;
 	}
-    int i,j,nb=0;
-    for (i=0;i<of_mod2dense_rows(m);i++)
-    {
-        for (j=0;j<of_mod2dense_cols(m);j++)
-        {
-            if (of_mod2dense_get (m, i, j))
-                nb++;
-        }
-    }
-    //printf("nb entries:%i\n",nb);
 	//of_mod2dense_print_bitmap(m);
-	if (!of_linear_binary_code_backward_substitution (variables, constant_member, m, ofcb))
+	if (!of_linear_binary_code_backward_substitution (ofcb, m, variable_tab, constant_tab))
 	{
-		OF_TRACE_LVL(0,("SolveDenseSystem: Backward_Substitution  failed\n"))
+		OF_TRACE_LVL(0,("%s: backward_substitution failed\n", __FUNCTION__))
 		OF_EXIT_FUNCTION
-		return 0;
+		return OF_STATUS_FAILURE;
 	}
 	OF_EXIT_FUNCTION
-	return 1;
+	return OF_STATUS_OK;
 }
 
 
-INT32	of_linear_binary_code_preprocess_dense_system  (of_mod2dense *		m,
-							void **			check_values,
-							UINT32			symbol_size)
-{
-	OF_ENTER_FUNCTION
-	INT32 i, n, p, w;
-	n = of_mod2dense_cols (m);
-	p = of_mod2dense_rows (m);
-	w = m->n_words;
-	/* for each line*/
-	for (i = 0; i < n; i++)
-	{
-		if (!of_linear_binary_code_col_forward_permutation (m, check_values, symbol_size, i))
-		{
-			//return 0;
-		}
-		if (i > 20)
-		{
-			OF_EXIT_FUNCTION
-			return 1;
-		}
-		if (i % (int) ceil (n / 10) == 0)
-		{
-			//of_mod2dense_print_bitmap(m);
-		}
-	}
-	OF_EXIT_FUNCTION
-	return 1;
-}
+/******  Static Functions  ****************************************************/
 
 
-INT32	of_linear_binary_code_triangularize_dense_system (of_mod2dense *		m,
-							  void **			check_values,
-							  of_linear_binary_code_cb_t *	ofcb)
+static
+INT32	of_linear_binary_code_triangularize_dense_system (of_linear_binary_code_cb_t	*ofcb,
+							  of_mod2dense			*m,
+							  void				**constant_tab)
 {
+	INT32 i, n;
+
 	OF_ENTER_FUNCTION
-	INT32 i,  n, p, w;
 	n = of_mod2dense_cols (m);
-	p = of_mod2dense_rows (m);
-	w = m->n_words;
-	/* for each line*/
+	/* for each row */
 	for (i = 0; i < n; i++)
 	{
-		if (!of_linear_binary_code_col_forward_elimination (m, check_values, ofcb, i))
+		if (!of_linear_binary_code_col_forward_elimination(ofcb, m, constant_tab, i))
 		{
 			OF_EXIT_FUNCTION
 			return 0;
@@ -127,176 +153,115 @@ INT32	of_linear_binary_code_triangularize_dense_system (of_mod2dense *		m,
 }
 
 
-inline INT32	of_linear_binary_code_col_forward_elimination  (of_mod2dense		*m,
-								void			**check_values,
-								of_linear_binary_code_cb_t	*ofcb,
-								INT32			col_idx)
+static
+INT32	of_linear_binary_code_col_forward_elimination  (of_linear_binary_code_cb_t	*ofcb,
+								of_mod2dense			*m,
+								void				**constant_tab,
+								INT32				col_idx)
 {
+	of_mod2word	*s;
+	of_mod2word	*t;
+	INT32		i, j, k;
+	INT32		n, p;
+	INT32		w;
+	INT32		w0;
+	INT32		b0;
+	INT32		symbol_size;
+	void		*tmp_buffer;
+
 	OF_ENTER_FUNCTION
-	of_mod2word *s, *t;
-	INT32 i, j, k, n, p, w, k0, b0,symbol_size=ofcb->encoding_symbol_length;
-	void * tmp_buffer;
+	symbol_size = ofcb->encoding_symbol_length;
 	n = of_mod2dense_cols (m);
 	p = of_mod2dense_rows (m);
 	w = m->n_words;
 	i = col_idx;
 	//printf("of_col_forward_elimination of col %d\n",i);
-	k0 = i >> of_mod2_wordsize_shift; // word index of the ith bit
-	b0 = i & of_mod2_wordsize_mask;  // bit index of the ith bit in the k0-th word
-	/* search for the first non-null element */
+	w0 = i >> of_mod2_wordsize_shift;	// word index of the ith bit
+	b0 = i & of_mod2_wordsize_mask;		// bit index of the ith bit in the w0-th word
+	/* search for the first non-null element of that column (pivot) */
 	for (j = i; j < p; j++)
 	{
-		if (of_mod2_getbit (m->row[j][k0], b0))
+		if (of_mod2_getbit(m->row[j][w0], b0))
 			break;
 	}
-	// now j is the index of the first non null element in the line i
+	/* now j is the index of the first non null element in column i */
 	if (j == p)
 	{
+		/* it's a failure, it's not possible to choose a pivot for this empty column */
 		OF_EXIT_FUNCTION
 		return 0;
 	}
 	if (j != i)
 	{
-		//printf("swap rows %i and %i\n",j,i);
 		// swap columns i and j in the two matrices
+		//printf("swap rows %i and %i\n",j,i);
 		t = m->row[i];
 		m->row[i] = m->row[j];
 		m->row[j] = t;
-		//  swap the partial sum
-		tmp_buffer = check_values[i];
-		check_values[i] = check_values[j];
-		check_values[j] = tmp_buffer;
+		// swap the partial sum
+		tmp_buffer = constant_tab[i];
+		constant_tab[i] = constant_tab[j];
+		constant_tab[j] = tmp_buffer;
 		//of_mod2dense_print(stdout,m);
 	}
-
-	ofcb->nb_tmp_symbols=0;
+	/* we have found the pivot and made sure that it is at row i (potentially after swapping two rows).
+	 * Now eliminate the other '1's below this pivot... */
+	ofcb->nb_tmp_symbols = 0;
 	for (j = i + 1; j < p; j++)
 	{
-		if (of_mod2_getbit (m->row[j][k0], b0))
+		if (of_mod2_getbit(m->row[j][w0], b0))
 		{
+			/* there's a '1' below the pivot, so XOR the two rows (word by word to go faster). */
 			//printf("\n\nxor in %i, %i\n",j,i);
-			// for all the column were the ith element is non null
 			s = m->row[j];
 			t = m->row[i];
-			s += k0;
-			t += k0;
-			for (k=k0;k<w;k++)
+			s += w0;
+			t += w0;
+			for (k = w0; k < w; k++)
 			{
-				*s ^=*t;
+				*s ^= *t;
 				s++;
 				t++;
 			}
 			//of_mod2dense_print(stdout,m);
-			if (check_values[i] != NULL)
+			if (constant_tab[i] != NULL)
 			{
-				// if the buffer of line i is NULL there is nothing to Add
-				// add the checkValues of the i to the m_checkValue of line j
-				if (check_values[j] == NULL)
+				/* if the buffer of line i is NULL there is nothing to add.
+				 * add the constant term of the i to the constant term of line j */
+				if (constant_tab[j] == NULL)
 				{
-					check_values[j] = of_malloc (symbol_size);
-					// Copy data now
-					memcpy (check_values[j],
-						check_values[i],
-						symbol_size);
+					constant_tab[j] = of_malloc (symbol_size);
+					/* copy data directly, there's no XOR to perform */
+					memcpy (constant_tab[j], constant_tab[i], symbol_size);
 				}
 				else
 				{
-					ofcb->tmp_tab_symbols[ofcb->nb_tmp_symbols++] = check_values[j];
+					/* add constant term i to constant term j */
+					ofcb->tmp_tab_symbols[ofcb->nb_tmp_symbols++] = constant_tab[j];
 				}
 			}
 			else
 			{
-				check_values[i] = of_calloc (1, symbol_size);
+				constant_tab[i] = of_calloc (1, symbol_size);
 			}
 		}
 	}
-	if (ofcb->nb_tmp_symbols!=0)
+	if (ofcb->nb_tmp_symbols != 0)
+	{
 		if (ofcb->nb_tmp_symbols == 1)
-			of_add_to_symbol(ofcb->tmp_tab_symbols[0], check_values[i], symbol_size OP_ARG_VAL);
+		{
+			of_add_to_symbol (ofcb->tmp_tab_symbols[0], constant_tab[i], symbol_size OP_ARG_VAL);
+		}
 		else
-			of_add_to_multiple_symbols(ofcb->tmp_tab_symbols,check_values[i],ofcb->nb_tmp_symbols, ofcb->encoding_symbol_length
+		{
+			of_add_to_multiple_symbols (ofcb->tmp_tab_symbols,
+						    constant_tab[i],
+						    ofcb->nb_tmp_symbols,
+						    ofcb->encoding_symbol_length
 #ifdef OF_DEBUG
-						   , &(ofcb->stats_xor->nb_xor_for_ML)
+						    , &(ofcb->stats_xor->nb_xor_for_ML)
 #endif
 						   );
-	OF_EXIT_FUNCTION
-	return 1;
-}
-
-
-INT32	of_linear_binary_code_col_forward_elimination_pivot_reordering (of_mod2dense		*m,
-									void			**check_values,
-									of_linear_binary_code_cb_t	*ofcb,
-									INT32			col_idx)
-{
-	OF_ENTER_FUNCTION
-	of_mod2word *s, *t;
-	INT32 i, j, k, n, p, w, k0, b0,symbol_size = ofcb->encoding_symbol_length;
-	void * tmp_buffer;
-	n = of_mod2dense_cols (m);
-	p = of_mod2dense_rows (m);
-	w = m->n_words;
-	i = col_idx;
-	//printf("of_col_forward_elimination of col %d\n",i);
-	k0 = i >> of_mod2_wordsize_shift; // word index of the ith bit
-	b0 = i & of_mod2_wordsize_mask;  // bit index of the ith bit in the k0-th word
-	/* search for the first non-null element */
-	for (j = i; j < p; j++)
-	{
-		if (of_mod2_getbit (m->row[j][k0], b0))
-			break;
-	}
-	// now j is the index of the first non null element in the line i
-	if (j == p)
-	{
-		OF_EXIT_FUNCTION
-		return 0;
-	}
-	if (j != i)
-	{
-		// swap column i an j the two matrices
-		t = m->row[i];
-		m->row[i] = m->row[j];
-		m->row[j] = t;
-		//  swap the partial sum
-		tmp_buffer = check_values[i];
-		check_values[i] = check_values[j];
-		check_values[j] = tmp_buffer;
-	}
-	for (j = i; j < p; j++)
-	{
-		if (j != i && of_mod2_getbit (m->row[j][k0], b0))
-		{			
-			// for all the row were the ith element is non null
-			s = m->row[j];
-			t = m->row[i];
-			for (k = k0; k < w; k++)
-			{
-				s[k] ^= t[k]; // add row i with row j
-			}
-			if (check_values[i] != NULL)
-			{
-				// if the buffer of line i is NULL there is nothing to Add
-				// add the checkValues of the i to the m_checkValue of line j
-				if (check_values[j] == NULL)
-				{
-					check_values[j] =  of_malloc (symbol_size);
-					//printf("malloc %d\n",symbolSize);
-					// Copy data now
-					memcpy (check_values[j],
-						check_values[i],
-						symbol_size);
-				}
-				else
-				{
-					of_add_to_symbol (check_values[j], check_values[i], symbol_size OP_ARG_VAL);
-				}
-			}
-			else
-			{
-				check_values[i] = of_malloc (symbol_size);
-				memset (check_values[i], 0, symbol_size);
-			}
 		}
 	}
 	OF_EXIT_FUNCTION
@@ -304,96 +269,64 @@ INT32	of_linear_binary_code_col_forward_elimination_pivot_reordering (of_mod2den
 }
 
 
-/* Deduce the value of the missing symbols from the inverted dense matrix */
-INT32	of_linear_binary_code_backward_substitution    (void *				variables[],
-							void *				constant_member[],
-							of_mod2dense *			m,
-							of_linear_binary_code_cb_t *	ofcb)
+/* old trivial backward substitution algorithm. */
+static
+INT32	of_linear_binary_code_backward_substitution    (of_linear_binary_code_cb_t	*ofcb,
+							of_mod2dense			*m,
+							void				*variable_tab[],
+							void				*constant_tab[])
 {
-	OF_ENTER_FUNCTION
-	INT32 i, j, n, p, w, k0, b0;
-	n = of_mod2dense_cols (m);
-	p = of_mod2dense_rows (m);
-	w = m->n_words;
-	for (i = n - 1;i >= 0;i--)
-	{
-		if (variables[i] == NULL)
-		{
-			k0 = i >> of_mod2_wordsize_shift; // word index of the ith bit
-			b0 = i & of_mod2_wordsize_mask;  // bit index of the ith bit in the k0-th word
-			ASSERT(of_mod2_getbit (m->row[i][k0], b0))
-			// the missing source symbol in col i is equal to the sum of P'_i and all the
-			// source symbol represented in row i
-			//printf("rebuilding source symbol %d with col %d\n",col_index[i],i);
-			variables[i] = constant_member[i];
-			constant_member[i] = NULL;
+	INT32	i;		/* current variable index for which we apply backward substition. It's also the row index. */
+	INT32	j;		/*  */
+	INT32	n;
+	INT32	w0;		/* dense matrix word index for variable j */
+	INT32	b0;		/* dense matrix bit index in word of index w0 */
 
-			ofcb->nb_tmp_symbols=0;
-			for (j = i + 1; j < n;j++)
+	OF_ENTER_FUNCTION
+	n = of_mod2dense_cols (m);
+	/* go through all the rows, starting from the last one... */
+	for (i = n - 1; i >= 0; i--)
+	{
+		ASSERT(variable_tab[i] == NULL);
+		//if (variable_tab[i] == NULL)
+		{
+			of_mod2word	*row = m->row[i];		// row corresponding to variable i
+#ifdef OF_DEBUG
+			w0 = i >> of_mod2_wordsize_shift;	// word index of the ith bit
+			b0 = i & of_mod2_wordsize_mask;		// bit index of the ith bit in the w0-th word
+			ASSERT(of_mod2_getbit(row[w0], b0))
+#endif
+			/*
+			 * the missing source symbol in col i is equal to the sum of the constant term of this
+			 * equation (i.e. row i) plus all the variables of this equation.
+			 */
+			//OF_TRACE_LVL(1, ("%s: rebuilding source symbol %d with col %d\n", __FUNCTION__, col_index[i], i))
+			ASSERT(variable_tab[i] == NULL);
+			variable_tab[i] = constant_tab[i];
+			constant_tab[i] = NULL;
+			/* determine the list of symbols to add to compute the decoded source symbol */
+			ofcb->nb_tmp_symbols = 0;
+			for (j = i + 1; j < n; j++)
 			{
-				k0 = j >> of_mod2_wordsize_shift; // word index of the ith bit
-				b0 = j & of_mod2_wordsize_mask;  // bit index of the ith bit in the k0-th word
-				/* search for the non-null element  in the row i*/
-				if (of_mod2_getbit (m->row[i][k0], b0))
+				w0 = j >> of_mod2_wordsize_shift;	// word index of the ith bit
+				b0 = j & of_mod2_wordsize_mask;		// bit index of the ith bit in the w0-th word
+				/* search for the non-null element in row i */
+				if (of_mod2_getbit(row[w0], b0))
 				{
-					ofcb->tmp_tab_symbols[ofcb->nb_tmp_symbols++] = variables[j];
+					/* since the bit is set, add the variable_tab[j] symbol */
+					ofcb->tmp_tab_symbols[ofcb->nb_tmp_symbols++] = variable_tab[j];
 				}
 			}
-			//printf("%i\n",ofcb->nb_tmp_symbols);
-			if (ofcb->nb_tmp_symbols!=0)
-				of_add_from_multiple_symbols(variables[i], (const void**)ofcb->tmp_tab_symbols, ofcb->nb_tmp_symbols, ofcb->encoding_symbol_length
+			if (ofcb->nb_tmp_symbols != 0)
+			{
+				of_add_from_multiple_symbols(variable_tab[i], (const void**)ofcb->tmp_tab_symbols,
+							     ofcb->nb_tmp_symbols, ofcb->encoding_symbol_length
 #ifdef OF_DEBUG
 							     , &(ofcb->stats_xor->nb_xor_for_ML)
 #endif
-							     );
+								);
+			}
 		}
-		else
-		{
-			OF_PRINT_ERROR(("Backward_Substitution_mt: ERROR variables[%d] should be NULL\n", i))
-		}
-	}
-	OF_EXIT_FUNCTION
-	return 1;
-}
-
-
-INT32	of_linear_binary_code_col_forward_permutation  (of_mod2dense *		m,
-							void **			check_values,
-							UINT32			symbol_size,
-							INT32			col_idx)
-{
-	OF_ENTER_FUNCTION
-	of_mod2word  *t;
-	INT32 i, j, n, p, w, k0, b0;
-	void * tmp_buffer;
-	n = of_mod2dense_cols (m);
-	p = of_mod2dense_rows (m);
-	w = m->n_words;
-	i = col_idx;
-	k0 = i >> of_mod2_wordsize_shift; // word index of the ith bit
-	b0 = i & of_mod2_wordsize_mask;  // bit index of the ith bit in the k0-th word
-	/* search for the first non-null element */
-	for (j = i; j < p; j++)
-	{
-		if (of_mod2_getbit (m->row[j][k0], b0))
-			break;
-	}
-	// now j is the index of the first non null element in the line i
-	if (j == p)
-	{
-		OF_EXIT_FUNCTION
-		return 0;
-	}
-	if (j != i)
-	{
-		// swap column i an j the two matrices
-		t = m->row[i];
-		m->row[i] = m->row[j];
-		m->row[j] = t;
-		//  swap the partial sum
-		tmp_buffer = check_values[i];
-		check_values[i] = check_values[j];
-		check_values[j] = tmp_buffer;
 	}
 	OF_EXIT_FUNCTION
 	return 1;

@@ -1,4 +1,4 @@
-/* $Id: globals.c 95 2013-04-26 07:09:39Z roca $ */
+/* $Id: globals.c 199 2014-10-21 14:25:02Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009-2012 INRIA - All rights reserved
@@ -87,7 +87,7 @@ INT32	max_decoding_steps = -1;
 
 bool	find_min_overhead_mode = false;
 
-INT32	find_min_overhead_nb_rx_pkts = -1;
+//INT32	find_min_overhead_nb_rx_pkts = -1;
 
 bool use_callback=false; /* by default, we don't use callbacks */
 
@@ -101,6 +101,7 @@ UINT32	src_pkt_nb	= 0;	/* % of source data packets are sent   */
 
 UINT32	loss_model 	= 0;
 UINT32	tx_simul_loss	= 0;	/* number of simulated losses */
+INT32	trim_after_this_nb_rx_pkts	= -1;
 
 
 double	p_loss_when_ok 	= P_LOSS_WHEN_OK;

@@ -1,4 +1,4 @@
-/* $Id: sender.c 148 2014-07-08 08:01:56Z roca $ */
+/* $Id: sender.c 207 2014-12-10 19:47:50Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009-2012 INRIA - All rights reserved
@@ -66,7 +66,7 @@ init_sender (void)
 	OF_PRINT(("init_start=%lI64f\n", (double)tv0.QuadPart/(double)freq.QuadPart))
 #else
 	gettimeofday(&tv0, NULL);
-	OF_PRINT(("init_start=%ld.%ld\n", tv0.tv_sec, tv0.tv_usec))
+	OF_PRINT(("init_start=%ld.%d\n", tv0.tv_sec, tv0.tv_usec))
 #endif
 #endif
 	/*
@@ -103,7 +103,7 @@ init_sender (void)
 #else
 	gettimeofday(&tv1, NULL);
 	timersub(&tv1, &tv0, &tv_delta);
-	OF_PRINT(("init_end=%ld.%ld  init_time=%ld.%06ld\n",
+	OF_PRINT(("init_end=%ld.%d  init_time=%ld.%06d\n",
 		tv1.tv_sec, tv1.tv_usec, tv_delta.tv_sec, tv_delta.tv_usec))
 #endif
 #endif
@@ -136,6 +136,15 @@ init_sender (void)
 	OF_PRINT_LVL(1, ("Blocking_struct:\n\ttot_nb_source_symbols=%d, tot_nb_repair_symbols=%d, tot_nb_encoding_symbols=%d, code_rate=%.3f\n\tI=%d, tot_nb_blocks=%d, A_large=%d, A_small=%d\n",
 		tot_nb_source_symbols, tot_nb_repair_symbols, tot_nb_encoding_symbols, code_rate,
 		bs.I, tot_nb_blocks, bs.A_large, bs.A_small))
+
+	/*
+	 * check there is a single block in -find_min_overhead or -loss=5:nb modes, otherwise results are hazardous...
+	 */
+	if ((tot_nb_blocks > 1) && (trim_after_this_nb_rx_pkts >= 0))
+	{
+		OF_PRINT_ERROR(("ERROR: there are multiple blocks, which is not supported in -find_min_overhead or -loss=5:nb modes to avoid hazardous results!\n"))
+		goto error;
+	}
 
 	/*
 	 * allocate and initialize the original source and repair symbol buffers.
@@ -260,7 +269,7 @@ encode (void)
 	OF_PRINT(("encoding_start=%lI64f\n", (double)tv0.QuadPart / (double)freq.QuadPart))
 #else
 	gettimeofday(&tv0, NULL);
-	OF_PRINT(("encoding_start=%ld.%ld\n", tv0.tv_sec, tv0.tv_usec))
+	OF_PRINT(("encoding_start=%ld.%d\n", tv0.tv_sec, tv0.tv_usec))
 #endif
 	for (sbn = 0, blk = blk_cb_tab; sbn < tot_nb_blocks; sbn++, blk++) {
 		k = blk->k;
@@ -318,7 +327,7 @@ encode (void)
 		 * is above a certain threshold), so do not sent it since the codec already knows it.
 		 */
 		blk->ldpc_dont_send_last_repair = false;		/* by default */
-		if ((codec_id == OF_CODEC_LDPC_STAIRCASE_STABLE)) {
+		if (codec_id == OF_CODEC_LDPC_STAIRCASE_STABLE) {
 			bool	lib_says_its_null;	/* boolean */
 
 			if (of_get_control_parameter(ses, OF_CRTL_LDPC_STAIRCASE_IS_LAST_SYMBOL_NULL,
@@ -360,7 +369,7 @@ encode (void)
 #else
 	gettimeofday(&tv1, NULL);
 	timersub(&tv1, &tv0, &tv_delta);
-	OF_PRINT(("encoding_end=%ld.%ld  encoding_time=%ld.%06ld\n",
+	OF_PRINT(("encoding_end=%ld.%d  encoding_time=%ld.%06d\n",
 		tv1.tv_sec, tv1.tv_usec, tv_delta.tv_sec, tv_delta.tv_usec))
 #endif
 	free(encoding_symbols_tab);

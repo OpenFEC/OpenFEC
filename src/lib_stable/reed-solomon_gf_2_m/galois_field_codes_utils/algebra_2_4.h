@@ -1,4 +1,4 @@
-/* $Id: algebra_2_4.h 148 2014-07-08 08:01:56Z roca $ */
+/* $Id: algebra_2_4.h 207 2014-12-10 19:47:50Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (C) 1997-98 Luigi Rizzo (luigi@iet.unipi.it)
@@ -89,6 +89,18 @@ static const gf of_gf_2_4_opt_mul_table[][256] = {
  * addmul() computes dst[] = dst[] + c * src[]
  */
 void	of_galois_field_2_4_addmul1(gf *dst1, gf *src1, gf c, int sz);
+
+/*
+ * of_galois_field_2_4_addmul1_compact() computes dst[] = dst[] + c * src[] when src and dst
+ * both point to vectors where each GF(2^4) element is actually stored in 4-bits.
+ * Said differently, there are two elements per byte.
+ * This is used for matrix operations where source/repair symbols are involved (encoding
+ * and decoding).
+ * This function has been optimized so that two elements are accessed each time, and the
+ * mulc table works on two elements at a time. This is a highly effective solution which
+ * warrants high performances.
+ */
+void         of_galois_field_2_4_addmul1_compact (gf *dst1, gf *src1, gf c, int sz);
 
 /*
  * computes C = AB where A is n*k, B is k*m, C is n*m

@@ -1,4 +1,4 @@
-/* $Id: tx_simulator.c 95 2013-04-26 07:09:39Z roca $ */
+/* $Id: tx_simulator.c 199 2014-10-21 14:25:02Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009-2011 INRIA - All rights reserved
@@ -80,6 +80,8 @@ UINT32 myrand ()
 of_status_t
 init_tx_simulator()
 {
+	UINT32		i;
+
 	/* first of all, fix the seed */
 	init_prng_with_seed(suggested_seed);
 	/*
@@ -113,7 +115,6 @@ init_tx_simulator()
 		break;
 	case 3:
 		if (tx_mode == TX_MODE_SIMUL_BCAST_WITH_UNICAST_REPAIR) {
-			int	i;
 			/* do things in two steps: loss array for the first repair symbols, then
 			 * extend it to simulate the reception of all source symbols. */
 			if (nb_loss > tot_nb_repair_symbols) {
@@ -122,8 +123,7 @@ init_tx_simulator()
 				goto error;
 			}
 			is_lost_tab = create_loss_array_from_erasure_nb(tot_nb_repair_symbols, nb_loss);
-			for (i = 0; i < src_pkt_nb; i++ ) {	// mark the following (source) symbols
-									// as received
+			for (i = 0; i < src_pkt_nb; i++) {	/* mark the following (source) symbols as received */
 				is_lost_tab[tot_nb_repair_symbols + i] = false;
 			}
 		} else {
@@ -137,6 +137,18 @@ init_tx_simulator()
 		break;
 	case 4:
 		is_lost_tab = create_loss_array_from_erasure_nb(max_decoding_steps, 0);
+		break;
+	case 5:
+		/* loss only occur after the first trim_after_this_nb_rx_pkts received packets */
+		if (trim_after_this_nb_rx_pkts > max_decoding_steps) {
+			OF_PRINT_ERROR(("number of symbols to receive (%d) cannot exceed total number of symbols that could be received (%d)\n",
+					trim_after_this_nb_rx_pkts, max_decoding_steps))
+			goto error;
+		}
+		is_lost_tab = create_loss_array_from_erasure_nb(max_decoding_steps, 0);
+		for (i = trim_after_this_nb_rx_pkts; i < max_decoding_steps; i++) {
+			is_lost_tab[i] = true;
+		}
 		break;
 	default:
 		OF_PRINT_ERROR(("loss model (%d) is not supported\n", loss_model))
@@ -197,7 +209,7 @@ get_next_symbol_received ()
 		} else {
 			/* this symbol is received, return it */
 			if ((find_min_overhead_mode == true) &&
-			    (tot_nb_recvd_symbols >= find_min_overhead_nb_rx_pkts)) {
+			    (tot_nb_recvd_symbols >= trim_after_this_nb_rx_pkts)) {
 				/* stop test in find_min_overhead mode if we achieved the maximum value */
 				break;
 			}

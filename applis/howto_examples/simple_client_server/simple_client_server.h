@@ -1,4 +1,4 @@
-/* $Id: simple_client_server.h 190 2014-07-16 09:16:54Z roca $ */
+/* $Id: simple_client_server.h 207 2014-12-10 19:47:50Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009-2014 INRIA - All rights reserved
@@ -69,7 +69,7 @@
 #define CODE_RATE	0.667		/* k/n = 2/3 means we add 50% of repair symbols */
 #define LOSS_RATE	0.30		/* we consider 30% of packet losses... It assumes there's no additional loss during UDP transmissions */
 
-#define VERBOSITY	1		/* Define the verbosity level:
+#define VERBOSITY	2		/* Define the verbosity level:
 					 *	0 : no trace
 					 *	1 : main traces
 					 *	2 : full traces with packet dumps */

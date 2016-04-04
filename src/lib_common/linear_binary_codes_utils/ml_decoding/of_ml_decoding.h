@@ -1,4 +1,4 @@
-/* $Id: of_ml_decoding.h 186 2014-07-16 07:17:53Z roca $ */
+/* $Id: of_ml_decoding.h 208 2014-12-12 18:39:20Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -42,20 +42,6 @@
 
 
 /**
- * This function simplifies the linear system (H): delete rows and cols when we can.
- *
- * @fn of_status_t		of_linear_binary_code_simplify_linear_system (of_linear_binary_code_cb_t *ofcb,const void* new_symbol,UINT32 new_symbol_esi)
- * @brief			symplify the linear system
- * @param ofcb 			(IN/OUT) Linear-Binary-Code control-block.
- * @param new_symbol		(IN/OUT) pointer to new symbol to process
- * @param new_symbol_esi	(IN) Encoding Symbol Index
- * @return			1 if it's OK, or 0 if an error appears.
- */
-of_status_t of_linear_binary_code_simplify_linear_system   (of_linear_binary_code_cb_t* ofcb,
-							const void* new_symbol,
-							UINT32 new_symbol_esi);
-
-/**
  * This function tries to finish decoding.
  *
  * @fn of_status_t		of_linear_binary_code_finish_decoding_with_ml (of_linear_binary_code_cb_t *ofcb)
@@ -65,15 +51,6 @@ of_status_t of_linear_binary_code_simplify_linear_system   (of_linear_binary_cod
  */
 of_status_t of_linear_binary_code_finish_decoding_with_ml (of_linear_binary_code_cb_t *ofcb);
 
-/**
- * This function tries to finish decoding on a parity check matrix.
- *
- * @fn of_status_t		of_ldpc_staircase_finish_decoding_with_ml (of_linear_binary_code_cb_t *ofcb)
- * @brief			try to finish decoding
- * @param ofcb 			(IN/OUT) Linear-Binary-Code control-block.
- * @return			1 if it's OK, or 0 if an error appears.
- */
-of_status_t of_linear_binary_code_finish_with_ml_decoding_on_parity_check_matrix (of_linear_binary_code_cb_t *ofcb);
 
 #endif //ML_DECODING
 

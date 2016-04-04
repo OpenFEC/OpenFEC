@@ -1,18 +1,11 @@
 ################# Performance Evaluation Config file #################
-# $Id: params_c7.txt 201 2014-10-21 15:37:06Z roca $
+# $Id: params.txt 150 2014-07-08 13:18:04Z roca $
 
 #
 # This is the file that gathers all the parameters that control performance
 # evaluation tests. It is used both during simulations and during graph
 # generation. Feel free to edit this file as appropriate.
 #
-
-# NB: this version is for curve 7:
-#	-curve=7    number of XOR operations W.R.T. loss percentage
-# Here it is essential to use the Debug version of eperftool since the Release
-# version does not collect XOR statistics. Also, the find_min_overhead must be
-# set to false, the nb_source_symbols must be fixed, and the loss must be set
-# accordingly.
 
 
 #################################################################################
@@ -23,8 +16,9 @@
 # Choose between the Release and Debug versions, and adjust the path if need be.
 # WARNING: specify a debug compilated version of eperftool if you want to
 # calcultate XOR operation number.
-#fec_tool   ../bin/Release/eperftool
-fec_tool  ../bin/Debug/eperftool
+#
+fec_tool   ../bin/Release/eperftool
+#fec_tool  ../bin/Debug/eperftool
 
 # Name of the trace file during the first step (simulation).
 # At the end of the tests, this file contains all the raw test results (useful
@@ -41,6 +35,7 @@ file_suffix
 
 # Number of thread to use in the test
 # Automatically set to two times the number of processors if not set here
+#
 # nb_thread 2
 
 
@@ -61,7 +56,7 @@ file_suffix
 # minimum/average/maximum or decoding failure probability curves. In particular,
 # for decoding failure probability curves, nb_iterations must be large enough.
 #
-nb_iterations	100
+nb_iterations	1000
 
 # Start tests at this offset.
 # This is useful either to split a particularly long test on several machines:
@@ -98,17 +93,17 @@ nb_iterations_for_partial_results	100
 #     6: LDPC, with a binary H matrix specified in a file, advanced codec
 # You can specify one or several codes.
 #
-codec	3
+codec		3
  
 # List of the number of source symbols to consider (in <min> <max> <step> format).
 #
 #nb_source_symbols	10 100 10
 nb_source_symbols	1024 1024 1
 
-# List of code rates, specified as float values, to consider. There can be one
-# or more code rates. Fractions are NOT accepted.
-#
-# WARNING: choose whether the code rate(s) or the number(s) of repair symbols should
+# Code rate, specified as float value, to consider. ONLY ONE code rate must be
+# specified. Fractions are NOT accepted.
+# Maximum precision : 10^(-3)
+# WARNING: choose whether the code rate or the number of repair symbols should
 # be specified, but do not specify both of them.
 #
 code_rate	0.666
@@ -140,7 +135,7 @@ ldpc_N1		7 7 1
 # This is equivalent to using eperftool with the -find_min_overhead argument.
 # This parameter is not meaningful with MDS codes (e.g., Reed-Solomon).
 #
-find_min_overhead	false
+find_min_overhead	true
 
 
 #################################################################################
@@ -189,7 +184,7 @@ tx_type		0
 # WARNING: this parameter is ignored in find_min_overhead mode (it automatically
 # select loss type 0 associated with transmission type 0).
 #
-loss	2 15 33  1 
+loss	2 50 70  1 
 #loss 	3 1000
 
 

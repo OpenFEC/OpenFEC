@@ -2,6 +2,16 @@ file (GLOB_RECURSE openfec_sources *)
 
 add_library(openfec  SHARED  ${openfec_sources})
 
+# From: $cmake --help-property SOVERSION
+#		For shared libraries VERSION and SOVERSION can be used to specify
+#		the build version and api version respectively.
+#
+# Edit it as appropriate to be in line with the src/lib_common/of_openfec_api.c::more_about() version
+#
+set_target_properties(openfec PROPERTIES
+			VERSION 1.4.2
+			SOVERSION 1) 
+
 # Feel free to edit as appropriate the "target_link_libraries".
 #
 # Add the IL (DevIL) library if you want to have the possibility to

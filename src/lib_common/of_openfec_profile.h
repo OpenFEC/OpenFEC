@@ -1,4 +1,4 @@
-/* $Id: of_openfec_profile.h 175 2014-07-11 09:58:38Z roca $ */
+/* $Id: of_openfec_profile.h 207 2014-12-10 19:47:50Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -53,7 +53,7 @@
 #include "../lib_stable/reed-solomon_gf_2_m/of_codec_profile.h"
 #include "../lib_stable/ldpc_staircase/of_codec_profile.h"
 #include "../lib_stable/2d_parity_matrix/of_codec_profile.h"
-#include "../lib_advanced/ldpc_from_file/of_codec_profile.h"
+//#include "../lib_advanced/ldpc_from_file/of_codec_profile.h"
 
 /*
  * Edit as needed to define which core solving system to use.

@@ -1,4 +1,4 @@
-/* $Id: of_linear_binary_code.h 189 2014-07-16 08:53:50Z roca $ */
+/* $Id: of_linear_binary_code.h 209 2014-12-12 18:49:58Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2011 INRIA - All rights reserved
@@ -142,7 +142,6 @@ typedef struct of_linear_binary_code_cb
 #include "it_decoding/of_it_decoding.h"
 #include "ml_decoding/of_ml_decoding.h"
 #include "ml_decoding/of_ml_tool.h"
-#include "ml_decoding/of_ml_tool_2.h"
 
 
 #endif

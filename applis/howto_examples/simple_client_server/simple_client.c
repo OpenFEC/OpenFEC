@@ -1,4 +1,4 @@
-/* $Id: simple_client.c 190 2014-07-16 09:16:54Z roca $ */
+/* $Id: simple_client.c 216 2014-12-13 13:21:07Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009-2014 INRIA - All rights reserved
@@ -74,14 +74,15 @@ static void	dump_buffer_32 (void	*buf,
 
 
 int
-main(int argc, char* argv[])
+main (int argc, char* argv[])
 {
 	of_codec_id_t	codec_id;				/* identifier of the codec to use */
 	of_session_t	*ses 		= NULL;			/* openfec codec instance identifier */
 	of_parameters_t	*params		= NULL;			/* structure used to initialize the openfec session */
-	void**		recvd_symbols_tab= NULL;		/* table containing pointers to received packets, containing FPI + symbol */
+	void**		recvd_symbols_tab= NULL;		/* table containing pointers to received symbols (no FPI here).
+								 * The allocated buffer start 4 bytes (i.e., sizeof(FPI)) before... */
 	void**		src_symbols_tab	= NULL;			/* table containing pointers to the source symbol buffers (no FPI here) */
-	UINT32		symb_sz_32	= SYMBOL_SIZE / 4;		/* symbol size in units of 32 bit words */
+	UINT32		symb_sz_32	= SYMBOL_SIZE / 4;	/* symbol size in units of 32 bit words */
 	UINT32		k;					/* number of source symbols in the block */
 	UINT32		n;					/* number of encoding symbols (i.e. source + repair) in the block */
 	UINT32		esi;					/* Encoding Symbol ID, used to identify each encoding symbol */
@@ -176,7 +177,7 @@ main(int argc, char* argv[])
 	params->encoding_symbol_length	= SYMBOL_SIZE;
 
 	/* Open and initialize the openfec decoding session now that we know the various parameters used by the sender/encoder... */
-	if (ret = of_create_codec_instance(&ses, codec_id, OF_DECODER, VERBOSITY) != OF_STATUS_OK)
+	if ((ret = of_create_codec_instance(&ses, codec_id, OF_DECODER, VERBOSITY)) != OF_STATUS_OK)
 	{
 		OF_PRINT_ERROR(("of_create_codec_instance() failed\n"))
 		ret = -1;
@@ -217,7 +218,7 @@ main(int argc, char* argv[])
 			ret = -1;
 			goto end;
 		}
-		recvd_symbols_tab[esi] = pkt_with_fpi;	/* remember */
+		recvd_symbols_tab[esi] = (char*)pkt_with_fpi + 4;	/* remember */
 		printf("%05d => receiving symbol esi=%u (%s)\n", n_received, esi, (esi < k) ? "src" : "repair");
 		if (of_decode_with_new_symbol(ses, (char*)pkt_with_fpi + 4, esi) == OF_STATUS_ERROR) {
 			OF_PRINT_ERROR(("of_decode_with_new_symbol() failed\n"))
@@ -249,7 +250,7 @@ main(int argc, char* argv[])
 			ret = -1;
 			goto end;
 		}
-		recvd_symbols_tab[esi] = pkt_with_fpi;	/* remember */
+		recvd_symbols_tab[esi] = (char*)pkt_with_fpi + 4;	/* remember */
 		printf("%05d => receiving symbol esi=%u (%s)\n", n_received, esi, (esi < k) ? "src" : "repair");
 		len = SYMBOL_SIZE + 4;	/* make sure len contains the size of the expected packet */
 	}
@@ -329,9 +330,8 @@ end:
 		{
 			if (recvd_symbols_tab[esi])
 			{
-				/* this is a symbol received from the network, with its FPI, so free
-				 * it using the pointer to the buffer as stored in recvd_symbols_tab */
-				free(recvd_symbols_tab[esi]);
+				/* this is a symbol received from the network, without its FPI that starts 4 bytes before */
+				free((char*)recvd_symbols_tab[esi] - 4);
 			}
 			else if (esi < k && src_symbols_tab[esi])
 			{

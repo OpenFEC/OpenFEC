@@ -121,7 +121,7 @@ int main()
 		{
 			printf("%d ", iter);
 			fflush(stdout);
-			if (ret = of_create_codec_instance(&ses, codec_id, OF_ENCODER, 0) != OF_STATUS_OK)
+			if ((ret = of_create_codec_instance(&ses, codec_id, OF_ENCODER, 0)) != OF_STATUS_OK)
 			{
 				printf("of_create_codec_instance: ERROR for codec %d\n", codec_id);
 				goto error;
@@ -234,7 +234,7 @@ int main()
 			/*
 			 * release everything to finish.
 			 */
-			if (ret = of_release_codec_instance(ses) != OF_STATUS_OK)
+			if ((ret = of_release_codec_instance(ses)) != OF_STATUS_OK)
 			{
 				printf("ERROR, of_release_codec_instance() failed for codec=%d \n", codec_id);
 				goto error;

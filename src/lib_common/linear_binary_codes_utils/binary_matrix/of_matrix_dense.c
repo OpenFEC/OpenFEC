@@ -462,7 +462,6 @@ of_mod2dense *of_mod2dense_read (FILE *f)
 
 /* GET AN ELEMENT FROM A DENSE MOD2 MATRIX. */
 
-inline
 UINT32 of_mod2dense_get (of_mod2dense	*m, 	/* Matrix to get element from */
 			 UINT32		row,	/* Row of element (starting with zero) */
 			 UINT32		col)	/* Column of element (starting with zero) */

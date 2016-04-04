@@ -82,7 +82,7 @@ int main()
     //for (k=0;k<CODEC_MAX;k++)
     {
 	// create an instance of an encoder
-      if (ret = of_create_codec_instance(&ses,k,OF_ENCODER,1)!= OF_STATUS_OK)
+      if ((ret = of_create_codec_instance(&ses,k,OF_ENCODER,1)) != OF_STATUS_OK)
       {
 	printf("error in of_create_codec_instance\n");
 	goto error;      
@@ -117,14 +117,14 @@ int main()
 	      //goto error;
 	  }
       }
-       if (ret = of_release_codec_instance(ses) != OF_STATUS_OK)
+       if ((ret = of_release_codec_instance(ses)) != OF_STATUS_OK)
       {
 	printf("of_release_codec_instance: ");;
 	//goto error;
       }
 
 	//create a decoder instance
-      if (ret = of_create_codec_instance(&ses,k,OF_DECODER,1)!= OF_STATUS_OK)
+      if ((ret = of_create_codec_instance(&ses,k,OF_DECODER,1)) != OF_STATUS_OK)
       {
 	printf("of_create_codec_instance: ");
 	;
@@ -146,7 +146,7 @@ int main()
       of_finish_decoding(ses);
       printf("fini\n");
 
-      if (ret = of_release_codec_instance(ses) != OF_STATUS_OK)
+      if ((ret = of_release_codec_instance(ses)) != OF_STATUS_OK)
       {
 	printf("of_release_codec_instance: ");;
 	//goto error;

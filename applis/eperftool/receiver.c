@@ -1,4 +1,4 @@
-/* $Id: receiver.c 100 2013-11-07 02:54:55Z roca $ */
+/* $Id: receiver.c 207 2014-12-10 19:47:50Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009-2011 INRIA - All rights reserved
@@ -85,7 +85,7 @@ receive_and_decode (void)
 	OF_PRINT(("decoding_start=%lI64f\n", (double)tv0.QuadPart/(double)freq.QuadPart))
 #else
 	gettimeofday(&tv0, NULL);
-	OF_PRINT(("decoding_start=%ld.%ld\n", tv0.tv_sec, tv0.tv_usec))
+	OF_PRINT(("decoding_start=%ld.%d\n", tv0.tv_sec, tv0.tv_usec))
 #endif
 
 	while ((new_symb_cb = get_next_symbol_received()) != NULL) {
@@ -275,7 +275,7 @@ receive_and_decode (void)
 #else
 		gettimeofday(&tv1, NULL);
 		timersub(&tv1, &tv0, &tv_delta);
-		OF_PRINT(("decoding_end=%ld.%ld  decoding_time=%ld.%06ld  nb_received_symbols=%d  inefficiency_ratio=%.6f\n",
+		OF_PRINT(("decoding_end=%ld.%d  decoding_time=%ld.%06d  nb_received_symbols=%d  inefficiency_ratio=%.6f\n",
 			tv1.tv_sec, tv1.tv_usec,
 			tv_delta.tv_sec, tv_delta.tv_usec,
 			tot_nb_recvd_symbols, (double)tot_nb_recvd_symbols/(double)tot_nb_source_symbols))

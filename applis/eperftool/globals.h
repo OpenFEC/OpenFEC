@@ -1,4 +1,4 @@
-/* $Id: globals.h 95 2013-04-26 07:09:39Z roca $ */
+/* $Id: globals.h 199 2014-10-21 14:25:02Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009-2012 INRIA - All rights reserved
@@ -95,7 +95,7 @@ extern bool	find_min_overhead_mode;
 
 /** when eperftool is used so as to find the mininum decoding overhead, the current nb of
  * received symbols to test. */
-extern INT32	find_min_overhead_nb_rx_pkts;
+//extern INT32	find_min_overhead_nb_rx_pkts;
 
 /** if use_callback is true, then eperftool uses callbacks from the OpenFEC library */
 extern bool	use_callback;
@@ -117,6 +117,10 @@ extern UINT32	loss_model;
 
 /** number of simulated losses */
 extern UINT32	tx_simul_loss;
+
+/** number of packets to receive, and trim whatever follows.
+ * Used both by -loss=5 mode and in find_min_overhead mode */
+extern INT32	trim_after_this_nb_rx_pkts;
 
 
 extern double	p_loss_when_ok;

@@ -1,4 +1,4 @@
-/* $Id: of_matrix_sparse.h 186 2014-07-16 07:17:53Z roca $ */
+/* $Id: of_matrix_sparse.h 197 2014-07-16 15:21:56Z roca $ */
 /*
  * The contents of this directory and its sub-directories are
  * Copyright (c) 1995-2003 by Radford M. Neal
@@ -241,7 +241,7 @@ of_mod2entry *of_mod2sparse_find (of_mod2sparse *,
 				  UINT32,
 				  UINT32);
 
-inline of_mod2entry *of_mod2sparse_insert (of_mod2sparse *,
+of_mod2entry *of_mod2sparse_insert (of_mod2sparse *,
 				    UINT32,
 				    UINT32);
 
