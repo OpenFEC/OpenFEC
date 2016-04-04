@@ -1,4 +1,4 @@
-/* $Id: of_statistics.h 72 2012-04-13 13:27:26Z detchart $ */
+/* $Id: of_statistics.h 186 2014-07-16 07:17:53Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -31,53 +31,43 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-
-/*
- * This module implements statistics about memoryoperations.
- */
 #ifndef STATISTICS_H
 #define STATISTICS_H
 
 
-#include "of_linked_list.h"
-#include "of_hash_table.h"
-#include "of_queue.h"
-#include "of_symbols_stats.h"
-
 #ifdef OF_DEBUG
 
-/**
- * \struct of_memory_block_t
- * \brief This structure represents a memory block which contains an allocated pointer and its size
- */
-typedef struct of_memory_block
-{
-	void	*ptr;
-	size_t	size;
-} of_memory_block_t;
-
 
 /**
- * \struct of_memory_usage_stats_t
- * \brief Memory usage statistics, for a given codec instance.
+ * Symbol level statistics.
  */
-typedef struct of_memory_usage_stats
+typedef struct of_symbols_stats
 {
-	UINT32 		nb_malloc;
-	UINT32 		nb_calloc;
-	UINT32 		nb_realloc;
-	UINT32 		nb_free;
-	UINT32		current_mem;	/* current amount of memory used by a codec instance */
-	UINT32		maximum_mem;	/* maximum amount of memory used by a codec instance */
-	of_hash_table_t	*hash;
-} of_memory_usage_stats_t;
+	/** Number of source symbols received by decoder (they havn't been decoded). */
+	UINT32		nb_source_symbols_received;
+	/** Number of repair symbols received by decoder (they havn't been decoded). */
+	UINT32		nb_repair_symbols_received;
+	/** Number of source symbols decoded during IT decoding. */
+	UINT32		nb_source_symbols_built_with_it; 
+	/** Number of source symbols decoded during ML decoding. */
+	UINT32		nb_source_symbols_built_with_ml;
+	/** Number of repair symbols decoded during IT decoding. */
+	UINT32		nb_repair_symbols_built_with_it;
+	/** Number of repair symbols decoded during ML decoding. */
+	UINT32		nb_repair_symbols_built_with_ml;
+	/** Number of source symbols ...... */
+	UINT32		nb_source_symbols_ignored;
+	/** Number of repair symbols ...... */
+	UINT32		nb_repair_symbols_ignored;
+} of_symbols_stats_t;
 
-#else
 
-typedef struct of_memory_usage_stats
-{} of_memory_usage_stats_t;
+/**
+ * Print the statistics to the standard output.
+ */
+void	of_print_symbols_stats(of_symbols_stats_t*);
 
-void of_print_memory_statistics(of_memory_usage_stats_t*);
+
 #endif // OF_DEBUG
 
 #endif //STATISTICS_H

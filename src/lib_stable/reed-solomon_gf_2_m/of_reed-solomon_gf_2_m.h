@@ -1,4 +1,4 @@
-/* $Id: of_reed-solomon_gf_2_m.h 129 2014-05-19 16:06:36Z roca $ */
+/* $Id: of_reed-solomon_gf_2_m.h 182 2014-07-15 09:27:51Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -55,9 +55,6 @@ typedef struct of_rs_2_m_cb
 	UINT32			nb_repair_symbols;	/** r = n - k parameter.                 */
 	UINT32			encoding_symbol_length;	/** symbol length.                       */
 /***********************************************************************************/
-
-	/** Memory usage statistics for this codec instance. */
-	of_memory_usage_stats_t	*stats;
 
 	UINT16			m;		/* in theory between 2..16. Currently only values 4 and 8 are supported */
 	UINT16			field_size; 	/* 2^m */

@@ -1,4 +1,4 @@
-/* $Id: of_tools.h 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: of_tools.h 186 2014-07-16 07:17:53Z roca $ */
 /*
  * The contents of this directory and its sub-directories are
  * Copyright (c) 1995-2003 by Radford M. Neal
@@ -40,23 +40,31 @@
 #ifndef TOOLS_H__
 #define TOOLS_H__
 
-#include <stdlib.h>
-#include <stdio.h>
-#include "../../of_types.h"
-#include "../../of_mem.h"
 
 #ifdef OF_USE_LINEAR_BINARY_CODES_UTILS
 
-void *of_chk_alloc (UINT32 n, UINT32 size, of_memory_usage_stats_t *stats);	/* Calls 'calloc' and exits with error if it fails */
 
-void of_print_composition (char* symbol,
-			UINT32 size);
+/**
+ * Call calloc and exits with an error if it fails
+ */
+void *	of_chk_alloc (UINT32	n,
+		      UINT32	size);
 
-#if 1
-INT32  of_intio_read (FILE *);	/* Read an integer  */
-void of_intio_write (FILE *,
-		  INT32);	/* Write an integer */
-#endif
+/**
+ */
+void	of_print_composition (char*	symbol,
+			      UINT32	size);
+
+/**
+ * Read an integer 
+ */
+INT32 	of_intio_read (FILE *);
+
+/**
+ * Write an integer
+ */
+void	of_intio_write (FILE *, INT32);
+
 
 #endif //OF_USE_LINEAR_BINARY_CODES_UTILS
 

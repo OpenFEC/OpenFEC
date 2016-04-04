@@ -1,4 +1,4 @@
-/* $Id: algebra_2_4.c 85 2012-05-11 08:06:09Z roca $ */
+/* $Id: algebra_2_4.c 185 2014-07-15 09:57:16Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (C) 1997-98 Luigi Rizzo (luigi@iet.unipi.it)
@@ -210,11 +210,11 @@ int        of_galois_field_2_4_invert_mat (of_galois_field_code_cb_t* ofcb, gf *
         int irow, icol, row, col, i, ix ;
 
         int error = 1 ;
-        int *indxc =	(int*) of_malloc (k * sizeof (int) MEM_STATS_ARG);
-        int *indxr =	(int*) of_malloc (k * sizeof (int) MEM_STATS_ARG);
-        int *ipiv =	(int*) of_malloc (k * sizeof (int) MEM_STATS_ARG);
-        gf  *id_row =	(gf*)  of_malloc (1 * k * sizeof(gf) MEM_STATS_ARG);
-        gf  *temp_row =	(gf*)  of_malloc (1 * k * sizeof(gf) MEM_STATS_ARG);
+        int *indxc =	(int*) of_malloc (k * sizeof (int));
+        int *indxr =	(int*) of_malloc (k * sizeof (int));
+        int *ipiv =	(int*) of_malloc (k * sizeof (int));
+        gf  *id_row =	(gf*)  of_malloc (1 * k * sizeof(gf));
+        gf  *temp_row =	(gf*)  of_malloc (1 * k * sizeof(gf));
 
         bzero (id_row, k*sizeof (gf));
         /*
@@ -342,11 +342,11 @@ int        of_galois_field_2_4_invert_mat (of_galois_field_code_cb_t* ofcb, gf *
         }
         error = 0 ;
 fail:
-        of_free (indxc MEM_STATS_ARG);
-        of_free (indxr MEM_STATS_ARG);
-        of_free (ipiv MEM_STATS_ARG);
-        of_free (id_row MEM_STATS_ARG);
-        of_free (temp_row MEM_STATS_ARG);
+        of_free (indxc);
+        of_free (indxr);
+        of_free (ipiv);
+        of_free (id_row);
+        of_free (temp_row);
         OF_EXIT_FUNCTION
         return error ;
 }
@@ -363,9 +363,9 @@ int         of_galois_field_2_4_invert_vdm (of_galois_field_code_cb_t* ofcb, gf 
          * c holds the coefficient of P(x) = Prod (x - p_i), i=0..k-1
          * b holds the coefficient for the matrix inversion
          */
-        c = (gf*) of_malloc(1 * k * sizeof(gf) MEM_STATS_ARG);
-        b = (gf*) of_malloc(1 * k * sizeof(gf) MEM_STATS_ARG);
-        p = (gf*) of_malloc(1 * k * sizeof(gf) MEM_STATS_ARG);
+        c = (gf*) of_malloc(1 * k * sizeof(gf));
+        b = (gf*) of_malloc(1 * k * sizeof(gf));
+        p = (gf*) of_malloc(1 * k * sizeof(gf));
 
         for (j = 1, i = 0 ; i < k ; i++, j += k)
         {
@@ -403,9 +403,9 @@ int         of_galois_field_2_4_invert_vdm (of_galois_field_code_cb_t* ofcb, gf 
                 for (col = 0 ; col < k ; col++)
                         src[col*k + row] = of_gf_2_4_mul_table [of_gf_2_4_inv[t]][ b[col]];
         }
-        of_free (c MEM_STATS_ARG);
-        of_free (b MEM_STATS_ARG);
-        of_free (p MEM_STATS_ARG);
+        of_free (c);
+        of_free (b);
+        of_free (p);
         OF_EXIT_FUNCTION
         return 0 ;
 }

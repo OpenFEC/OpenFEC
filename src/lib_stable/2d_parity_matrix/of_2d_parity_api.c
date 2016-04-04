@@ -1,4 +1,4 @@
-/* $Id: of_2d_parity_api.c 72 2012-04-13 13:27:26Z detchart $ */
+/* $Id: of_2d_parity_api.c 185 2014-07-15 09:57:16Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -39,13 +39,11 @@
 
 of_status_t	of_2d_parity_create_codec_instance (of_2d_parity_cb_t**	of_cb)
 {
-	OF_ENTER_FUNCTION
 	of_codec_type_t		codec_type;	/* temporary value */
-#ifdef OF_DEBUG
-	of_2d_parity_cb_t* cb = (of_2d_parity_cb_t*) of_realloc (*of_cb, sizeof (of_2d_parity_cb_t), NULL);
-#else
-	of_2d_parity_cb_t* cb = (of_2d_parity_cb_t*) of_realloc (*of_cb, sizeof (of_2d_parity_cb_t));
-#endif
+	of_2d_parity_cb_t	*cb;
+
+	OF_ENTER_FUNCTION
+	cb = (of_2d_parity_cb_t*) of_realloc (*of_cb, sizeof (of_2d_parity_cb_t));
 	/* realloc does not initialize the additional buffer space, so do that manually,
 	 * then re-initialize a few parameters */
 	codec_type			= cb->codec_type;
@@ -62,12 +60,13 @@ of_status_t	of_2d_parity_create_codec_instance (of_2d_parity_cb_t**	of_cb)
 
 of_status_t	of_2d_parity_release_codec_instance (of_2d_parity_cb_t*	ofcb)
 {
-	OF_ENTER_FUNCTION
 	UINT32 i;
+
+	OF_ENTER_FUNCTION
 	if (ofcb->pchk_matrix  != NULL)
 	{
-		of_mod2sparse_free(ofcb->pchk_matrix,ofcb->stats);
-		of_free (ofcb->pchk_matrix MEM_STATS_ARG);
+		of_mod2sparse_free(ofcb->pchk_matrix);
+		of_free (ofcb->pchk_matrix);
 		ofcb->pchk_matrix  = NULL;
 	}
 	if (ofcb->encoding_symbols_tab != NULL)
@@ -78,11 +77,11 @@ of_status_t	of_2d_parity_release_codec_instance (of_2d_parity_cb_t*	ofcb)
 		{
 			if (ofcb->encoding_symbols_tab[i] != NULL)
 			{
-				of_free (ofcb->encoding_symbols_tab[i] MEM_STATS_ARG);
+				of_free (ofcb->encoding_symbols_tab[i]);
 				ofcb->encoding_symbols_tab[i] = NULL;
 			}
 		}
-		of_free (ofcb->encoding_symbols_tab MEM_STATS_ARG);
+		of_free (ofcb->encoding_symbols_tab);
 		ofcb->encoding_symbols_tab = NULL;
 	}
 #ifdef OF_USE_DECODER
@@ -90,17 +89,17 @@ of_status_t	of_2d_parity_release_codec_instance (of_2d_parity_cb_t*	ofcb)
 	{
 		if (ofcb->tab_nb_enc_symbols_per_equ != NULL)
 		{
-			of_free (ofcb->tab_nb_enc_symbols_per_equ MEM_STATS_ARG);
+			of_free (ofcb->tab_nb_enc_symbols_per_equ);
 			ofcb->tab_nb_enc_symbols_per_equ = NULL;
 		}
 		if (ofcb->tab_nb_equ_for_repair != NULL)
 		{
-			of_free (ofcb->tab_nb_equ_for_repair MEM_STATS_ARG);
+			of_free (ofcb->tab_nb_equ_for_repair);
 			ofcb->tab_nb_equ_for_repair = NULL;
 		}
 		if (ofcb->tab_nb_unknown_symbols != NULL)
 		{
-			of_free (ofcb->tab_nb_unknown_symbols MEM_STATS_ARG);
+			of_free (ofcb->tab_nb_unknown_symbols);
 			ofcb->tab_nb_unknown_symbols = NULL;
 		}
 		if (ofcb->tab_const_term_of_equ != NULL)
@@ -109,11 +108,11 @@ of_status_t	of_2d_parity_release_codec_instance (of_2d_parity_cb_t*	ofcb)
 			{
 				if (ofcb->tab_const_term_of_equ[i] != NULL)
 				{
-					of_free (ofcb->tab_const_term_of_equ[i] MEM_STATS_ARG);
+					of_free (ofcb->tab_const_term_of_equ[i]);
 					ofcb->tab_const_term_of_equ[i] = NULL;
 				}
 			}
-			of_free(ofcb->tab_const_term_of_equ MEM_STATS_ARG);
+			of_free(ofcb->tab_const_term_of_equ);
 		}
 	}
 #endif
@@ -121,42 +120,37 @@ of_status_t	of_2d_parity_release_codec_instance (of_2d_parity_cb_t*	ofcb)
 #ifdef OF_2D_PARITY_ML_DECODING
 	if (ofcb->index_rows != NULL)
 	{
-		of_free (ofcb->index_rows MEM_STATS_ARG);
+		of_free (ofcb->index_rows);
 		ofcb->index_rows = NULL;
 	}
 	if (ofcb->index_cols != NULL)
 	{
-		of_free (ofcb->index_cols MEM_STATS_ARG);
+		of_free (ofcb->index_cols);
 		ofcb->index_cols = NULL;
 	}
 	if (ofcb->pchk_matrix_simplified != NULL)
 	{
-		of_mod2sparse_free (ofcb->pchk_matrix_simplified,ofcb->stats);
-		of_free(ofcb->pchk_matrix_simplified MEM_STATS_ARG);
+		of_mod2sparse_free (ofcb->pchk_matrix_simplified);
+		of_free(ofcb->pchk_matrix_simplified);
 		ofcb->pchk_matrix_simplified = NULL;
 	}
 	if (ofcb->original_pchkMatrix != NULL)
 	{
-		of_mod2sparse_free (ofcb->original_pchkMatrix,ofcb->stats);
+		of_mod2sparse_free (ofcb->original_pchkMatrix);
 		ofcb->original_pchkMatrix = NULL;
 	}
 	if (ofcb->pchk_matrix_gauss != NULL)
 	{
-		of_mod2sparse_free (ofcb->pchk_matrix_gauss,ofcb->stats);
+		of_mod2sparse_free (ofcb->pchk_matrix_gauss);
 		ofcb->pchk_matrix_gauss = NULL;
 	}
 #endif
 #ifdef OF_DEBUG
-	of_print_memory_statistics(ofcb->stats);
-	of_print_xor_symbols_statistics(ofcb->stats_xor);
-
-	if (ofcb->stats != NULL) {
-	of_hash_table_destroy(ofcb->stats->hash);
-	of_free(ofcb->stats->hash,NULL);
-	of_free(ofcb->stats,NULL);
-	}
 	if (ofcb->stats_xor != NULL)
-		of_free(ofcb->stats_xor,NULL);
+	{
+		of_print_xor_symbols_statistics(ofcb->stats_xor);
+		of_free(ofcb->stats_xor);
+	}
 #endif
 	OF_EXIT_FUNCTION
 	return OF_STATUS_OK;
@@ -173,15 +167,8 @@ of_status_t	of_2d_parity_set_fec_parameters (of_2d_parity_cb_t*	ofcb,
 	OF_ENTER_FUNCTION
 
 #ifdef OF_DEBUG
-	ofcb->stats		= of_calloc(1, sizeof(of_memory_usage_stats_t), NULL);
-	ofcb->stats->hash	= of_calloc(1, sizeof(of_hash_table_t), NULL);
-	ofcb->stats_xor = of_calloc(1, sizeof(of_2d_symbol_stats_op_t),NULL);
-	//ofcb->stats->nb_malloc	= 0;
-	//ofcb->stats->nb_calloc	= 0;
-	//ofcb->stats->nb_realloc	= 0;
-	//ofcb->stats->nb_free		= 0;
-	of_hash_table_init(ofcb->stats->hash, 97, of_hash, NULL);
-	ofcb->stats_symbols		= of_calloc(1,sizeof(of_symbols_stats_t),NULL);
+	ofcb->stats_xor		= of_calloc(1, sizeof(of_2d_symbol_stats_op_t));
+	ofcb->stats_symbols	= of_calloc(1,sizeof(of_symbols_stats_t));
 #endif
 	if ((ofcb->nb_source_symbols = params->nb_source_symbols) > ofcb->max_nb_source_symbols) {
 		OF_PRINT_ERROR(("of_2d_parity_set_fec_parameters: ERROR, invalid nb_source_symbols parameter (got %d, maximum is %d)",
@@ -200,7 +187,7 @@ of_status_t	of_2d_parity_set_fec_parameters (of_2d_parity_cb_t*	ofcb,
 			ofcb->nb_source_symbols, ofcb->nb_repair_symbols, ofcb->nb_total_symbols,
 			ofcb->encoding_symbol_length, 0, 0))
 	ofcb->pchk_matrix = of_create_pchk_matrix (ofcb->nb_repair_symbols, ofcb->nb_total_symbols, Evenboth,
-						   0, 0, false, Type2DMATRIX, 1,ofcb->stats);
+						   0, 0, false, Type2DMATRIX, 1);
 
 	if (ofcb->pchk_matrix == NULL)
 	{
@@ -217,20 +204,20 @@ of_status_t	of_2d_parity_set_fec_parameters (of_2d_parity_cb_t*	ofcb,
 #ifdef OF_2D_PARITY_ML_DECODING
 	ofcb->pchk_matrix_simplified = NULL;
 #endif
-	if ((ofcb->encoding_symbols_tab = (void**) of_calloc (ofcb->nb_total_symbols, sizeof (void*) MEM_STATS_ARG)) == NULL) {
+	if ((ofcb->encoding_symbols_tab = (void**) of_calloc (ofcb->nb_total_symbols, sizeof (void*))) == NULL) {
 		goto no_mem;
 	}
 #ifdef OF_USE_DECODER
 	if (ofcb->codec_type & OF_DECODER)
 	{
 		ofcb->tab_nb_unknown_symbols = (UINT16*)
-				of_calloc (ofcb->nb_repair_symbols, sizeof (UINT16) MEM_STATS_ARG);
+				of_calloc (ofcb->nb_repair_symbols, sizeof (UINT16));
 		ofcb->tab_const_term_of_equ = (void**)
-				of_calloc (ofcb->nb_repair_symbols, sizeof (void*) MEM_STATS_ARG);
+				of_calloc (ofcb->nb_repair_symbols, sizeof (void*));
 		ofcb->tab_nb_equ_for_repair = (UINT16*)
-				of_calloc (ofcb->nb_repair_symbols, sizeof (UINT16) MEM_STATS_ARG);
+				of_calloc (ofcb->nb_repair_symbols, sizeof (UINT16));
 		ofcb->tab_nb_enc_symbols_per_equ = (UINT16*)
-				of_calloc (ofcb->nb_repair_symbols, sizeof (UINT16) MEM_STATS_ARG);
+				of_calloc (ofcb->nb_repair_symbols, sizeof (UINT16));
 		if (ofcb->tab_nb_unknown_symbols == NULL || ofcb->tab_const_term_of_equ == NULL ||
 		    ofcb->tab_nb_equ_for_repair == NULL || ofcb->tab_nb_enc_symbols_per_equ == NULL) {
 			goto no_mem;
@@ -339,7 +326,7 @@ of_status_t	of_2d_parity_build_repair_symbol (of_2d_parity_cb_t*		ofcb,
 				goto error;
 			}
 #ifdef OF_DEBUG
-			of_add_to_symbol (parity_symbol, to_add_buf, ofcb->encoding_symbol_length,&(ofcb->stats_xor->nb_xor_for_IT));
+			of_add_to_symbol (parity_symbol, to_add_buf, ofcb->encoding_symbol_length, &(ofcb->stats_xor->nb_xor_for_IT));
 #else
 			of_add_to_symbol (parity_symbol, to_add_buf, ofcb->encoding_symbol_length);
 #endif
@@ -377,7 +364,7 @@ of_status_t	of_2d_parity_set_available_symbols (of_2d_parity_cb_t*	ofcb,
 	{
 		if (encoding_symbols_tab[i] != NULL)
 		{
-			ofcb->encoding_symbols_tab[i] = of_calloc (1, ofcb->encoding_symbol_length MEM_STATS_ARG);
+			ofcb->encoding_symbols_tab[i] = of_calloc (1, ofcb->encoding_symbol_length);
 			memcpy (ofcb->encoding_symbols_tab[i], encoding_symbols_tab[i], ofcb->encoding_symbol_length);
 		}
 	}

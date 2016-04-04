@@ -36,5 +36,6 @@ link_directories(${LIBRARY_OUTPUT_PATH})
 
 add_subdirectory(src)
 add_subdirectory(applis/eperftool)
+add_subdirectory(applis/howto_examples/simple_client_server)
 add_subdirectory(tools/descr_stats_v1.2)
 add_subdirectory(tests)

@@ -1,4 +1,4 @@
-/* $Id: of_ml_decoding.c 80 2012-04-13 14:25:30Z roca $ */
+/* $Id: of_ml_decoding.c 186 2014-07-16 07:17:53Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -31,15 +31,13 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-#include "of_ml_decoding.h"
+#include "../of_linear_binary_code.h"
+
 
 #ifdef OF_USE_DECODER
-
 #ifdef OF_USE_LINEAR_BINARY_CODES_UTILS
-
 #ifdef ML_DECODING
 
-#include <string.h>
 
 of_status_t	of_linear_binary_code_simplify_linear_system (of_linear_binary_code_cb_t* ofcb,
 								const void* new_symbol,
@@ -74,7 +72,7 @@ of_status_t	of_linear_binary_code_simplify_linear_system (of_linear_binary_code_
 		if (ofcb->tab_const_term_of_equ[_row] == NULL)
 		{
 			if ((ofcb->tab_const_term_of_equ[_row] =
-					of_malloc (ofcb->encoding_symbol_length MEM_STATS_ARG)) == NULL)
+					of_malloc (ofcb->encoding_symbol_length)) == NULL)
 			{
 				goto no_mem;
 			}
@@ -122,7 +120,7 @@ of_status_t	of_linear_binary_code_simplify_linear_system (of_linear_binary_code_
 					else
 					{
 						ofcb->encoding_symbols_tab[decoded_symbol_seqno] =
-							of_malloc (ofcb->encoding_symbol_length MEM_STATS_ARG);
+							of_malloc (ofcb->encoding_symbol_length);
 					}
 					if (ofcb->encoding_symbols_tab[decoded_symbol_seqno] == NULL)
 					{
@@ -132,7 +130,7 @@ of_status_t	of_linear_binary_code_simplify_linear_system (of_linear_binary_code_
 					memcpy((ofcb->encoding_symbols_tab[decoded_symbol_seqno]),
 						 (ofcb->tab_const_term_of_equ[_row]),
 						 ofcb->encoding_symbol_length);
-					of_free (ofcb->tab_const_term_of_equ[_row] MEM_STATS_ARG);
+					of_free (ofcb->tab_const_term_of_equ[_row]);
 					ofcb->tab_const_term_of_equ[_row]=NULL;
 					// It'll be known at the end of this step
 					ofcb->tab_nb_unknown_symbols[_row]--;	// symbol is known
@@ -158,7 +156,7 @@ of_status_t	of_linear_binary_code_simplify_linear_system (of_linear_binary_code_
 					else
 					{
 						ofcb->encoding_symbols_tab[decoded_symbol_seqno] =
-								of_malloc (ofcb->encoding_symbol_length MEM_STATS_ARG);
+								of_malloc (ofcb->encoding_symbol_length);
 					}
 					if (ofcb->encoding_symbols_tab[decoded_symbol_seqno] == NULL)
 					{
@@ -168,7 +166,7 @@ of_status_t	of_linear_binary_code_simplify_linear_system (of_linear_binary_code_
 					memcpy(ofcb->encoding_symbols_tab[decoded_symbol_seqno],
 						ofcb->tab_const_term_of_equ[_row],
 						ofcb->encoding_symbol_length);
-					of_free (ofcb->tab_const_term_of_equ[_row] MEM_STATS_ARG);
+					of_free (ofcb->tab_const_term_of_equ[_row]);
 					ofcb->tab_const_term_of_equ[_row]=NULL;
 					// It'll be known at the end of this step
 					ofcb->tab_nb_unknown_symbols[_row]--;	// symbol is known
@@ -265,7 +263,7 @@ of_status_t of_linear_binary_code_finish_with_ml_decoding_on_parity_check_matrix
 	// It makes the decoding process more efficient...
 	//srand(1234);
 	UINT32	*array;
-	array = (UINT32 *) of_malloc (ofcb->nb_repair_symbols * sizeof(UINT32) MEM_STATS_ARG);
+	array = (UINT32 *) of_malloc (ofcb->nb_repair_symbols * sizeof(UINT32));
 	for (i = 0 ; i < ofcb->nb_repair_symbols ; i++)
 	{
 		array[i] = i;
@@ -294,7 +292,7 @@ of_status_t of_linear_binary_code_finish_with_ml_decoding_on_parity_check_matrix
 			}
 		}
 	}
-	of_free (array MEM_STATS_ARG);
+	of_free (array);
 	array = NULL;
 	OF_TRACE_LVL (1, (" ofcb->remain_rows=%d, ofcb->remain_cols=%d\n", ofcb->remain_rows, ofcb->remain_cols))
 #ifdef IL_SUPPORT
@@ -313,8 +311,7 @@ of_status_t of_linear_binary_code_finish_with_ml_decoding_on_parity_check_matrix
 	//of_mod2dense	*m;
 
 	dense_pck_matrix_simplified = of_mod2dense_allocate (ofcb->pchk_matrix_simplified->n_rows,
-							     ofcb->pchk_matrix_simplified->n_cols,
-							     ofcb->stats);
+							     ofcb->pchk_matrix_simplified->n_cols);
 	of_mod2sparse_to_dense (ofcb->pchk_matrix_simplified, dense_pck_matrix_simplified);
 #ifdef DEBUG
 	struct timeval	gdtv0;	/* start */
@@ -330,7 +327,7 @@ of_status_t of_linear_binary_code_finish_with_ml_decoding_on_parity_check_matrix
 	OF_TRACE_LVL (1, ("gauss_decoding_start=%ld.%ld\n", gdtv0.tv_sec, gdtv0.tv_usec))
 #endif
 	if ((column_idx = (INT32 *) of_malloc
-				(of_mod2dense_cols (dense_pck_matrix_simplified) * sizeof (INT32) MEM_STATS_ARG))
+				(of_mod2dense_cols (dense_pck_matrix_simplified) * sizeof (INT32)))
 			== NULL)
 	{
 		goto no_mem;
@@ -340,7 +337,7 @@ of_status_t of_linear_binary_code_finish_with_ml_decoding_on_parity_check_matrix
 		column_idx[i] = i;
 	}
 	if ((checkValues = (void **) of_malloc
-				(of_mod2dense_rows (dense_pck_matrix_simplified) * sizeof (void*) MEM_STATS_ARG))
+				(of_mod2dense_rows (dense_pck_matrix_simplified) * sizeof (void*)))
 			== NULL)
 	{
 		goto no_mem;
@@ -351,7 +348,7 @@ of_status_t of_linear_binary_code_finish_with_ml_decoding_on_parity_check_matrix
 		ofcb->tab_const_term_of_equ[ofcb->index_rows[i]] = NULL;
 	}
 	if ((variable_member = (void **) of_calloc
-				(of_mod2dense_cols (dense_pck_matrix_simplified), sizeof (void*) MEM_STATS_ARG))
+				(of_mod2dense_cols (dense_pck_matrix_simplified), sizeof (void*)))
 			== NULL)
 	{
 		goto no_mem;
@@ -380,7 +377,7 @@ of_status_t of_linear_binary_code_finish_with_ml_decoding_on_parity_check_matrix
 	for (i = 0; i < nb_computed_repair_in_ml; i++)
 	{
 		if (variable_member[i] != NULL)
-			of_free(variable_member[i] MEM_STATS_ARG);
+			of_free(variable_member[i]);
 	}
 	/* the other symbols found in ML are source symbols. So, we copy pointers. */
 	for (i = 0; i < ofcb->nb_source_symbols; i++)
@@ -403,26 +400,26 @@ of_status_t of_linear_binary_code_finish_with_ml_decoding_on_parity_check_matrix
 			    gdtv1.tv_sec, gdtv1.tv_usec,
 			    gdtv_delta.tv_sec, gdtv_delta.tv_usec))
 #endif
-	of_free(checkValues MEM_STATS_ARG);
+	of_free(checkValues);
 	checkValues = NULL;
-	of_free(variable_member MEM_STATS_ARG);
+	of_free(variable_member);
 	variable_member = NULL;
-	of_free(column_idx MEM_STATS_ARG);
+	of_free(column_idx);
 	column_idx = NULL;
-	of_mod2dense_free(dense_pck_matrix_simplified , ofcb->stats);
+	of_mod2dense_free(dense_pck_matrix_simplified);
 	dense_pck_matrix_simplified = NULL;
 	
 	OF_EXIT_FUNCTION
 	return OF_STATUS_OK;
 
 error:
-	of_free(checkValues MEM_STATS_ARG);
+	of_free(checkValues);
 	checkValues = NULL;
-	of_free(variable_member MEM_STATS_ARG);
+	of_free(variable_member);
 	variable_member = NULL;
-	of_free(column_idx MEM_STATS_ARG);
+	of_free(column_idx);
 	column_idx = NULL;
-	of_mod2dense_free(dense_pck_matrix_simplified , ofcb->stats);
+	of_mod2dense_free(dense_pck_matrix_simplified);
 	dense_pck_matrix_simplified = NULL;
 	return OF_STATUS_FAILURE;
 

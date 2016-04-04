@@ -1,4 +1,4 @@
-/* $Id: of_matrix_convert.h 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: of_matrix_convert.h 182 2014-07-15 09:27:51Z roca $ */
 
 /* Copyright (c) 1996 by Radford M. Neal
  *
@@ -16,28 +16,28 @@
 #ifndef OF_MATRIX_CONVERT
 #define OF_MATRIX_CONVERT
 
-#include "of_matrix_sparse.h"
-#include "of_matrix_dense.h"
 
 #ifdef OF_USE_LINEAR_BINARY_CODES_UTILS
+
 /**
- * @fn			void of_mod2sparse_to_dense (of_mod2sparse * m, of_mod2dense * r)
  * @brief		convert a sparse matrix to a dense matrix
  * @param m		(IN) sparse matrix
  * @param r		(IN) dense matrix
  * @return		void
  */
-void of_mod2sparse_to_dense (of_mod2sparse * m, of_mod2dense * r);
+void of_mod2sparse_to_dense (of_mod2sparse	*m,
+			     of_mod2dense	*r);
+
 
 /**
- * @fn			void of_mod2dense_to_sparse (of_mod2dense *m, of_mod2sparse *r,of_memory_usage_stats_t *stats)
  * @brief		convert a dense matrix to a sparse matrix
  * @param m		(IN) dense matrix
  * @param r		(IN) sparse matrix
- * @param stats		(IN/OUT) memory statistics (can be NULL)
  * @return		void
  */
-void of_mod2dense_to_sparse (of_mod2dense *m, of_mod2sparse *r,of_memory_usage_stats_t *stats);
+void of_mod2dense_to_sparse (of_mod2dense	*m,
+			     of_mod2sparse	*r);
+
 
 #endif //OF_USE_LINEAR_BINARY_CODES_UTILS
 

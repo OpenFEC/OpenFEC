@@ -1,4 +1,4 @@
-/* $Id: of_ml_decoding.h 72 2012-04-13 13:27:26Z detchart $ */
+/* $Id: of_ml_decoding.h 186 2014-07-16 07:17:53Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -34,16 +34,13 @@
 #ifndef ML_DECODING_H
 #define ML_DECODING_H
 
-#include "../../of_openfec_api.h"
+//#include "../../of_openfec_api.h"
 
 #ifdef OF_USE_DECODER
 #ifdef OF_USE_LINEAR_BINARY_CODES_UTILS
 #ifdef ML_DECODING
 
-#include "../of_linear_binary_code.h"
-#include "of_ml_tool.h"
-#include "of_ml_tool_2.h"
-#include <stdio.h>
+
 /**
  * This function simplifies the linear system (H): delete rows and cols when we can.
  *

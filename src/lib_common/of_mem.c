@@ -1,7 +1,7 @@
-/* $Id: of_mem.c 72 2012-04-13 13:27:26Z detchart $ */
+/* $Id: of_mem.c 182 2014-07-15 09:27:51Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009 - 2012 INRIA - All rights reserved
+ * (c) Copyright 2009 - 2011 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and
@@ -33,28 +33,22 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include "of_types.h"
-#include "of_mem.h"
-#include "of_debug.h"
+#include "of_openfec_api.h"
 
-
-#ifndef OF_DEBUG
-
-inline void* of_malloc (size_t	size)
+void* of_malloc (size_t	size)
 {
 	return malloc (size);
 }
 
 
-inline void* of_calloc (size_t	nmemb,
+void* of_calloc (size_t	nmemb,
 		 size_t	size)
 {
 	return calloc (nmemb, size);
 }
 
 
-inline void* of_realloc (void* ptr,
+void* of_realloc (void* ptr,
 		  size_t size)
 {
 	return realloc (ptr, size);
@@ -62,149 +56,29 @@ inline void* of_realloc (void* ptr,
 }
 
 
-inline void  of_free (void* ptr)
+void  of_free (void* ptr)
 {
-	if (ptr)
-	{
+	if (ptr) {
 		free (ptr);
-
 	}
 }
 
 
-#else  /* } { */
-
-
-// return as key, pointer to allocated block
-UINT32 of_hash(const void	*data)
+#if 0
+void of_dump_buffer (char* buf, UINT32 size)
 {
-	UINT32		lowbits;
-	/* cast the pointer (a 64 bit integer on LP64 systems) to uintptr_t first, and then
-	 * truncate it to keep only the lowest 32 bits. Works the same on both 32 bit and 64
-	 * bit systems */
-	lowbits = 0xFFFFFFFF & (uintptr_t)(((of_memory_block_t*)data)->ptr);
-	return lowbits;
+	UINT32	i;
+	UINT32	*s32;
+
+	if (size % 4 != 0)
+	{
+		size = (size % 4) * 4;
+	}
+	for (i = 0, s32 = (UINT32*)buf; i < size; i += 4, s32++)
+	{
+		printf ("%08x ", *s32);
+	}
+	printf ("\n");
 }
+#endif
 
-
-inline void* of_malloc (size_t				size,
-			of_memory_usage_stats_t*	stats)
-{
-	void	*p;
-
-	p = malloc (size);
-	if ((p != NULL) && (stats != NULL))
-	{
-		of_memory_block_t	*b;
-		b	= (of_memory_block_t *)calloc(1, sizeof(of_memory_block_t));
-		b->size	= size;
-		b->ptr	= p;
-		of_hash_table_insert(stats->hash, (const void *)b);
-		stats->current_mem += size;
-		if (stats->current_mem > stats->maximum_mem)
-		{
-			stats->maximum_mem = stats->current_mem;
-		}
-		stats->nb_malloc++;
-	}
-	return p;
-}
-
-
-inline void* of_calloc (size_t				nmemb,
-			size_t				size,
-			of_memory_usage_stats_t*	stats)
-{
-	void	*p;
-	p = calloc (nmemb, size);
-	if ((p != NULL) && (stats != NULL))
-	{
-		of_memory_block_t	*b;
-		b	= (of_memory_block_t *)calloc(1, sizeof(of_memory_block_t));
-		b->size	= size*nmemb;
-		b->ptr	= p;
-		of_hash_table_insert(stats->hash, (const void *)b);
-		stats->current_mem += (size*nmemb);
-		if (stats->current_mem > stats->maximum_mem)
-		{
-			stats->maximum_mem = stats->current_mem;
-		}
-		stats->nb_calloc++;
-	}
-	return p;
-}
-
-
-inline void* of_realloc (void*				ptr,
-			 size_t				size,
-			 of_memory_usage_stats_t*	stats)
-{
-	void	*p;
-	if (stats != NULL)
-	{
-		of_memory_block_t	b;
-		of_memory_block_t	*ptr_b;
-
-		b.ptr	= ptr;
-		b.size	= 0;
-		ptr_b = &b;
-		if (of_hash_table_search(stats->hash, (void**)&ptr_b) == OF_STATUS_OK)
-		{
-			stats->current_mem -= ptr_b->size;
-			of_hash_table_remove(stats->hash, (void**)&ptr_b);
-		}
-		else
-		{
-			OF_PRINT_ERROR(("(memory stats): not found in list of allocated buffers\n"))
-		}
-	}
-	p =  realloc (ptr, size);
-	if (stats != NULL)
-	{
-		of_memory_block_t	b;
-
-		b.size	= size;
-		b.ptr	= p;
-		of_hash_table_insert(stats->hash, (const void *)&b);
-		stats->current_mem += size;
-		if (stats->current_mem > stats->maximum_mem)
-		{
-			stats->maximum_mem = stats->current_mem;
-		}
-		stats->nb_realloc++;
-	}
-	return p;
-}
-
-
-inline void  of_free   (void*				ptr,
-			of_memory_usage_stats_t*	stats)
-{
-	if (ptr == NULL)
-	{
-		return;
-	}
-	if (stats != NULL)
-	{
-		of_memory_block_t	b;
-		of_memory_block_t	*ptr_b;
-
-		b.size	= 0;
-		b.ptr	= ptr;
-		ptr_b = &b;
-		if (of_hash_table_search(stats->hash, (void**)&ptr_b) == OF_STATUS_OK)
-		{
-			stats->current_mem -= ptr_b->size;
-			if (of_hash_table_remove(stats->hash, (void**)&ptr_b) != OF_STATUS_OK)
-				OF_PRINT(("not removed..\n"))
-		}
-		else
-		{
-			OF_PRINT_ERROR(("(memory stats): not found in list of allocated buffers\n"))
-		}
-		stats->nb_free++;
-	}
-	free (ptr);
-}
-
-#endif /* } */

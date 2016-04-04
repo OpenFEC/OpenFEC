@@ -1,4 +1,4 @@
-/* $Id: of_openfec_api.c 148 2014-07-08 08:01:56Z roca $ */
+/* $Id: of_openfec_api.c 189 2014-07-16 08:53:50Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -63,11 +63,7 @@ of_status_t	of_create_codec_instance (of_session_t**	ses,
 	/**
 	 * each codec must realloc control block.
 	 */
-#if OF_DEBUG
-	(*ses) = of_calloc (1, sizeof (of_cb_t), NULL);
-#else
 	(*ses) = of_calloc (1, sizeof (of_cb_t));
-#endif
 	if (*ses == NULL)
 	{
 		OF_PRINT_ERROR ( ("Error, of_calloc failed\n"))
@@ -111,11 +107,7 @@ of_status_t	of_create_codec_instance (of_session_t**	ses,
 	return status;
 	
 error:
-#if OF_DEBUG
-	of_free (*ses, NULL);
-#else
 	of_free(*ses);
-#endif
 	*ses = NULL;
 error2:
 	OF_EXIT_FUNCTION
@@ -130,43 +122,39 @@ of_status_t	of_release_codec_instance (of_session_t*	ses)
 	OF_ENTER_FUNCTION
 	if (ses != NULL)
 	{
-		switch ( ( (of_cb_t*) ses)->codec_id)
-		{
+	switch ( ( (of_cb_t*) ses)->codec_id)
+	{
 #ifdef OF_USE_REED_SOLOMON_CODEC			
-			case OF_CODEC_REED_SOLOMON_GF_2_8_STABLE:
-				status = of_rs_release_codec_instance ( (of_rs_cb_t*) ses);
-				break;
+	case OF_CODEC_REED_SOLOMON_GF_2_8_STABLE:
+		status = of_rs_release_codec_instance ( (of_rs_cb_t*) ses);
+		break;
 #endif
 #ifdef OF_USE_REED_SOLOMON_2_M_CODEC			
-			case OF_CODEC_REED_SOLOMON_GF_2_M_STABLE:
-				status = of_rs_2_m_release_codec_instance ( (of_rs_2_m_cb_t*) ses);
-				break;
+	case OF_CODEC_REED_SOLOMON_GF_2_M_STABLE:
+		status = of_rs_2_m_release_codec_instance ( (of_rs_2_m_cb_t*) ses);
+		break;
 #endif
 #ifdef OF_USE_LDPC_STAIRCASE_CODEC		
-			case OF_CODEC_LDPC_STAIRCASE_STABLE:
-				status = of_ldpc_staircase_release_codec_instance ( (of_ldpc_staircase_cb_t*) ses);
-				break;		
+	case OF_CODEC_LDPC_STAIRCASE_STABLE:
+		status = of_ldpc_staircase_release_codec_instance ( (of_ldpc_staircase_cb_t*) ses);
+		break;		
 #endif
 #ifdef OF_USE_2D_PARITY_MATRIX_CODEC
-			case OF_CODEC_2D_PARITY_MATRIX_STABLE:
-				status = of_2d_parity_release_codec_instance( (of_2d_parity_cb_t*) ses);
-				break;
+	case OF_CODEC_2D_PARITY_MATRIX_STABLE:
+		status = of_2d_parity_release_codec_instance( (of_2d_parity_cb_t*) ses);
+		break;
 #endif
 #ifdef OF_USE_LDPC_FROM_FILE_CODEC	
-			case OF_CODEC_LDPC_FROM_FILE_ADVANCED:
-				status = of_ldpc_staircase_release_codec_instance ( (of_ldpc_staircase_cb_t*) ses);
-				break;		
+	case OF_CODEC_LDPC_FROM_FILE_ADVANCED:
+		status = of_ldpc_staircase_release_codec_instance ( (of_ldpc_staircase_cb_t*) ses);
+		break;		
 #endif
-			default:
-				OF_PRINT_ERROR ( ("Error, codec %d non available\n", ((of_cb_t*)ses)->codec_id))
-				goto error;
-		}
-#ifdef OF_DEBUG
-		of_free (ses, NULL);
-#else
-		of_free(ses);
-#endif
-		ses = NULL;
+	default:
+		OF_PRINT_ERROR ( ("Error, codec %d non available\n", ((of_cb_t*)ses)->codec_id))
+		goto error;
+	}
+	of_free(ses);
+	ses = NULL;
 	}
 	OF_EXIT_FUNCTION
 	return status;
@@ -330,7 +318,7 @@ of_status_t	of_more_about (of_session_t*	ses,
 				char**		copyrights_str)
 {
 	OF_ENTER_FUNCTION
-	static char	of_version_string[] = "OpenFEC.org - Version 1.4.0, July 9th, 2014\n";
+	static char	of_version_string[] = "OpenFEC.org - Version 1.4.1, July 16th, 2014\n";
 	static char	of_copyrights_string[] ="\n\
     OpenFEC.org - Because free, open source AL-FEC codes and codecs matter\n\
     Copyright (c) 2003-2014 INRIA - All rights reserved\n\

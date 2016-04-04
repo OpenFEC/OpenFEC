@@ -1,4 +1,4 @@
-/* $Id: of_symbol.h 148 2014-07-08 08:01:56Z roca $ */
+/* $Id: of_symbol.h 182 2014-07-15 09:27:51Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -34,8 +34,6 @@
 #ifndef OF_SYMBOL
 #define OF_SYMBOL
 
-#include "../of_openfec_api.h"
-#include "../of_cb.h"
 
 #ifdef OF_USE_LINEAR_BINARY_CODES_UTILS
 
@@ -45,7 +43,6 @@ typedef struct of_symbol_stats_op
 	UINT32 nb_xor_for_IT;
 	UINT32 nb_xor_for_ML;
 } of_symbol_stats_op_t;
-
 
 
 /**

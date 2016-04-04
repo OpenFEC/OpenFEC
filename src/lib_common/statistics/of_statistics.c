@@ -1,4 +1,4 @@
-/* $Id: of_statistics.c 126 2014-05-06 08:15:25Z kchaumon $ */
+/* $Id: of_statistics.c 186 2014-07-16 07:17:53Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -31,22 +31,26 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
+#include <stdio.h>
+#include "../of_types.h"
+#include "../of_debug.h"
+#include "../of_openfec_api.h"
 #include "of_statistics.h"
 
 
 #ifdef OF_DEBUG
-void of_print_memory_statistics(of_memory_usage_stats_t* mem) {
-	if (mem != NULL)
-	{
-		if (mem->hash != NULL)
-		{
-			OF_TRACE_LVL (0, ("Memory stats:\n\tmaximum_mem=%i  current_mem=%i\n\tmalloc=%u  calloc=%u  realloc=%u  free=%u (*alloc-free=%i missed blocks)\n",
-				mem->maximum_mem, mem->current_mem,
-				mem->nb_malloc, mem->nb_calloc,
-				mem->nb_realloc, mem->nb_free,
-				mem->nb_malloc + mem->nb_calloc - mem->nb_free))
-		}
-	}
-}
 
+ 
+void of_print_symbols_stats(of_symbols_stats_t* stats)
+{
+	OF_TRACE_LVL(0,("nb source symbols received: %hu\n", stats->nb_source_symbols_received))
+	OF_TRACE_LVL(0,("nb repair symbols received: %hu\n", stats->nb_repair_symbols_received));
+	OF_TRACE_LVL(0,("nb source symbols built during IT decoding: %i\n", stats->nb_source_symbols_built_with_it));
+	OF_TRACE_LVL(0,("nb repair symbols built during IT decoding: %i\n", stats->nb_repair_symbols_built_with_it));
+	OF_TRACE_LVL(0,("nb source symbols built during ML decoding: %i\n", stats->nb_source_symbols_built_with_ml));
+	OF_TRACE_LVL(0,("nb repair symbols built during ML decoding: %i\n", stats->nb_repair_symbols_built_with_ml));
+	OF_TRACE_LVL(0,("nb source symbols ignored: %i\n", stats->nb_source_symbols_ignored));
+	OF_TRACE_LVL(0,("nb repair symbols ignored: %i\n", stats->nb_repair_symbols_ignored));
+}
+ 
 #endif

@@ -1,4 +1,4 @@
-/* $Id: of_it_decoding.c 72 2012-04-13 13:27:26Z detchart $ */
+/* $Id: of_it_decoding.c 186 2014-07-16 07:17:53Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -31,15 +31,15 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-#include "of_it_decoding.h"
+#include "../of_linear_binary_code.h"
 
 #ifdef OF_USE_DECODER
-
-#include <string.h>
-
 #ifdef OF_USE_LINEAR_BINARY_CODES_UTILS
 
-of_status_t of_linear_binary_code_decode_with_new_symbol(of_linear_binary_code_cb_t* ofcb,void* new_symbol,UINT32 new_symbol_esi)
+
+of_status_t of_linear_binary_code_decode_with_new_symbol (of_linear_binary_code_cb_t*	ofcb,
+							  void*				new_symbol,
+							  UINT32			new_symbol_esi)
 {
 	OF_ENTER_FUNCTION
 	of_mod2entry	*e = NULL;			// entry ("1") in parity check matrix
@@ -98,7 +98,7 @@ of_status_t of_linear_binary_code_decode_with_new_symbol(of_linear_binary_code_c
 		// in ML decoding, we need to store all parity symbols, whereas with pure IT
 		// decoding this is not necessary.
 		if ((ofcb->encoding_symbols_tab[new_symbol_esi] = (void *)
-						of_malloc (ofcb->encoding_symbol_length MEM_STATS_ARG)) == NULL)
+						of_malloc (ofcb->encoding_symbol_length)) == NULL)
 		{
 			goto no_mem;
 		}
@@ -126,7 +126,7 @@ of_status_t of_linear_binary_code_decode_with_new_symbol(of_linear_binary_code_c
 			// we need to allocate a partial sum (i.e. check node)
 			// and add the symbol to it, because it is the
 			// last missing symbol of this equation.
-			partial_sum = (void*) of_calloc (1, ofcb->encoding_symbol_length MEM_STATS_ARG);
+			partial_sum = (void*) of_calloc (1, ofcb->encoding_symbol_length);
 			if ((ofcb->tab_const_term_of_equ[row] = partial_sum) == NULL)
 			{
 				goto no_mem;
@@ -196,7 +196,7 @@ of_status_t of_linear_binary_code_decode_with_new_symbol(of_linear_binary_code_c
 						// if ML decoding is needed, then keep the repair symbol
 						if (ofcb->tab_nb_equ_for_repair[tmp_esi - ofcb->nb_source_symbols] == 0)
 						{
-							of_free (tmp_symbol MEM_STATS_ARG);
+							of_free (tmp_symbol);
 							ofcb->encoding_symbols_tab[tmp_esi] = NULL;
 						}
 #endif
@@ -233,7 +233,7 @@ of_status_t of_linear_binary_code_decode_with_new_symbol(of_linear_binary_code_c
 				// allocate memory for the table first
 				size_of_table_of_check_deg_1 = 4;
 				if ((table_of_check_deg_1 = (UINT32*) of_calloc (size_of_table_of_check_deg_1,
-										 sizeof (UINT32*) MEM_STATS_ARG)) == NULL)
+										 sizeof (UINT32*))) == NULL)
 				{
 					goto no_mem;
 				}
@@ -244,8 +244,7 @@ of_status_t of_linear_binary_code_decode_with_new_symbol(of_linear_binary_code_c
 				size_of_table_of_check_deg_1 += 4;
 				if ((table_of_check_deg_1 = (UINT32*)
 						of_realloc (table_of_check_deg_1,
-							    size_of_table_of_check_deg_1 * sizeof (UINT32*)
-							    MEM_STATS_ARG)) == NULL)
+							    size_of_table_of_check_deg_1 * sizeof (UINT32*))) == NULL)
 				{
 					goto no_mem;
 				}
@@ -308,7 +307,7 @@ of_status_t of_linear_binary_code_decode_with_new_symbol(of_linear_binary_code_c
 						// if the application has allocated a buffer, copy the symbol into it.
 						memcpy (decoded_symbol_dst, partial_sum, ofcb->encoding_symbol_length);
 						// we don't need the partial_sum buffer any more, so free it.
-						of_free (partial_sum MEM_STATS_ARG);
+						of_free (partial_sum);
 					}
 					else
 					{
@@ -340,13 +339,13 @@ of_status_t of_linear_binary_code_decode_with_new_symbol(of_linear_binary_code_c
 				// Call this function recursively first...
 				of_linear_binary_code_decode_with_new_symbol (ofcb, partial_sum, decoded_symbol_esi);
 				// ...then free the partial sum which is no longer needed.
-				of_free (partial_sum MEM_STATS_ARG);
+				of_free (partial_sum);
 			}
 		}
 	}
 	if (table_of_check_deg_1 != NULL)
 	{
-		of_free (table_of_check_deg_1 MEM_STATS_ARG);
+		of_free (table_of_check_deg_1);
 	}
 
 #ifdef OF_DEBUG

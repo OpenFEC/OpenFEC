@@ -1,4 +1,4 @@
-/* $Id: of_reed-solomon_gf_2_m_includes.h 148 2014-07-08 08:01:56Z roca $ */
+/* $Id: of_reed-solomon_gf_2_m_includes.h 189 2014-07-16 08:53:50Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -38,27 +38,23 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-//#include <math.h>
-//#include <sys/time.h>	/* for timersub */
-#ifndef _WIN32_WCE
-#ifndef WIN32
-#include <strings.h>
-#endif
-#include <sys/types.h>
-#endif /* WIN32_WCE */
 
-#include "../../lib_common/of_types.h"
-#include "../../lib_common/of_debug.h"
 #include "../../lib_common/of_openfec_api.h"
-#include "../../lib_common/of_cb.h"
-#include "../../lib_common/of_mem.h"
-#include "../../lib_common/linear_binary_codes_utils/of_symbol.h"
+
+/* 
+ * the remaining includes will only be considered if of_codec_profile.h is
+ * included above by of_openfec_api.h => of_openfec_profile.h
+ */
+#ifdef OF_USE_REED_SOLOMON_2_M_CODEC
+
+#include "../../lib_common/linear_binary_codes_utils/of_linear_binary_code.h"
 
 #include "of_reed-solomon_gf_2_m_api.h"
 #include "of_reed-solomon_gf_2_m.h"
 #include "galois_field_codes_utils/of_galois_field_code.h"
-
 #include "galois_field_codes_utils/algebra_2_4.h"
 #include "galois_field_codes_utils/algebra_2_8.h"
 
+
+#endif //OF_USE_REED_SOLOMON_2_M_CODEC
 #endif //OF_REED_SOLOMON_INCLUDES_H

@@ -1,4 +1,4 @@
-/* $Id: of_ml_tool.h 149 2014-07-08 10:21:50Z roca $ */
+/* $Id: of_ml_tool.h 186 2014-07-16 07:17:53Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -34,18 +34,10 @@
 #ifndef OF_ML_TOOL
 #define OF_ML_TOOL
 
-#include "../../of_openfec_profile.h"
 
 #ifdef OF_USE_DECODER
 #ifdef OF_USE_LINEAR_BINARY_CODES_UTILS
 #ifdef ML_DECODING
-
-#include <math.h>
-#include <string.h>
-#include "../../of_types.h"
-#include "../../of_openfec_api.h"
-#include "../of_linear_binary_code.h"
-
 
 #ifdef OF_DEBUG
 #define OP_ARGS ,UINT32* op
@@ -55,10 +47,10 @@
 #define OP_ARG_VAL
 #endif
 
+
 /**
  * This function transforms the matrix into a triangular matrix
  *
- * @fn INT32			of_linear_binary_code_triangularize_dense_system (of_mod2dense *m,void **check_values,of_linear_binary_code_cb_t *ofcb)
  * @brief			triangularize the dense system
  * @param m			(IN/OUT) address of the dense matrix.
  * @param check_values		(IN/OUT)
@@ -72,7 +64,6 @@ INT32	of_linear_binary_code_triangularize_dense_system (of_mod2dense *m,
 /**
  * This function deduce the value of the missing symbols from the inverted dense matrix
  *
- * @fn INT32			of_linear_binary_code_backward_substitution (void * variables[],void * constant_member[],of_mod2dense *m,of_linear_binary_code_cb_t *ofcb)
  * @brief			solve system with backward substitution
  * @param variables		(IN/OUT) address of the dense matrix.
  * @param constant_member
@@ -89,7 +80,6 @@ INT32	of_linear_binary_code_backward_substitution (void * variables[],
  * This function solves the system: first triangularize the system, then for each column,
  * do a forward elimination, then do the backward elimination.
  *
- * @fn INT32			of_linear_binary_code_solve_dense_system (of_mod2dense *m,void ** constant_member,void **variables,of_linear_binary_code_cb_t *ofcb)
  * @brief			solves the system
  * @param m 			(IN/OUT) address of the dense matrix.
  * @param variables
@@ -105,7 +95,6 @@ INT32	of_linear_binary_code_solve_dense_system (of_mod2dense		*m,
 /**
  * This function eliminates "1" entries in parity check matrix for each columns to make an upper triangular matrix.
  *
- * @fn INT32			of_linear_binary_code_col_forward_elimination (of_mod2dense *m,void ** check_values,of_linear_binary_code_cb_t *ofcb,INT32 col_idx)
  * @brief			eliminates "1" entries in parity check matrix
  * @param m 			(IN/OUT) address of the dense matrix.
  * @param check_values		(IN/OUT) pointer to all constant members
@@ -121,7 +110,6 @@ inline INT32	of_linear_binary_code_col_forward_elimination (of_mod2dense *m,
 /**
  * This function eliminates "1" entries in parity check matrix for each columns to make an upper triangular matrix, but choose a better pivot to minimize operations.
  *
- * @fn INT32			of_linear_binary_code_col_forward_elimination_pivot_reordering (of_mod2dense *m,void ** check_values,of_linear_binary_code_cb_t *ofcb,INT32 col_idx)
  * @brief			eliminates "1" entries in parity check matrix
  * @param m 			(IN/OUT) address of the dense matrix.
  * @param check_values		(IN/OUT) pointer to all constant members
@@ -137,7 +125,6 @@ INT32	of_linear_binary_code_col_forward_elimination_pivot_reordering (of_mod2den
 /**
  * This function update weight of a row ignoring nb_ignore values. Used by pivot reordering.
  *
- * @fn INT32			of_linear_binary_code_update_row_weight (of_mod2dense *m,INT32 row1,INT32 row2,INT32 nb_ignore)
  * @brief			update weight of a row ignoring nb_ignore values.
  * @param m 			(IN/OUT) address of the dense matrix.
  * @param row1			(IN) row to update
@@ -153,7 +140,6 @@ INT32	of_linear_binary_code_update_row_weight (of_mod2dense *m,
 /**
  * This function get weight of a row. Used by pivot reordering.
  *
- * @fn INT32			of_linear_binary_code_get_row_weight (of_mod2dense *m,INT32 row_idx)
  * @brief			get the weight of a row
  * @param m 			(IN/OUT) address of the dense matrix.
  * @param row_idx		(IN) row index
@@ -164,7 +150,6 @@ INT32	of_linear_binary_code_get_row_weight (of_mod2dense *m, INT32 row_idx);
 /**
  * This function do permutations in parity check matrix for each columns to prepare the dense system.
  *
- * @fn INT32			of_linear_binary_code_col_forward_permutation (of_mod2dense *m,void ** check_values,UINT32 symbol_size,INT32 col_idx)
  * @brief			do permutations on matrix m and checkValues
  * @param m 			(IN/OUT) address of the dense matrix.
  * @param check_values		(IN/OUT) pointer to all constant members
@@ -179,7 +164,6 @@ INT32	of_linear_binary_code_col_forward_permutation (of_mod2dense *m,
 /**
  * This function prepare the dense system by making permutations on columns.
  *
- * @fn INT32			of_linear_binary_code_preprocess_dense_system (of_mod2dense *m,void ** check_values,UINT32 symbol_size)
  * @brief			prepare the dense system
  * @param m 			(IN/OUT) address of the dense matrix.
  * @param check_values		(IN/OUT) pointer to all constant members

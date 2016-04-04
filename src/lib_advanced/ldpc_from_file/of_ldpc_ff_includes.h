@@ -1,4 +1,4 @@
-/* $Id: of_ldpc_ff_includes.h 89 2012-05-23 15:15:36Z roca $ */
+/* $Id: of_ldpc_ff_includes.h 186 2014-07-16 07:17:53Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -36,7 +36,6 @@
 
 #include <stdio.h>
 #include <string.h>
-//#include <malloc.h>
 #include <math.h>
 #include <sys/time.h>	/* for timersub */
 
@@ -44,16 +43,10 @@
 
 #ifdef OF_USE_LDPC_FROM_FILE_CODEC
 
-#include "../../lib_common/of_types.h"
-#include "../../lib_common/statistics/of_statistics.h"
-#include "../../lib_common/of_mem.h"
-#include "../../lib_common/of_debug.h"
-#include "../../lib_common/of_cb.h"
-
 #include "../../lib_common/linear_binary_codes_utils/of_linear_binary_code.h"
+
 #include "../../lib_stable/ldpc_staircase/of_ldpc_staircase_api.h"
 #include "../../lib_stable/ldpc_staircase/of_ldpc_staircase.h"
-
 
 #include "of_ldpc_ff_api.h"
 #include "of_ldpc_ff.h"

@@ -1,4 +1,4 @@
-/* $Id: of_matrix_sparse.h 102 2013-11-08 19:25:52Z roca $ */
+/* $Id: of_matrix_sparse.h 186 2014-07-16 07:17:53Z roca $ */
 /*
  * The contents of this directory and its sub-directories are
  * Copyright (c) 1995-2003 by Radford M. Neal
@@ -41,11 +41,6 @@
 #ifndef OF_LDPC_MATRIX_SPARSE__
 #define OF_LDPC_MATRIX_SPARSE__
 
-#ifdef IL_SUPPORT
-#include <IL/il.h>
-#endif
-#include "../../of_types.h"
-#include "../../of_mem.h"
 
 #ifdef OF_USE_LINEAR_BINARY_CODES_UTILS
 
@@ -162,20 +157,20 @@ typedef enum mod2sparse_strategy_enum
 
 
 /* PROCEDURES TO MANIPULATE SPARSE MATRICES. */
-of_mod2sparse *of_mod2sparse_allocate (UINT32, UINT32, of_memory_usage_stats_t*);
+of_mod2sparse *of_mod2sparse_allocate (UINT32, UINT32);
 
-void of_mod2sparse_free (of_mod2sparse *, of_memory_usage_stats_t*);
+void of_mod2sparse_free (of_mod2sparse *);
 
 void of_mod2sparse_clear (of_mod2sparse *);
 
 //#if 0
-void of_mod2sparse_copy (of_mod2sparse *, of_mod2sparse *, of_memory_usage_stats_t *stats);
+void of_mod2sparse_copy (of_mod2sparse *, of_mod2sparse *);
 //#endif // #if 0
 
 #if defined(ML_DECODING)
 
-void of_mod2sparse_copyrows (of_mod2sparse *, of_mod2sparse *, UINT32 *, of_memory_usage_stats_t *stats);
-void of_mod2sparse_copycols (of_mod2sparse *, of_mod2sparse *, UINT32 *, of_memory_usage_stats_t *stats);
+void of_mod2sparse_copyrows (of_mod2sparse *, of_mod2sparse *, UINT32 *);
+void of_mod2sparse_copycols (of_mod2sparse *, of_mod2sparse *, UINT32 *);
 
 /**
  * Copy a list of rows from one matrix to another.
@@ -186,13 +181,11 @@ void of_mod2sparse_copycols (of_mod2sparse *, of_mod2sparse *, UINT32 *, of_memo
  * @param __parsing        (IN)   Optimization for the insertion of new elements,
  *                                avoid parsing again all the element in a cal before
  *                                finding the good position
- * @param stats		(IN/OUT) memory statistics (can be NULL)
  */
 void of_mod2sparse_copyrows_opt (of_mod2sparse * m,
 				 of_mod2sparse * r,
 				 UINT32 * rows,
-				 of_mod2entry ** __parsing,
-				 of_memory_usage_stats_t *stats);
+				 of_mod2entry ** __parsing);
 
 
 /**
@@ -201,12 +194,10 @@ void of_mod2sparse_copyrows_opt (of_mod2sparse * m,
  * @param m                (IN)   Matrix to print out (only 0 and 1)
  * @param r                (OUT)  Resulting matrix
  * @param cols             (IN)   List of cols to copy
- * @param stats		(IN/OUT) memory statistics (can be NULL)
  */
 void of_mod2sparse_copycols_opt (of_mod2sparse * m,
 				 of_mod2sparse * r,
-				 UINT32 * cols,
-				 of_memory_usage_stats_t *stats);
+				 UINT32 * cols);
 
 #endif // #if defined(ML_DECODING)
 
@@ -236,8 +227,7 @@ UINT32 of_mod2sparse_write_human_readable (FILE *,
 
 of_mod2sparse *of_mod2sparse_read_human_readable (FILE *f,
 						  UINT32 *nb_source,
-						  UINT32 *nb_parity,
-						  of_memory_usage_stats_t *stats);
+						  UINT32 *nb_parity);
 
 /* PRINT matrix statistics: average number of 1's per row/line etc ...*/
 
@@ -253,8 +243,7 @@ of_mod2entry *of_mod2sparse_find (of_mod2sparse *,
 
 inline of_mod2entry *of_mod2sparse_insert (of_mod2sparse *,
 				    UINT32,
-				    UINT32,
-				    of_memory_usage_stats_t *stats);
+				    UINT32);
 
 void of_mod2sparse_delete (of_mod2sparse *,
 			   of_mod2entry *);
@@ -280,17 +269,15 @@ void of_mod2sparse_delete (of_mod2sparse *,
  * @param __parsing        (IN/OUT)  Optimization for Gauss pivoting in the XOR steps. Gauss pivoting
  *                                   parses from up to bottom to XOR lines and then eliminates simplifies
  *                                   the matrix. At the end of swapping, __parsing is initialyzed.
- * @param stats		   (IN/OUT)  Memory statistics (can be NULL)
  *
- * @return                            weight of the new row0 line
+ * @return                           The hamming weight of the new row0 line
  */
 UINT32  of_mod2sparse_swap_rows (of_mod2sparse * m,
 				 UINT32 row0,
 				 UINT32 row1,
 				 of_mod2sparse * __swapMatrix,
 				 of_mod2entry ** __links,
-				 of_mod2entry ** __parsing,
-				 of_memory_usage_stats_t *stats);
+				 of_mod2entry ** __parsing);
 
 /**
  * XOR two lines of the matrix m: row1 = row0 + row1.
@@ -305,16 +292,13 @@ UINT32  of_mod2sparse_swap_rows (of_mod2sparse * m,
  * @param __parsing        (IN/OUT)  Optimization for Gauss pivoting in the XOR steps. Gauss pivoting
  *                                   parses from up to bottom to XOR lines and then eliminates simplifies
  *                                   the matrix. At the end of swapping, __parsing is initialyzed.
- * @param stats		   (IN/OUT)  Memory statistics (can be NULL)
  *
  * @return                           The hamming weight of the new row1 line
  */
 UINT32  of_mod2sparse_xor_rows (of_mod2sparse * m,
 				UINT32 row0, UINT32 row1,
 				of_mod2entry ** __links,
-				of_mod2entry ** __parsing,
-				of_memory_usage_stats_t *stats);
-
+				of_mod2entry ** __parsing);
 
 /**
  * Determine if a row is empty
@@ -359,9 +343,9 @@ UINT32 of_mod2sparse_weight_row (of_mod2sparse * m, UINT32 row);
  * @return                           The weight of the col
  */
 UINT32 mod2sparse_weight_col (of_mod2sparse * m, UINT32 col);
-#endif // #if 0
+#endif
 
-#endif // #if defined(ML_DECODING)
+#endif // defined(ML_DECODING)
 
 #if 0
 void mod2sparse_transpose (of_mod2sparse *, of_mod2sparse *);
@@ -382,14 +366,13 @@ UINT32 mod2sparse_decomp (of_mod2sparse *, UINT32, of_mod2sparse *, of_mod2spars
 
 UINT32 mod2sparse_forward_sub (of_mod2sparse *, UINT32 *, UINT8 *, UINT8 *);
 UINT32 mod2sparse_backward_sub (of_mod2sparse *, UINT32 *, UINT8 *, UINT8 *);
-#endif // #if 0
+#endif
 
 /* copy only filled rows and cols from m to r */
 void of_mod2sparse_copy_filled_matrix  (of_mod2sparse	*m,
 					of_mod2sparse	*r,
 					UINT32		*index_rows,
-					UINT32		*index_cols,
-					of_memory_usage_stats_t *stats);
+					UINT32		*index_cols);
 
 #endif /* #ifndef OF_LDPC_MATRIX_SPARSE__ */
 

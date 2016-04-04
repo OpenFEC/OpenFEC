@@ -1,4 +1,4 @@
-/* $Id: of_it_decoding.h 72 2012-04-13 13:27:26Z detchart $ */
+/* $Id: of_it_decoding.h 186 2014-07-16 07:17:53Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -34,22 +34,10 @@
 #ifndef IT_DECODING_H
 #define IT_DECODING_H
 
-#include "../../of_openfec_api.h"
-#include "../of_linear_binary_code.h"
 
 #ifdef OF_USE_DECODER
-
 #ifdef OF_USE_LINEAR_BINARY_CODES_UTILS
 
-
-#include <stdio.h>
-
-#include "../../of_types.h"
-#include "../../of_debug.h"
-#include "../../of_openfec_api.h"
-#include "../../of_cb.h"
-#include "../../of_debug.h"
-#include "../../of_mem.h"
 
 /**
  * @fn	  of_status_t	of_linear_binary_code_decode_with_new_symbol (of_linear_binary_code_cb_t*	ofcb, void*	const	new_symbol_buf, UINT32		new_symbol_esi)

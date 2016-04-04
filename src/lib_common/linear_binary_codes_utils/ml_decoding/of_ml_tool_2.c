@@ -1,4 +1,4 @@
-/* $Id: of_ml_tool_2.c 72 2012-04-13 13:27:26Z detchart $ */
+/* $Id: of_ml_tool_2.c 186 2014-07-16 07:17:53Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -31,12 +31,11 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-#include "of_ml_tool_2.h"
+#include "../of_linear_binary_code.h"
 
 #ifdef OF_USE_DECODER
 #ifdef OF_USE_LINEAR_BINARY_CODES_UTILS
 #ifdef ML_DECODING
-#include <string.h>
 
 #ifdef OF_DEBUG
 #define NB_OP_ARGS ,&(ofcb->stats_xor->nb_xor_for_ML)
@@ -44,18 +43,20 @@
 #define NB_OP_ARGS
 #endif
 
+
 of_status_t of_linear_binary_code_copy_simplified_linear_system (of_linear_binary_code_cb_t* ofcb)
 {
-	OF_ENTER_FUNCTION
 	INT32 _col, _row;
+
+	OF_ENTER_FUNCTION
 	ofcb->remain_cols = ofcb->remain_rows = 0;
 	if (ofcb->index_rows == NULL)
 	{
-		ofcb->index_rows = (UINT32*) of_calloc (ofcb->nb_repair_symbols, sizeof (UINT32) MEM_STATS_ARG);
+		ofcb->index_rows = (UINT32*) of_calloc (ofcb->nb_repair_symbols, sizeof (UINT32));
 	}
 	if (ofcb->index_cols == NULL)
 	{
-		ofcb->index_cols = (UINT32*) of_calloc (ofcb->nb_total_symbols, sizeof (UINT32) MEM_STATS_ARG);
+		ofcb->index_cols = (UINT32*) of_calloc (ofcb->nb_total_symbols, sizeof (UINT32));
 	}
 	for (_col = 0;_col < ofcb->nb_total_symbols;_col++)
 	{
@@ -65,8 +66,8 @@ of_status_t of_linear_binary_code_copy_simplified_linear_system (of_linear_binar
 	{
 		ofcb->index_rows[ofcb->remain_rows++] = _row;
 	}
-	ofcb->pchk_matrix_simplified = of_mod2sparse_allocate (ofcb->remain_rows, ofcb->remain_cols,ofcb->stats);
-	of_mod2sparse_copyrows_opt (ofcb->pchk_matrix, ofcb->pchk_matrix_simplified, ofcb->index_rows, NULL,ofcb->stats);
+	ofcb->pchk_matrix_simplified = of_mod2sparse_allocate (ofcb->remain_rows, ofcb->remain_cols);
+	of_mod2sparse_copyrows_opt (ofcb->pchk_matrix, ofcb->pchk_matrix_simplified, ofcb->index_rows, NULL);
 	// Update the array containing the system info
 	for (_row = 0 ; _row < ofcb->nb_repair_symbols ; _row++)
 	{
@@ -86,19 +87,21 @@ of_status_t of_linear_binary_code_copy_simplified_linear_system (of_linear_binar
 	return OF_STATUS_OK;
 }
 
+
 of_status_t of_linear_binary_code_create_simplified_linear_system (of_linear_binary_code_cb_t* ofcb)
 {
-	OF_ENTER_FUNCTION
 	INT32 _col, _row;
 	of_mod2sparse	*__pchk_matrix_simplified_cols;
+
+	OF_ENTER_FUNCTION
 	ofcb->remain_cols = ofcb->remain_rows = 0;
 	if (ofcb->index_rows == NULL)
 	{
-		ofcb->index_rows = (UINT32 *) of_calloc (ofcb->nb_repair_symbols, sizeof (UINT32) MEM_STATS_ARG);
+		ofcb->index_rows = (UINT32 *) of_calloc (ofcb->nb_repair_symbols, sizeof (UINT32));
 	}
 	
-	UINT32 *index_rows = (UINT32*) of_malloc(ofcb->nb_repair_symbols * sizeof(UINT32) MEM_STATS_ARG);
-	UINT32 *index_cols = (UINT32*) of_malloc(ofcb->nb_total_symbols  * sizeof(UINT32) MEM_STATS_ARG);
+	UINT32 *index_rows = (UINT32*) of_malloc(ofcb->nb_repair_symbols * sizeof(UINT32));
+	UINT32 *index_cols = (UINT32*) of_malloc(ofcb->nb_total_symbols  * sizeof(UINT32));
 	
 	//UINT32 index_rows[ofcb->nb_repair_symbols];
 	//UINT32 index_cols[ofcb->nb_total_symbols];
@@ -106,7 +109,7 @@ of_status_t of_linear_binary_code_create_simplified_linear_system (of_linear_bin
 	if (ofcb->index_cols == NULL)
 	{
 		ofcb->index_cols =
-		(UINT32 *) of_calloc (ofcb->nb_total_symbols - ofcb->nb_repair_symbol_ready - ofcb->nb_source_symbol_ready, sizeof (UINT32) MEM_STATS_ARG);
+		(UINT32 *) of_calloc (ofcb->nb_total_symbols - ofcb->nb_repair_symbol_ready - ofcb->nb_source_symbol_ready, sizeof (UINT32));
 	}
 	// Get the index of cols to copy from the original matrix
 	for (_col = 0 ; _col < ofcb->nb_total_symbols ; _col++)
@@ -130,9 +133,9 @@ of_status_t of_linear_binary_code_create_simplified_linear_system (of_linear_bin
 	// If the initial matrix is completely simplified
 	if (ofcb->remain_cols == 0)
 	{
-		of_free (ofcb->index_rows MEM_STATS_ARG);
+		of_free (ofcb->index_rows);
 		ofcb->index_rows = NULL;
-		of_free (ofcb->index_cols MEM_STATS_ARG);
+		of_free (ofcb->index_cols);
 		ofcb->index_cols = NULL;
 		OF_PRINT_LVL (1, ("Failure: ofcb->remain_cols==0\n"))
 		return OF_STATUS_FAILURE;
@@ -148,54 +151,32 @@ of_status_t of_linear_binary_code_create_simplified_linear_system (of_linear_bin
 		}
 	}
 	OF_TRACE_LVL (1, ("%dx%d; already decoded symbols: src=%d, parity=%d\n",
-			  ofcb->remain_rows,
-			  ofcb->remain_cols,
-			  ofcb->nb_source_symbol_ready,
-			  ofcb->nb_repair_symbol_ready))
-	__pchk_matrix_simplified_cols = of_mod2sparse_allocate (ofcb->nb_repair_symbols, ofcb->remain_cols,ofcb->stats);
+			  ofcb->remain_rows, ofcb->remain_cols, ofcb->nb_source_symbol_ready, ofcb->nb_repair_symbol_ready))
+	__pchk_matrix_simplified_cols = of_mod2sparse_allocate (ofcb->nb_repair_symbols, ofcb->remain_cols);
 	OF_TRACE_LVL (1, ("Simplified Matrix: %dx%d; already decoded symbols: src=%d, parity=%d  nb_row=%d  nb_col=%d\n",
-			  ofcb->remain_rows,
-			  ofcb->remain_cols,
-			  ofcb->nb_source_symbol_ready,
-			  ofcb->nb_repair_symbol_ready,
-			  ofcb->remain_rows,
-			  ofcb->remain_cols))
-	/*of_mod2sparse_copycols_opt (ofcb->pchk_matrix_simplified,
-				    __pchk_matrix_simplified_cols,
-				    ofcb->index_cols,ofcb->stats);
-	of_mod2sparse_free (ofcb->pchk_matrix_simplified,ofcb->stats);*/
+			  ofcb->remain_rows, ofcb->remain_cols, ofcb->nb_source_symbol_ready, ofcb->nb_repair_symbol_ready,
+			  ofcb->remain_rows, ofcb->remain_cols))
 	
-	of_mod2sparse_copy_filled_matrix(ofcb->pchk_matrix_simplified,__pchk_matrix_simplified_cols,index_rows,index_cols,ofcb->stats);
-	//mod2sparse_copy_filled_rows_and_cols(ofcb->pchk_matrix_simplified,__pchk_matrix_simplified_cols,ofcb->stats);
-	of_free (ofcb->pchk_matrix_simplified MEM_STATS_ARG);	/* of_mod2sparse_free does not free it! */
+	of_mod2sparse_copy_filled_matrix(ofcb->pchk_matrix_simplified,__pchk_matrix_simplified_cols,index_rows,index_cols);
+	of_free (ofcb->pchk_matrix_simplified);	/* of_mod2sparse_free does not free it! */
 	ofcb->pchk_matrix_simplified = __pchk_matrix_simplified_cols;
-	//of_mod2sparse_free(__pchk_matrix_simplified_cols, ofcb->stats);
 	__pchk_matrix_simplified_cols = NULL;
-	/*ofcb->pchk_matrix_simplified = NULL;
-	ofcb->pchk_matrix_simplified = of_mod2sparse_allocate (ofcb->remain_rows, ofcb->remain_cols,ofcb->stats);
-	of_mod2sparse_copyrows_opt (__pchk_matrix_simplified_cols,
-				    ofcb->pchk_matrix_simplified,
-				    ofcb->index_rows, NULL,ofcb->stats);
-
-	of_mod2sparse_free(__pchk_matrix_simplified_cols, ofcb->stats);
-	of_free(__pchk_matrix_simplified_cols MEM_STATS_ARG);
-	__pchk_matrix_simplified_cols = NULL;*/
 	
-	of_free(index_rows MEM_STATS_ARG);
-	of_free(index_cols MEM_STATS_ARG);
+	of_free(index_rows);
+	of_free(index_cols);
 	
 #if !defined(ML_DECODING)
-	of_mod2sparse_free (ofcb->pchk_matrix,ofcb->stats);
-	of_free (ofcb->pchk_matrix MEM_STATS_ARG);	/* of_mod2sparse_free does not free it! */
+	of_mod2sparse_free (ofcb->pchk_matrix);
+	of_free (ofcb->pchk_matrix);	/* of_mod2sparse_free does not free it! */
 	ofcb->pchk_matrix = NULL;
 	if (ofcb->tab_nb_unknown_symbols != NULL)
 	{
-		of_free (ofcb->tab_nb_unknown_symbols MEM_STATS_ARG);
+		of_free (ofcb->tab_nb_unknown_symbols);
 		ofcb->tab_nb_unknown_symbols = NULL;
 	}
-	of_free (ofcb->tab_nb_enc_symbols_per_equ MEM_STATS_ARG);
+	of_free (ofcb->tab_nb_enc_symbols_per_equ);
 	ofcb->tab_nb_enc_symbols_per_equ = NULL;
-	of_free (ofcb->tab_nb_equ_for_repair MEM_STATS_ARG);
+	of_free (ofcb->tab_nb_equ_for_repair);
 	ofcb->tab_nb_equ_for_repair = NULL;
 #endif
 	OF_TRACE_LVL (1, ("ok\n"))
@@ -203,15 +184,17 @@ of_status_t of_linear_binary_code_create_simplified_linear_system (of_linear_bin
 	return OF_STATUS_OK;
 }
 
+
 of_status_t of_linear_binary_code_apply_gauss_pivoting (of_linear_binary_code_cb_t* ofcb,
 				     void * encoding_symbols_tab[])
 {
-	OF_ENTER_FUNCTION
-	INT32 __current_row, __col;//,count;
+	INT32 __current_row, __col;
 	of_mod2entry * __pivot = NULL;
-	of_mod2sparse * __swapMatrix = of_mod2sparse_allocate (1, ofcb->remain_cols,ofcb->stats);
-	of_mod2entry ** __links = (of_mod2entry **) of_calloc (ofcb->remain_cols, sizeof (of_mod2entry *) MEM_STATS_ARG);
-	of_mod2entry ** __parsing = (of_mod2entry **) of_calloc (ofcb->remain_cols, sizeof (of_mod2entry *) MEM_STATS_ARG);
+	of_mod2sparse * __swapMatrix = of_mod2sparse_allocate (1, ofcb->remain_cols);
+	of_mod2entry ** __links = (of_mod2entry **) of_calloc (ofcb->remain_cols, sizeof (of_mod2entry *));
+	of_mod2entry ** __parsing = (of_mod2entry **) of_calloc (ofcb->remain_cols, sizeof (of_mod2entry *));
+
+	OF_ENTER_FUNCTION
 	__current_row = 0;
 	for (__col = 0 ; __col < ofcb->remain_cols ; __col++)
 	{
@@ -274,7 +257,7 @@ of_status_t of_linear_binary_code_apply_gauss_pivoting (of_linear_binary_code_cb
 			{
 				__e = of_mod2sparse_next_in_col (__e);
 			}
-			of_free (ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]] MEM_STATS_ARG);
+			of_free (ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]]);
 		}
 		if (!of_mod2sparse_at_end_col (__e))
 		{
@@ -285,36 +268,19 @@ of_status_t of_linear_binary_code_apply_gauss_pivoting (of_linear_binary_code_cb
 			// Found the next line to swap with
 			if (__row > __current_row)
 			{
-				ofcb->tab_nb_unknown_symbols[__current_row] =
-					of_mod2sparse_swap_rows (
-						ofcb->pchk_matrix_simplified,
-						__current_row,
-						__row,
-						__swapMatrix,
-						__links,
-						__parsing,
-						ofcb->stats
-					);
+				ofcb->tab_nb_unknown_symbols[__current_row] = of_mod2sparse_swap_rows (ofcb->pchk_matrix_simplified,
+													__current_row, __row, __swapMatrix, __links, __parsing);
 				// Swap index of checkValues
 				__idx  				 = ofcb->index_rows[__current_row];
 				ofcb->index_rows[__current_row]  = ofcb->index_rows[__row];
 				ofcb->index_rows[__row]          =  __idx;
-				__pivot = of_mod2sparse_first_in_row (ofcb->pchk_matrix_simplified,
-								      __current_row);
+				__pivot = of_mod2sparse_first_in_row (ofcb->pchk_matrix_simplified, __current_row);
 			}
 			else
 				if (__row == __current_row)
 				{
-					ofcb->tab_nb_unknown_symbols[__current_row] =
-						of_mod2sparse_swap_rows (
-							ofcb->pchk_matrix_simplified,
-							__current_row,
-							__row,
-							__swapMatrix,
-							__links,
-							__parsing,
-							ofcb->stats
-						);
+					ofcb->tab_nb_unknown_symbols[__current_row] = of_mod2sparse_swap_rows (ofcb->pchk_matrix_simplified,
+														__current_row, __row, __swapMatrix, __links, __parsing);
 					__pivot = __e;
 				}
 				else
@@ -333,39 +299,24 @@ of_status_t of_linear_binary_code_apply_gauss_pivoting (of_linear_binary_code_cb
 			while (!of_mod2sparse_at_end_col (__e))
 			{
 				__row = of_mod2sparse_row (__e);
-				ofcb->tab_nb_unknown_symbols[__row] =
-					of_mod2sparse_xor_rows (
-						ofcb->pchk_matrix_simplified,
-						__current_row,
-						__row,
-						__links,
-						__parsing,
-						ofcb->stats
-					);
-				if (ofcb->tab_const_term_of_equ[ofcb->index_rows[__row]] != NULL
-						&& ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]] != NULL)
+				ofcb->tab_nb_unknown_symbols[__row] = of_mod2sparse_xor_rows (ofcb->pchk_matrix_simplified,
+												__current_row, __row, __links, __parsing);
+				if (ofcb->tab_const_term_of_equ[ofcb->index_rows[__row]] != NULL && ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]] != NULL)
 				{
 					//ofcb->tmp_tab_symbols[ofcb->nb_tmp_symbols++] = (ofcb->tab_const_term_of_equ[ofcb->index_rows[__row]]);
 #if 1
-					of_add_to_symbol
-					(
-						(ofcb->tab_const_term_of_equ[ofcb->index_rows[__row]]),
-						(ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]])
-						, ofcb->encoding_symbol_length NB_OP_ARGS);
+					of_add_to_symbol((ofcb->tab_const_term_of_equ[ofcb->index_rows[__row]]),
+							(ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]]),
+							ofcb->encoding_symbol_length NB_OP_ARGS);
 #endif
 				}
-				else
-					if (ofcb->tab_const_term_of_equ[ofcb->index_rows[__row]] == NULL
-							&& ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]] != NULL)
-					{
-						ofcb->tab_const_term_of_equ[ofcb->index_rows[__row]] = of_malloc (
-									ofcb->encoding_symbol_length MEM_STATS_ARG);
-						memcpy (
-							(ofcb->tab_const_term_of_equ[ofcb->index_rows[__row]]),
-							(ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]]),
-							ofcb->encoding_symbol_length
-						);
-					}
+				else if (ofcb->tab_const_term_of_equ[ofcb->index_rows[__row]] == NULL && ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]] != NULL)
+				{
+					ofcb->tab_const_term_of_equ[ofcb->index_rows[__row]] = of_malloc (ofcb->encoding_symbol_length);
+					memcpy ((ofcb->tab_const_term_of_equ[ofcb->index_rows[__row]]),
+						(ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]]),
+						ofcb->encoding_symbol_length);
+				}
 				__e = of_mod2sparse_next_in_col (__pivot);
 			}
 #if 0
@@ -385,40 +336,41 @@ of_status_t of_linear_binary_code_apply_gauss_pivoting (of_linear_binary_code_cb
 		{
 			++__current_row;
 		}
-		else
-			if (of_mod2sparse_empty_row (ofcb->pchk_matrix_simplified, __current_row))
-			{
-				of_free (ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]] MEM_STATS_ARG);
-				ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]] = NULL;
-			}
+		else if (of_mod2sparse_empty_row (ofcb->pchk_matrix_simplified, __current_row))
+		{
+			of_free (ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]]);
+			ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]] = NULL;
+		}
 	}
 	
 	//
 	// Free spaces not used anymore
 	//
-	of_mod2sparse_free (__swapMatrix,ofcb->stats);
-	of_free (__swapMatrix MEM_STATS_ARG);
+	of_mod2sparse_free (__swapMatrix);
+	of_free (__swapMatrix);
 	__swapMatrix = NULL;
-	of_free (__links MEM_STATS_ARG);
+	of_free (__links);
 	__links = NULL;
-	of_free (__parsing MEM_STATS_ARG);
+	of_free (__parsing);
 	__parsing = NULL;
 	OF_TRACE_LVL (1, ("%s : ok\n",__FUNCTION__))
 	OF_EXIT_FUNCTION
 	return OF_STATUS_OK;
 }
 
+
 of_status_t of_linear_binary_code_inject_symbol_in_triangular_system (of_linear_binary_code_cb_t* ofcb,
 						   void * encoding_symbol_tab[],
 						   void * new_symbol,
 						   INT32 simplified_col)
 {
-	OF_ENTER_FUNCTION
 	of_mod2entry * __e;
 	of_mod2entry * __delMe;
 	of_mod2entry * __pivot;
 	INT32 new_symbol_esi;
 	INT32 __current_row;
+
+	OF_ENTER_FUNCTION
 	OF_TRACE_LVL (1, ("-> inject_symbol_in_triangular_system:\n"))
 	// Is it a known symbol that has een injected or not...
 	if (of_mod2sparse_empty_col (ofcb->pchk_matrix_simplified, simplified_col))
@@ -443,19 +395,15 @@ of_status_t of_linear_binary_code_inject_symbol_in_triangular_system (of_linear_
 		if (ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]] == NULL)
 		{
 			ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]] =
-				of_calloc (1, ofcb->encoding_symbol_length MEM_STATS_ARG);
+				of_calloc (1, ofcb->encoding_symbol_length);
 			// Copy data now
-			memcpy (
-				(ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]]),
-				(new_symbol),
-				ofcb->encoding_symbol_length);
+			memcpy ((ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]]),
+				(new_symbol), ofcb->encoding_symbol_length);
 		}
 		else
 		{
-			of_add_to_symbol (
-				(ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]]),
-				(new_symbol)
-				, ofcb->encoding_symbol_length NB_OP_ARGS);
+			of_add_to_symbol ((ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]]),
+					(new_symbol), ofcb->encoding_symbol_length NB_OP_ARGS);
 		}
 		ofcb->tab_nb_unknown_symbols[__current_row]--;
 		// Delete the current element
@@ -477,21 +425,18 @@ of_status_t of_linear_binary_code_inject_symbol_in_triangular_system (of_linear_
 				if (encoding_symbol_tab[tmp_seq_no] == NULL)
 				{
 					encoding_symbol_tab[tmp_seq_no] =
-							of_malloc (ofcb->encoding_symbol_length MEM_STATS_ARG);
-					memcpy (
-						(encoding_symbol_tab[tmp_seq_no]),
+							of_malloc (ofcb->encoding_symbol_length);
+					memcpy ((encoding_symbol_tab[tmp_seq_no]),
 						(ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]]),
-						ofcb->encoding_symbol_length
-					);
-					of_free (ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]] MEM_STATS_ARG);
+						ofcb->encoding_symbol_length);
+					of_free (ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]]);
 					ofcb->nb_source_symbol_ready++;
 					ofcb->tab_nb_unknown_symbols[__current_row]--;
 					of_mod2sparse_delete (ofcb->pchk_matrix_simplified, __pivot);
 					of_linear_binary_code_inject_symbol_in_triangular_system (ofcb,
 									    encoding_symbol_tab,
 									    encoding_symbol_tab[tmp_seq_no],
-									    __pivot_col
-									   );
+									    __pivot_col);
 				}
 			}
 			else
@@ -500,13 +445,11 @@ of_status_t of_linear_binary_code_inject_symbol_in_triangular_system (of_linear_
 				{
 					if (ofcb->encoding_symbols_tab[tmp_seq_no] == NULL)
 					{
-						ofcb->encoding_symbols_tab[tmp_seq_no] = of_malloc ( ofcb->encoding_symbol_length MEM_STATS_ARG);
-						memcpy (
-							(ofcb->encoding_symbols_tab[tmp_seq_no]),
+						ofcb->encoding_symbols_tab[tmp_seq_no] = of_malloc ( ofcb->encoding_symbol_length);
+						memcpy ((ofcb->encoding_symbols_tab[tmp_seq_no]),
 							(ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]]),
-							ofcb->encoding_symbol_length
-						);
-						of_free (ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]] MEM_STATS_ARG);
+							ofcb->encoding_symbol_length);
+						of_free (ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]]);
 						ofcb->nb_repair_symbol_ready++;
 						ofcb->tab_nb_unknown_symbols[__current_row]--;
 						of_mod2sparse_delete (ofcb->pchk_matrix_simplified, __pivot);
@@ -514,8 +457,7 @@ of_status_t of_linear_binary_code_inject_symbol_in_triangular_system (of_linear_
 						of_linear_binary_code_inject_symbol_in_triangular_system (ofcb,
 										    encoding_symbol_tab,
 										    ofcb->encoding_symbols_tab[tmp_seq_no],
-										    __pivot_col
-										   );
+										    __pivot_col);
 					}
 				}
 			}
@@ -529,13 +471,14 @@ of_status_t of_linear_binary_code_inject_symbol_in_triangular_system (of_linear_
 of_status_t of_linear_binary_code_solve_triangular_system (of_linear_binary_code_cb_t* ofcb,
 					void * encoding_symbol_tab[])
 {
-	OF_ENTER_FUNCTION
 	INT32 __current_row;
 	INT32 new_symbol_esi;
 	of_mod2entry * __pivot;
 	of_mod2entry * __delMe;
 	of_mod2entry * __e;
 	INT32 __col;
+
+	OF_ENTER_FUNCTION
 	for (__col = ofcb->remain_cols - 1 ; __col >= 0 ; __col--)
 	{
 		new_symbol_esi = of_get_symbol_esi ((of_cb_t*)ofcb, ofcb->index_cols[__col]);
@@ -546,7 +489,7 @@ of_status_t of_linear_binary_code_solve_triangular_system (of_linear_binary_code
 			if (ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]] == NULL)
 			{
 				ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]] =
-					of_calloc (1, ofcb->encoding_symbol_length MEM_STATS_ARG);
+					of_calloc (1, ofcb->encoding_symbol_length);
 			}
 			__pivot = of_mod2sparse_first_in_row (ofcb->pchk_matrix_simplified, __current_row);
 			if (of_mod2sparse_col (__pivot) == __col)
@@ -589,10 +532,8 @@ of_status_t of_linear_binary_code_solve_triangular_system (of_linear_binary_code
 					{
 						if (ofcb->encoding_symbols_tab[tmp_symbol_esi] != NULL)
 						{
-							of_add_to_symbol (
-								(ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]]),
-								(ofcb->tab_const_term_of_equ[tmp_symbol_esi])
-								, ofcb->encoding_symbol_length NB_OP_ARGS);
+							of_add_to_symbol ((ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]]),
+									(ofcb->tab_const_term_of_equ[tmp_symbol_esi]), ofcb->encoding_symbol_length NB_OP_ARGS);
 							ofcb->tab_nb_unknown_symbols[__current_row]--;
 							__delMe = __e;
 							__e = of_mod2sparse_next_in_row (__e);
@@ -616,25 +557,21 @@ of_status_t of_linear_binary_code_solve_triangular_system (of_linear_binary_code
 				{
 					if (ofcb->encoding_symbols_tab[new_symbol_esi] == NULL)
 					{
-						ofcb->encoding_symbols_tab[new_symbol_esi] = of_calloc (1, ofcb->encoding_symbol_length MEM_STATS_ARG);
+						ofcb->encoding_symbols_tab[new_symbol_esi] = of_calloc (1, ofcb->encoding_symbol_length);
 						memcpy((ofcb->encoding_symbols_tab[new_symbol_esi]),
 							 (ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]]),
 							 ofcb->encoding_symbol_length);
-						of_free (ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]] MEM_STATS_ARG);
+						of_free (ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]]);
 						++ofcb->nb_source_symbol_ready;
 						ofcb->tab_nb_unknown_symbols[__current_row]--;
-						__inject =
-							(!of_mod2sparse_at_end_col (of_mod2sparse_next_in_col (__pivot)))
-							? true : false;
+						__inject = (!of_mod2sparse_at_end_col (of_mod2sparse_next_in_col (__pivot))) ? true : false;
 						of_mod2sparse_delete (ofcb->pchk_matrix_simplified, __pivot);
 						// Inject only there exists 1 in the same col under my rows
 						if (__inject == true)
 						{
-							of_linear_binary_code_inject_symbol_in_triangular_system (
-								ofcb,
-								encoding_symbol_tab,
-								ofcb->encoding_symbols_tab[new_symbol_esi],
-								__current_col);
+							of_linear_binary_code_inject_symbol_in_triangular_system (ofcb, encoding_symbol_tab,
+														ofcb->encoding_symbols_tab[new_symbol_esi],
+														__current_col);
 						}
 					}
 				}
@@ -644,11 +581,11 @@ of_status_t of_linear_binary_code_solve_triangular_system (of_linear_binary_code
 					{
 						if (ofcb->encoding_symbols_tab[new_symbol_esi] == NULL)
 						{
-							ofcb->encoding_symbols_tab[new_symbol_esi] = of_calloc (1, ofcb->encoding_symbol_length MEM_STATS_ARG);
+							ofcb->encoding_symbols_tab[new_symbol_esi] = of_calloc (1, ofcb->encoding_symbol_length);
 							memcpy((ofcb->encoding_symbols_tab[new_symbol_esi]),
 								 (ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]]),
 								 ofcb->encoding_symbol_length);
-							of_free (ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]] MEM_STATS_ARG);
+							of_free (ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]]);
 							++ofcb->nb_repair_symbol_ready;
 							ofcb->tab_nb_unknown_symbols[__current_row]--;
 							__inject =
@@ -661,8 +598,7 @@ of_status_t of_linear_binary_code_solve_triangular_system (of_linear_binary_code
 								of_linear_binary_code_inject_symbol_in_triangular_system (ofcb,
 												    ofcb->encoding_symbols_tab,
 												    ofcb->encoding_symbols_tab[new_symbol_esi],
-												    __current_col
-												   );
+												    __current_col);
 							}
 						}
 					}
@@ -675,11 +611,13 @@ of_status_t of_linear_binary_code_solve_triangular_system (of_linear_binary_code
 	return OF_STATUS_OK;
 }
 
+
 of_status_t of_linear_binary_code_launch_ml_decoding (of_linear_binary_code_cb_t* ofcb,
 				   void * encoding_symbol_tab[])
 {
-	OF_ENTER_FUNCTION
 	INT32 i;
+
+	OF_ENTER_FUNCTION
 	if ( (ofcb->nb_source_symbol_ready + ofcb->nb_repair_symbol_ready) < ofcb->nb_source_symbols)
 		return OF_STATUS_ERROR;
 	if (ofcb->pchk_matrix_simplified == NULL)
@@ -715,7 +653,7 @@ of_status_t of_linear_binary_code_launch_ml_decoding (of_linear_binary_code_cb_t
 	// Randomize the parity symbols order before injecting them.
 	// It makes the decoding process more efficient...
 	INT32	*array;
-	array = (INT32 *) of_calloc (ofcb->nb_repair_symbols, sizeof (INT32) MEM_STATS_ARG);
+	array = (INT32 *) of_calloc (ofcb->nb_repair_symbols, sizeof (INT32));
 	for (i = 0 ; i < ofcb->nb_repair_symbols ; i++)
 	{
 		array[i] = i;
@@ -743,7 +681,7 @@ of_status_t of_linear_binary_code_launch_ml_decoding (of_linear_binary_code_cb_t
 			}
 		}
 	}
-	of_free (array MEM_STATS_ARG);
+	of_free (array);
 	array = NULL;
 	// Solve the system of linear equations:
 	//  - simplify matrix
@@ -760,8 +698,7 @@ of_status_t of_linear_binary_code_launch_ml_decoding (of_linear_binary_code_cb_t
 #endif
 	of_mod2dense *dense_pck_matrix_simplified;
 	dense_pck_matrix_simplified = of_mod2dense_allocate (ofcb->pchk_matrix_simplified->n_rows,
-							     ofcb->pchk_matrix_simplified->n_cols,
-							     ofcb->stats);
+							     ofcb->pchk_matrix_simplified->n_cols);
 	of_mod2sparse_to_dense (ofcb->pchk_matrix_simplified,
 				dense_pck_matrix_simplified);
 	OF_TRACE_LVL (1, ("Matrix m1 triangularizes or inverted \n\n"))
@@ -776,7 +713,6 @@ of_status_t of_linear_binary_code_launch_ml_decoding (of_linear_binary_code_cb_t
 		return OF_STATUS_FAILURE;
 	}
 
-	
 #ifdef OF_DEBUG
 	if (ofcb->nb_source_symbols < 100)
 	{
@@ -797,13 +733,15 @@ of_status_t of_linear_binary_code_launch_ml_decoding (of_linear_binary_code_cb_t
 	return OF_STATUS_OK;
 }
 
+
 INT32 of_linear_binary_code_invert_dense_system (of_linear_binary_code_cb_t* ofcb,
 				of_mod2dense *m	/* The matrix to find the inverse of (destroyed) */)
 {
-	OF_ENTER_FUNCTION
 	of_mod2word *s, *t;
 	INT32 i, j, k, n, p, w, k0, b0;
 	void * tmp_buffer;
+
+	OF_ENTER_FUNCTION
 #ifdef COL_ORIENTED
 	n = of_mod2dense_rows (m);
 	p = of_mod2dense_cols (m);
@@ -886,21 +824,19 @@ INT32 of_linear_binary_code_invert_dense_system (of_linear_binary_code_cb_t* ofc
 					// add the ofcb->tab_const_term_of_equ of the i to the m_checkValue of line j
 					if (ofcb->tab_const_term_of_equ[ofcb->index_rows[j]] == NULL)
 					{
-							ofcb->tab_const_term_of_equ[ofcb->index_rows[j]] = of_calloc (1, ofcb->encoding_symbol_length MEM_STATS_ARG);
+							ofcb->tab_const_term_of_equ[ofcb->index_rows[j]] = of_calloc (1, ofcb->encoding_symbol_length);
 						// Copy data now
-						memcpy (
-							(ofcb->tab_const_term_of_equ[ofcb->index_rows[j]]),
+						memcpy ((ofcb->tab_const_term_of_equ[ofcb->index_rows[j]]),
 							(ofcb->tab_const_term_of_equ[ofcb->index_rows[i]]),
 							ofcb->encoding_symbol_length);
 
-					} // if (ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]] == NULL)
+					}
 					else
 					{
-						of_add_to_symbol (
-							(ofcb->tab_const_term_of_equ[ofcb->index_rows[j]]),
-							(ofcb->tab_const_term_of_equ[ofcb->index_rows[i]])
-							, ofcb->encoding_symbol_length NB_OP_ARGS);
-					} // if (ofcb->tab_const_term_of_equ[ofcb->index_rows[__current_row]] == NULL) ... else ...
+						of_add_to_symbol ((ofcb->tab_const_term_of_equ[ofcb->index_rows[j]]),
+								(ofcb->tab_const_term_of_equ[ofcb->index_rows[i]]),
+								ofcb->encoding_symbol_length NB_OP_ARGS);
+					}
 				}
 			}
 		}
@@ -910,14 +846,16 @@ INT32 of_linear_binary_code_invert_dense_system (of_linear_binary_code_cb_t* ofc
 	return 1;
 }
 
+
 INT32 of_linear_binary_code_triangularize_dense_system_with_canvas (of_linear_binary_code_cb_t* ofcb,
 						 of_mod2dense *m,
 						 void * encoding_symbol_tab[])
 {
-	OF_ENTER_FUNCTION
 	of_mod2word *s, *t;
 	INT32 i, j, k, n, p, w, k0, b0;
 	void * tmp_buffer;
+
+	OF_ENTER_FUNCTION
 #ifdef COL_ORIENTED
 
 #else
@@ -945,9 +883,9 @@ INT32 of_linear_binary_code_triangularize_dense_system_with_canvas (of_linear_bi
 			m->row[i] = m->row[j];
 			m->row[j] = t;
 			//  swap the partial sum
-			tmp_buffer = encoding_symbol_tab[i]; // ofcb->tab_const_term_of_equ[ofcb->index_rows[i]];
-			encoding_symbol_tab[i] = encoding_symbol_tab[j]; // ofcb->tab_const_term_of_equ[ofcb->index_rows[i]]= ofcb->tab_const_term_of_equ[ofcb->index_rows[j]];
-			encoding_symbol_tab[j] = tmp_buffer; //ofcb->tab_const_term_of_equ[ofcb->index_rows[j]] = tmp_buffer;
+			tmp_buffer = encoding_symbol_tab[i];
+			encoding_symbol_tab[i] = encoding_symbol_tab[j];
+			encoding_symbol_tab[j] = tmp_buffer;
 		}
 		for (j = 0; j < p; j++)
 			//for (j = i; j<p; j++)
@@ -959,25 +897,23 @@ INT32 of_linear_binary_code_triangularize_dense_system_with_canvas (of_linear_bi
 				t = m->row[i];
 				for (k = k0; k < w; k++)
 					s[k] ^= t[k]; // add column i with coluln j
-				if (encoding_symbol_tab[i] /*ofcb->tab_const_term_of_equ[ofcb->index_rows[i]]*/ != NULL)
+				if (encoding_symbol_tab[i] != NULL)
 				{
 					// if the buffer of line i is NULL there is nothing to Add
 					// add the ofcb->tab_const_term_of_equ of the i to the m_checkValue of line j
 					if (encoding_symbol_tab[j] == NULL)
 					{
-						ofcb->tab_const_term_of_equ[ofcb->index_rows[j]] = of_calloc (1, ofcb->encoding_symbol_length MEM_STATS_ARG);
+						ofcb->tab_const_term_of_equ[ofcb->index_rows[j]] = of_calloc (1, ofcb->encoding_symbol_length);
 						// Copy data now
-						memcpy (
-							(encoding_symbol_tab[j]),  //GetBufferPtrOnly(ofcb->tab_const_term_of_equ[ofcb->index_rows[j]]),
-							(encoding_symbol_tab[i]),  //GetBuffer(ofcb->tab_const_term_of_equ[ofcb->index_rows[i]]),
+						memcpy ((encoding_symbol_tab[j]),
+							(encoding_symbol_tab[i]),
 							ofcb->encoding_symbol_length);
 					}
 					else
 					{
-						of_add_to_symbol (
-							encoding_symbol_tab[j],//GetBufferPtrOnly(ofcb->tab_const_term_of_equ[ofcb->index_rows[j]]),
-							encoding_symbol_tab[i]//GetBuffer(ofcb->tab_const_term_of_equ[ofcb->index_rows[i]])
-							, ofcb->encoding_symbol_length NB_OP_ARGS);
+						of_add_to_symbol (encoding_symbol_tab[j],
+								encoding_symbol_tab[i],
+								ofcb->encoding_symbol_length NB_OP_ARGS);
 					}
 				}
 			}
@@ -994,8 +930,9 @@ INT32 of_linear_binary_code_forward_substitution (of_linear_binary_code_cb_t* of
 				of_mod2dense* m,
 				void ** check_values)
 {
-	OF_ENTER_FUNCTION
 	INT32 i, n_rows, n_cols, k0, b0, symbol_esi;
+
+	OF_ENTER_FUNCTION
 	n_cols = m->n_cols;
 	n_rows = m->n_rows;
 	for (i = 0; i < n_cols; i++)
@@ -1007,10 +944,9 @@ INT32 of_linear_binary_code_forward_substitution (of_linear_binary_code_cb_t* of
 			symbol_esi = of_get_symbol_esi ((of_cb_t*)ofcb, ofcb->index_cols[i]);
 			if (of_is_source_symbol ((of_cb_t*)ofcb, symbol_esi))
 			{
-				encoding_symbol_tab[symbol_esi] = of_malloc (ofcb->encoding_symbol_length MEM_STATS_ARG);
+				encoding_symbol_tab[symbol_esi] = of_malloc (ofcb->encoding_symbol_length);
 				// Copy data now
-				memcpy (
-					(encoding_symbol_tab[symbol_esi]),
+				memcpy ((encoding_symbol_tab[symbol_esi]),
 					(check_values[i]),
 					ofcb->encoding_symbol_length);
 				++ofcb->nb_source_symbol_ready;

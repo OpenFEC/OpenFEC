@@ -1,4 +1,4 @@
-/* $Id: of_matrix_dense.h 102 2013-11-08 19:25:52Z roca $ */
+/* $Id: of_matrix_dense.h 186 2014-07-16 07:17:53Z roca $ */
 
 /* Copyright (c) 1996, 2000, 2001 by Radford M. Neal
  *
@@ -32,8 +32,6 @@
 #ifndef MOD2DENSE_H /* { */
 #define MOD2DENSE_H
 
-#include "../../of_types.h"
-#include "../../of_mem.h"
 
 #ifdef OF_USE_LINEAR_BINARY_CODES_UTILS
 
@@ -92,8 +90,8 @@ typedef struct
 
 /* PROCEDURES. */
 
-of_mod2dense *of_mod2dense_allocate (UINT32, UINT32, of_memory_usage_stats_t*);
-void of_mod2dense_free (of_mod2dense *, of_memory_usage_stats_t*);
+of_mod2dense *of_mod2dense_allocate (UINT32, UINT32);
+void of_mod2dense_free (of_mod2dense *);
 
 void of_mod2dense_clear (of_mod2dense *);
 void of_mod2dense_copy (of_mod2dense *, of_mod2dense *);

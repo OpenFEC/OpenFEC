@@ -1,4 +1,4 @@
-/* $Id: of_ldpc_staircase_api.c 97 2013-11-07 00:15:57Z roca $ */
+/* $Id: of_ldpc_staircase_api.c 186 2014-07-16 07:17:53Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -37,13 +37,11 @@
 
 of_status_t	of_ldpc_staircase_create_codec_instance (of_ldpc_staircase_cb_t**	of_cb)
 {
-	OF_ENTER_FUNCTION
 	of_codec_type_t		codec_type;	/* temporary value */
-#ifdef OF_DEBUG
-	of_ldpc_staircase_cb_t* cb = (of_ldpc_staircase_cb_t*) of_realloc (*of_cb, sizeof (of_ldpc_staircase_cb_t), NULL);
-#else
-	of_ldpc_staircase_cb_t* cb = (of_ldpc_staircase_cb_t*) of_realloc (*of_cb, sizeof (of_ldpc_staircase_cb_t));
-#endif
+	of_ldpc_staircase_cb_t	*cb;
+
+	OF_ENTER_FUNCTION
+	cb = (of_ldpc_staircase_cb_t*) of_realloc (*of_cb, sizeof (of_ldpc_staircase_cb_t));
 	/* realloc does not initialize the additional buffer space, so do that manually,
 	 * then re-initialize a few parameters */
 	codec_type			= cb->codec_type;
@@ -64,8 +62,8 @@ of_status_t	of_ldpc_staircase_release_codec_instance (of_ldpc_staircase_cb_t*	of
 	UINT32 i;
 	if (ofcb->pchk_matrix  != NULL)
 	{
-		of_mod2sparse_free(ofcb->pchk_matrix,ofcb->stats);
-		of_free (ofcb->pchk_matrix MEM_STATS_ARG);
+		of_mod2sparse_free(ofcb->pchk_matrix);
+		of_free (ofcb->pchk_matrix);
 		ofcb->pchk_matrix  = NULL;
 	}
 	if (ofcb->encoding_symbols_tab != NULL)
@@ -76,34 +74,34 @@ of_status_t	of_ldpc_staircase_release_codec_instance (of_ldpc_staircase_cb_t*	of
 		{
 			if (ofcb->encoding_symbols_tab[i] != NULL)
 			{
-				of_free (ofcb->encoding_symbols_tab[i] MEM_STATS_ARG);
+				of_free (ofcb->encoding_symbols_tab[i]);
 				ofcb->encoding_symbols_tab[i] = NULL;
 			}
 		}
-		of_free (ofcb->encoding_symbols_tab MEM_STATS_ARG);
+		of_free (ofcb->encoding_symbols_tab);
 		ofcb->encoding_symbols_tab = NULL;
 	}
 #ifdef OF_USE_DECODER
-	if(ofcb->codec_type & OF_DECODER)
+	if (ofcb->codec_type & OF_DECODER)
 	{
 		if (ofcb->tmp_tab_symbols != NULL)
 		{
-			of_free(ofcb->tmp_tab_symbols MEM_STATS_ARG);
+			of_free(ofcb->tmp_tab_symbols);
 			ofcb->tmp_tab_symbols = NULL;
 		}
 		if (ofcb->tab_nb_enc_symbols_per_equ != NULL)
 		{
-			of_free (ofcb->tab_nb_enc_symbols_per_equ MEM_STATS_ARG);
+			of_free (ofcb->tab_nb_enc_symbols_per_equ);
 			ofcb->tab_nb_enc_symbols_per_equ = NULL;
 		}
 		if (ofcb->tab_nb_equ_for_repair != NULL)
 		{
-			of_free (ofcb->tab_nb_equ_for_repair MEM_STATS_ARG);
+			of_free (ofcb->tab_nb_equ_for_repair);
 			ofcb->tab_nb_equ_for_repair = NULL;
 		}
 		if (ofcb->tab_nb_unknown_symbols != NULL)
 		{
-			of_free (ofcb->tab_nb_unknown_symbols MEM_STATS_ARG);
+			of_free (ofcb->tab_nb_unknown_symbols);
 			ofcb->tab_nb_unknown_symbols = NULL;
 		}
 		if (ofcb->tab_const_term_of_equ != NULL)
@@ -112,13 +110,13 @@ of_status_t	of_ldpc_staircase_release_codec_instance (of_ldpc_staircase_cb_t*	of
 			{
 				if (ofcb->tab_const_term_of_equ[i] != NULL)
 				{
-					of_free (ofcb->tab_const_term_of_equ[i] MEM_STATS_ARG);
+					of_free (ofcb->tab_const_term_of_equ[i]);
 					ofcb->tab_const_term_of_equ[i] = NULL;
 				}
 			}
-			of_free(ofcb->tab_const_term_of_equ MEM_STATS_ARG);
+			of_free(ofcb->tab_const_term_of_equ);
 		}
-        of_free(ofcb->tmp_tab_symbols MEM_STATS_ARG);
+		of_free(ofcb->tmp_tab_symbols);
 		ofcb->tmp_tab_symbols=NULL;
 	}
 #endif
@@ -126,42 +124,39 @@ of_status_t	of_ldpc_staircase_release_codec_instance (of_ldpc_staircase_cb_t*	of
 #ifdef OF_LDPC_STAIRCASE_ML_DECODING
 	if (ofcb->index_rows != NULL)
 	{
-		of_free (ofcb->index_rows MEM_STATS_ARG);
+		of_free (ofcb->index_rows);
 		ofcb->index_rows = NULL;
 	}
 	if (ofcb->index_cols != NULL)
 	{
-		of_free (ofcb->index_cols MEM_STATS_ARG);
+		of_free (ofcb->index_cols);
 		ofcb->index_cols = NULL;
 	}
 	if (ofcb->pchk_matrix_simplified != NULL)
 	{
-		of_mod2sparse_free (ofcb->pchk_matrix_simplified,ofcb->stats);
-		of_free(ofcb->pchk_matrix_simplified MEM_STATS_ARG);
+		of_mod2sparse_free (ofcb->pchk_matrix_simplified);
+		of_free(ofcb->pchk_matrix_simplified);
 		ofcb->pchk_matrix_simplified = NULL;
 	}
 	if (ofcb->original_pchkMatrix != NULL)
 	{
-		of_mod2sparse_free (ofcb->original_pchkMatrix,ofcb->stats);
+		of_mod2sparse_free (ofcb->original_pchkMatrix);
 		ofcb->original_pchkMatrix = NULL;
 	}
 	if (ofcb->pchk_matrix_gauss != NULL)
 	{
-		of_mod2sparse_free (ofcb->pchk_matrix_gauss,ofcb->stats);
+		of_mod2sparse_free (ofcb->pchk_matrix_gauss);
 		ofcb->pchk_matrix_gauss = NULL;
 	}
 #endif
 #ifdef OF_DEBUG
-	of_print_memory_statistics(ofcb->stats);
-	of_print_xor_symbols_statistics(ofcb->stats_xor);
-
-	if (ofcb->stats != NULL) {
-		of_hash_table_destroy(ofcb->stats->hash);
-		of_free(ofcb->stats->hash,NULL);
-		of_free(ofcb->stats,NULL);
+	if (ofcb->stats_xor != NULL) {
+		of_print_xor_symbols_statistics(ofcb->stats_xor);
+		of_free(ofcb->stats_xor);
 	}
-	if (ofcb->stats_xor != NULL)
-		of_free(ofcb->stats_xor,NULL);
+        if (ofcb->stats_symbols != NULL) {
+                of_free(ofcb->stats_symbols);
+        }
 #endif
 	OF_EXIT_FUNCTION
 	return OF_STATUS_OK;
@@ -178,12 +173,8 @@ of_status_t	of_ldpc_staircase_set_fec_parameters (of_ldpc_staircase_cb_t*	ofcb,
 	OF_ENTER_FUNCTION
 
 #ifdef OF_DEBUG
-	ofcb->stats			= of_calloc(1, sizeof(of_memory_usage_stats_t), NULL);
-	ofcb->stats->hash		= of_calloc(1, sizeof(of_hash_table_t), NULL);
-	ofcb->stats_xor			= of_calloc(1, sizeof(of_symbol_stats_op_t),NULL);
-
-	of_hash_table_init(ofcb->stats->hash, 97, of_hash, NULL);
-	ofcb->stats_symbols		= of_calloc(1,sizeof(of_symbols_stats_t),NULL);
+	ofcb->stats_xor			= of_calloc(1, sizeof(of_symbol_stats_op_t));
+	ofcb->stats_symbols		= of_calloc(1, sizeof(of_symbols_stats_t));
 #endif
 	if (params->N1 < 3)
 	{
@@ -259,21 +250,20 @@ of_status_t	of_ldpc_staircase_set_fec_parameters (of_ldpc_staircase_cb_t*	ofcb,
 	}
 #endif
 
-	if ((ofcb->encoding_symbols_tab = (void**) of_calloc (ofcb->nb_total_symbols, sizeof (void*) MEM_STATS_ARG)) == NULL) {
+	if ((ofcb->encoding_symbols_tab = (void**) of_calloc (ofcb->nb_total_symbols, sizeof (void*))) == NULL) {
 		goto no_mem;
 	}
 #ifdef OF_USE_DECODER
 	if (ofcb->codec_type & OF_DECODER)
 	{
-		ofcb->tmp_tab_symbols = (void**)of_malloc(ofcb->nb_repair_symbols*sizeof(void*) MEM_STATS_ARG);
 		ofcb->tab_nb_unknown_symbols = (UINT16*)
-				of_calloc (ofcb->nb_repair_symbols, sizeof (UINT16) MEM_STATS_ARG);
+				of_calloc (ofcb->nb_repair_symbols, sizeof (UINT16));
 		ofcb->tab_const_term_of_equ = (void**)
-				of_calloc (ofcb->nb_repair_symbols, sizeof (void*) MEM_STATS_ARG);
+				of_calloc (ofcb->nb_repair_symbols, sizeof (void*));
 		ofcb->tab_nb_equ_for_repair = (UINT16*)
-				of_calloc (ofcb->nb_repair_symbols, sizeof (UINT16) MEM_STATS_ARG);
+				of_calloc (ofcb->nb_repair_symbols, sizeof (UINT16));
 		ofcb->tab_nb_enc_symbols_per_equ = (UINT16*)
-				of_calloc (ofcb->nb_repair_symbols, sizeof (UINT16) MEM_STATS_ARG);
+				of_calloc (ofcb->nb_repair_symbols, sizeof (UINT16));
 		if (ofcb->tab_nb_unknown_symbols == NULL || ofcb->tab_const_term_of_equ == NULL ||
 		    ofcb->tab_nb_equ_for_repair == NULL || ofcb->tab_nb_enc_symbols_per_equ == NULL) {
 			goto no_mem;
@@ -298,7 +288,7 @@ of_status_t	of_ldpc_staircase_set_fec_parameters (of_ldpc_staircase_cb_t*	ofcb,
 				ofcb->tab_nb_equ_for_repair[seq - ofcb->nb_source_symbols]++;
 			}
 		}
-		ofcb->tmp_tab_symbols = (void**)of_malloc(sizeof(void*)*ofcb->nb_total_symbols MEM_STATS_ARG);
+		ofcb->tmp_tab_symbols = (void**)of_malloc(sizeof(void*)*ofcb->nb_total_symbols);
 	}
 #endif //OF_USE_DECODER
 	ofcb->nb_source_symbol_ready = 0; // Number of source symbols ready
@@ -338,7 +328,7 @@ of_status_t	of_ldpc_staircase_set_fec_parameters (of_ldpc_staircase_cb_t*	ofcb,
 			 */
 			void	*null_symbol;		/* that's the null repair symbol */
 
-			if ((null_symbol = of_calloc(1, ofcb->encoding_symbol_length MEM_STATS_ARG)) == NULL)
+			if ((null_symbol = of_calloc(1, ofcb->encoding_symbol_length)) == NULL)
 			{
 				goto no_mem;
 			}
@@ -363,17 +353,14 @@ error:
 }
 
 
-of_status_t	of_ldpc_staircase_set_callback_functions (
-				of_ldpc_staircase_cb_t*		ofcb,
-				void* (*decoded_source_symbol_callback) (
-								void	*context,
-								UINT32	size,	/* size of decoded source symbol */
-								UINT32	esi),	/* encoding symbol ID in {0..k-1} */
-				void* (*decoded_repair_symbol_callback) (
-								void	*context,
-								UINT32	size,	/* size of decoded repair symbol */
-								UINT32	esi),	/* encoding symbol ID in {k..n-1} */
-				void*	context_4_callback)
+of_status_t	of_ldpc_staircase_set_callback_functions (of_ldpc_staircase_cb_t*		ofcb,
+							  void* (*decoded_source_symbol_callback) (void		*context,
+												   UINT32	size,	/* size of decoded source symbol */
+												   UINT32	esi),	/* encoding symbol ID in {0..k-1} */
+							  void* (*decoded_repair_symbol_callback) (void		*context,
+												   UINT32	size,	/* size of decoded repair symbol */
+												   UINT32	esi),	/* encoding symbol ID in {k..n-1} */
+							  void*	context_4_callback)
 {
 	OF_ENTER_FUNCTION
 	ofcb->decoded_source_symbol_callback	= 	decoded_source_symbol_callback;
@@ -383,11 +370,12 @@ of_status_t	of_ldpc_staircase_set_callback_functions (
 	return OF_STATUS_OK;
 }
 
+
 #ifdef OF_USE_ENCODER
 
-of_status_t	of_ldpc_staircase_build_repair_symbol (of_ldpc_staircase_cb_t*		ofcb,
-							void*				encoding_symbols_tab[],
-							UINT32				esi_of_symbol_to_build)
+of_status_t	of_ldpc_staircase_build_repair_symbol (of_ldpc_staircase_cb_t*	ofcb,
+							void*			encoding_symbols_tab[],
+							UINT32			esi_of_symbol_to_build)
 {
 	of_mod2entry	*e;
 	UINT32		col_to_build;
@@ -436,6 +424,7 @@ error:
 
 #endif //OF_USE_ENCODER
 
+
 #ifdef OF_USE_DECODER
 
 of_status_t	of_ldpc_staircase_decode_with_new_symbol (of_ldpc_staircase_cb_t*	ofcb,
@@ -450,19 +439,24 @@ of_status_t	of_ldpc_staircase_decode_with_new_symbol (of_ldpc_staircase_cb_t*	of
 of_status_t	of_ldpc_staircase_set_available_symbols (of_ldpc_staircase_cb_t*	ofcb,
 							 void* const			encoding_symbols_tab[])
 {
-	OF_ENTER_FUNCTION
 	UINT32 i;
+
+	OF_ENTER_FUNCTION
 	for (i = 0; i < ofcb->nb_total_symbols; i++)
 	{
-		if (encoding_symbols_tab[i] != NULL)
+		if (encoding_symbols_tab[i] == NULL)
 		{
-			ofcb->encoding_symbols_tab[i] = of_calloc (1, ofcb->encoding_symbol_length MEM_STATS_ARG);
-			memcpy (ofcb->encoding_symbols_tab[i], encoding_symbols_tab[i], ofcb->encoding_symbol_length);
+			continue;	
 		}
+		/* use the decode_with_new_symbol function */
+		of_linear_binary_code_decode_with_new_symbol((of_linear_binary_code_cb_t*)ofcb, encoding_symbols_tab[i], i);
+		/* NB: this approach is a little bit sub-optimal with LDPC codes, as symbols are submit for IT decoding in sequence.
+		 *     We should consider randomizing this order. */
 	}
 	OF_EXIT_FUNCTION
 	return OF_STATUS_OK;
 }
+
 
 of_status_t	of_ldpc_staircase_finish_decoding (of_ldpc_staircase_cb_t*	ofcb)
 {
@@ -475,7 +469,7 @@ of_status_t	of_ldpc_staircase_finish_decoding (of_ldpc_staircase_cb_t*	ofcb)
 }
 	
 
-bool	of_ldpc_staircase_is_decoding_complete (of_ldpc_staircase_cb_t*	ofcb)
+bool	of_ldpc_staircase_is_decoding_complete (of_ldpc_staircase_cb_t*		ofcb)
 {
 	for (; ofcb->first_non_decoded < ofcb->nb_source_symbols; ofcb->first_non_decoded++)
 	{
@@ -494,9 +488,10 @@ bool	of_ldpc_staircase_is_decoding_complete (of_ldpc_staircase_cb_t*	ofcb)
 
 
 of_status_t	of_ldpc_staircase_get_source_symbols_tab (of_ldpc_staircase_cb_t*	ofcb,
-						void*			source_symbols_tab[])
+							  void*				source_symbols_tab[])
 {
 	OF_ENTER_FUNCTION
+	/* copy the internal table containing the pointers to all source symbols into the table provided by the caller */
 	memcpy (source_symbols_tab, ofcb->encoding_symbols_tab, sizeof (void *) * ofcb->nb_source_symbols);
 	OF_EXIT_FUNCTION
 	return OF_STATUS_OK;
@@ -506,19 +501,19 @@ of_status_t	of_ldpc_staircase_get_source_symbols_tab (of_ldpc_staircase_cb_t*	of
 #endif //OF_USE_DECODER
 
 of_status_t	of_ldpc_staircase_set_control_parameter  (of_ldpc_staircase_cb_t*	ofcb,
-						UINT32			type,
-						void*			value,
-						UINT32			length)
+							  UINT32			type,
+							  void*				value,
+							  UINT32			length)
 {
 	OF_PRINT_ERROR(("of_ldpc_staircase_set_control_parameter: ERROR, not implemented...\n"))
 	return OF_STATUS_ERROR;
 }
 
 
-of_status_t	of_ldpc_staircase_get_control_parameter  (of_ldpc_staircase_cb_t*	ofcb,
-						UINT32			type,
-						void*			value,
-						UINT32			length)
+of_status_t	of_ldpc_staircase_get_control_parameter (of_ldpc_staircase_cb_t*	ofcb,
+							 UINT32				type,
+							 void*				value,
+							 UINT32				length)
 {
 	OF_ENTER_FUNCTION
 	switch (type) {

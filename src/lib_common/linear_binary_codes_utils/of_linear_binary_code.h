@@ -1,7 +1,7 @@
-/* $Id: of_linear_binary_code.h 72 2012-04-13 13:27:26Z detchart $ */
+/* $Id: of_linear_binary_code.h 189 2014-07-16 08:53:50Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
- * (c) Copyright 2009 - 2012 INRIA - All rights reserved
+ * (c) Copyright 2009 - 2011 INRIA - All rights reserved
  * Contact: vincent.roca@inria.fr
  *
  * This software is governed by the CeCILL-C license under French law and
@@ -34,11 +34,39 @@
 #ifndef LINEAR_BINARY_CODE_H
 #define LINEAR_BINARY_CODE_H
 
-#include "of_symbol.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <string.h>
+//#ifdef USE_NEON
+//#include <arm_neon.h>
+//#endif
+
+#include "../of_openfec_api.h"		// includes of_type.h, of_debug.h
+
+#ifdef IL_SUPPORT
+#include <IL/il.h>
+#endif
+
+#ifdef ASSEMBLY_SSE_OPT
+#include <xmmintrin.h>
+#endif
+
 #include "../of_rand.h"
+#include "../of_cb.h"
+#include "../of_mem.h"
+#include "of_symbol.h"
 #include "../statistics/of_statistics.h"
-#include "binary_matrix/of_binary_matrix.h"
+
+#include "binary_matrix/of_matrix_sparse.h"
+#include "binary_matrix/of_matrix_dense.h"
 #include "of_create_pchk.h"
+
+#include "binary_matrix/of_matrix_convert.h"
+#include "binary_matrix/of_hamming_weight.h"
+#include "binary_matrix/of_tools.h"
+
+
 /**
  * Linear-Binary-Code stable codec specific control block structure.
  */
@@ -58,13 +86,12 @@ typedef struct of_linear_binary_code_cb
 	/* parity check matrix */
 	of_mod2sparse*	pchk_matrix;
 
-	/** Memory usage statistics, for this codec instance. */
-	of_memory_usage_stats_t		*stats;
-	of_symbol_stats_op_t		*stats_xor;
-	#ifdef OF_DEBUG
-	  of_symbols_stats_t* stats_symbols;
-	#endif
-	
+	/** statistics for this codec instance. */
+	of_symbol_stats_op_t	*stats_xor;
+#ifdef OF_DEBUG
+	of_symbols_stats_t	*stats_symbols;
+#endif
+
 	UINT32		nb_source_symbol_ready; // Number of source symbols ready
 	UINT32		nb_repair_symbol_ready; // Number of parity symbols ready
 
@@ -74,14 +101,13 @@ typedef struct of_linear_binary_code_cb
 	UINT32		remain_cols;	// Nb of non empty remaining cols in the future simplified matrix
 	UINT32		remain_rows;	// Nb of non empty remaining rows in the future simplified matrix
 
-
 	of_mod2sparse	*pchk_matrix_simplified; // Simplified Parity Check Matrix in sparse mode format
 	of_mod2sparse	*original_pchkMatrix;
-	of_mod2sparse*	pchk_matrix_gauss;	// Parity Check matrix in sparse mode format.
+	of_mod2sparse	*pchk_matrix_gauss;	// Parity Check matrix in sparse mode format.
 	
-	UINT32		dec_step;	// Current step in the Gauss decoding algorithm
-	UINT32		threshold_simplification; // threshold (number of symbols) above which we
-											// run the Gaussian Elimination algorithm
+	UINT32		dec_step;		// Current step in the Gauss decoding algorithm
+	UINT32		threshold_simplification;// threshold (number of symbols) above which we
+						// run the Gaussian Elimination algorithm
 #endif
 
 #ifdef OF_USE_DECODER /* { */
@@ -95,25 +121,28 @@ typedef struct of_linear_binary_code_cb
 	/** table containing the number of equations in which a repair symbol is included. */
 	UINT16*		tab_nb_equ_for_repair;
 	
-	void** repair_symbols_values;
-	void** tmp_tab_symbols;
-	UINT16 nb_tmp_symbols;
+	void		** repair_symbols_values;
+	void		** tmp_tab_symbols;
+	UINT16		nb_tmp_symbols;
 #endif /* } OF_USE_DECODER */
 
 	void 		**encoding_symbols_tab;
 
 	/** callbacks registered by the application. */
 	void*	(*decoded_source_symbol_callback) (void	*context,
-						UINT32	size,	/* size of decoded source symbol */
-						UINT32	esi);	/* encoding symbol ID in {0..k-1} */
+						   UINT32	size,	/* size of decoded source symbol */
+						   UINT32	esi);	/* encoding symbol ID in {0..k-1} */
 	void*	(*decoded_repair_symbol_callback) (void	*context,
-						UINT32	size,	/* size of decoded repair symbol */
-						UINT32	esi);	/* encoding symbol ID in {0..k-1} */
+						   UINT32	size,	/* size of decoded repair symbol */
+						   UINT32	esi);	/* encoding symbol ID in {0..k-1} */
 	void*	context_4_callback;
 } of_linear_binary_code_cb_t;
 
 
-#include "ml_decoding/of_ml_decoding.h"
 #include "it_decoding/of_it_decoding.h"
+#include "ml_decoding/of_ml_decoding.h"
+#include "ml_decoding/of_ml_tool.h"
+#include "ml_decoding/of_ml_tool_2.h"
+
 
 #endif

@@ -1,4 +1,4 @@
-/* $Id: of_tools.c 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: of_tools.c 182 2014-07-15 09:27:51Z roca $ */
 /*
  * The contents of this directory and its sub-directories are
  * Copyright (c) 1995-2003 by Radford M. Neal
@@ -37,10 +37,8 @@
    Direct access to these structures should be avoided except in low-level
    routines.  Use the macros and procedures defined below instead. */
 
+#include "../of_linear_binary_code.h"
 
-#include "of_tools.h"
-#include "../../of_debug.h"
-#include "../../of_openfec_api.h"
 
 #ifdef OF_USE_LINEAR_BINARY_CODES_UTILS
 
@@ -49,13 +47,12 @@
    found. */
 
 void *of_chk_alloc     (UINT32	n,		/* Number of elements */
-			UINT32	size,		/* Size of each element */
-			of_memory_usage_stats_t* stats)
+			UINT32	size)		/* Size of each element */
 {
-	OF_ENTER_FUNCTION
 	void *p;
 
-	p = of_calloc (n, size MEM_STATS);
+	OF_ENTER_FUNCTION
+	p = of_calloc (n, size);
 	if (p == NULL)
 	{
 		fprintf (stderr, "Ran out of memory (while trying to allocate %d bytes)\n", n*size);
@@ -83,11 +80,11 @@ void *of_chk_alloc     (UINT32	n,		/* Number of elements */
 
 INT32 of_intio_read (FILE *f)		/* File to read from */
 {
-	OF_ENTER_FUNCTION
 	UINT8 b[4];
 	INT32 top;
 	INT32 i;
 
+	OF_ENTER_FUNCTION
 	for (i = 0; i < 4; i++)
 	{
 		if (fread (&b[i], 1, 1, f) != 1)
@@ -96,9 +93,7 @@ INT32 of_intio_read (FILE *f)		/* File to read from */
 			return 0;
 		}
 	}
-
 	top = b[3] > 127 ? (INT32) b[3] - 256 : b[3];
-
 	OF_EXIT_FUNCTION
 	return (top << 24) + (b[2] << 16) + (b[1] << 8) + b[0];
 }
@@ -115,35 +110,34 @@ INT32 of_intio_read (FILE *f)		/* File to read from */
 void of_intio_write	(FILE	*f,	/* File to write to */
 			 INT32	v)	/* Value to write to file */
 {
-	OF_ENTER_FUNCTION
 	UINT8 b;
 	INT32 i;
 
+	OF_ENTER_FUNCTION
 	for (i = 0; i < 3; i++)
 	{
 		b = v & 0xff;
 		fwrite (&b, 1, 1, f);
 		v >>= 8;
 	}
-
 	b = v > 0 ? v : v + 256;
 	fwrite (&b, 1, 1, f);
 	OF_EXIT_FUNCTION
 }
 #endif
 
+
 void of_print_composition (char* symbol, UINT32 size)
 {
+	UINT32 i;
 
 	OF_ENTER_FUNCTION
-	UINT32 i;
 	for (i = 0;i < size;i++)
 	{
 		if (symbol[i] != 0)
 		{
 			printf ("%d ", i);
 		}
-
 	}
 	printf ("\n");
 	OF_EXIT_FUNCTION

@@ -1,4 +1,4 @@
-/* $Id: of_hamming_weight.h 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: of_hamming_weight.h 186 2014-07-16 07:17:53Z roca $ */
 /*
  * Source: Wikipedia http://en.wikipedia.org/wiki/Hamming_weight
  *
@@ -35,8 +35,6 @@
 #ifndef HAMMING_WEIGHT_H
 #define HAMMING_WEIGHT_H
 
-#include "../../of_types.h"
-#include "../of_linear_binary_code.h"
 
 #ifdef OF_USE_LINEAR_BINARY_CODES_UTILS
 

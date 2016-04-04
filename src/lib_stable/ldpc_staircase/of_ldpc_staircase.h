@@ -1,4 +1,4 @@
-/* $Id: of_ldpc_staircase.h 72 2012-04-13 13:27:26Z detchart $ */
+/* $Id: of_ldpc_staircase.h 184 2014-07-15 09:42:57Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -53,14 +53,13 @@ typedef struct of_ldpc_staircase_cb
 	UINT32		nb_total_symbols;	/** n parameter (AKA code length). */
 
 	/* parity check matrix */
-	of_mod2sparse*	pchk_matrix;
+	of_mod2sparse	*pchk_matrix;
 
-	/** Memory usage statistics, for this codec instance. */
-	of_memory_usage_stats_t		*stats;
-	of_symbol_stats_op_t		*stats_xor;
-	#ifdef OF_DEBUG
-	  of_symbols_stats_t* stats_symbols;
-	#endif
+	/** usage statistics for this codec instance. */
+	of_symbol_stats_op_t	*stats_xor;
+#ifdef OF_DEBUG
+	of_symbols_stats_t	*stats_symbols;
+#endif
 	UINT32		nb_source_symbol_ready; // Number of source symbols ready
 	UINT32		nb_repair_symbol_ready; // Number of parity symbols ready
 
@@ -72,7 +71,7 @@ typedef struct of_ldpc_staircase_cb
 
 	of_mod2sparse	*pchk_matrix_simplified; // Simplified Parity Check Matrix in sparse mode format
 	of_mod2sparse	*original_pchkMatrix;
-	of_mod2sparse*	pchk_matrix_gauss;	// Parity Check matrix in sparse mode format.
+	of_mod2sparse	*pchk_matrix_gauss;	// Parity Check matrix in sparse mode format.
 	UINT32		dec_step;	// Current step in the Gauss decoding algorithm
 	UINT32		threshold_simplification; // threshold (number of symbols) above which we
 					// run the Gaussian Elimination algorithm
@@ -89,9 +88,9 @@ typedef struct of_ldpc_staircase_cb
 	/** table containing the number of equations in which a repair symbol is included. */
 	UINT16*		tab_nb_equ_for_repair;
 	
-	void** repair_symbols_values;
-    void** tmp_tab_symbols;
-	UINT16 nb_tmp_symbols;
+	void**		repair_symbols_values;
+	void**		tmp_tab_symbols;
+	UINT16		nb_tmp_symbols;
 #endif /* } OF_USE_DECODER */
 
 	void 		**encoding_symbols_tab;

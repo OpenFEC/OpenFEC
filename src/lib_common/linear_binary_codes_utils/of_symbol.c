@@ -1,4 +1,4 @@
-/* $Id: of_symbol.c 151 2014-07-08 13:51:01Z roca $ */
+/* $Id: of_symbol.c 186 2014-07-16 07:17:53Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -31,11 +31,8 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-#include "of_symbol.h"
-#include <stdio.h>
-#ifdef ASSEMBLY_SSE_OPT
-#include <xmmintrin.h>
-#endif
+#include "of_linear_binary_code.h"
+
 
 #ifdef OF_USE_LINEAR_BINARY_CODES_UTILS
 

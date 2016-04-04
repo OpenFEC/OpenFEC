@@ -1,4 +1,4 @@
-/* $Id: of_mem.h 72 2012-04-13 13:27:26Z detchart $ */
+/* $Id: of_mem.h 186 2014-07-16 07:17:53Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -39,65 +39,6 @@
 #ifndef OF_MEM_H
 #define OF_MEM_H
 
-#include "statistics/of_statistics.h"
-
-#ifdef OF_DEBUG /* { */
-
-
-
-/**
- * @fn			UINT32		of_hash(const void *key)
- * @brief		get the hash of data parameter
- * @param data		(IN) Pointer to  data.
- * @return		hash value.
- */
-UINT32		of_hash(const void *data);
-
-/**
- * @fn			inline void*	of_malloc (size_t size, of_memory_usage_stats_t*)
- * @brief		do a malloc
- * @param size		(IN) size of wanted allocated area.
- * @param stats		(IN/OUT) Pointer to memory statistics
- * @return		allocated pointer or NULL if error.
- */
-inline void*	of_malloc (size_t size, of_memory_usage_stats_t* stats);
-
-/**
- * @fn			inline void*	of_calloc (size_t nmemb,size_t size, of_memory_usage_stats_t*)
- * @brief		do a calloc
- * @param nmemb		(IN) number of elements
- * @param size		(IN) size of wanted allocated area.
- * @param stats		(IN/OUT) Pointer to memory statistics
- * @return		allocated pointer or NULL if error.
- */
-inline void*	of_calloc (size_t nmemb, size_t size, of_memory_usage_stats_t* stats);
-
-/**
- * @fn			inline void*	of_realloc (void* prt, size_t size, of_memory_usage_stats_t* stats)
- * @brief		realloc memory adress
- * @param prt		(IN) pointer to realloc
- * @param size		(IN) size of wanted allocated area.
- * @param stats		(IN/OUT) Pointer to memory statistics
- * @return		allocated pointer or NULL if error.
- */
-inline void*	of_realloc (void* prt, size_t size, of_memory_usage_stats_t* stats);
-
-/**
- * @fn			inline void 	of_free (void* ptr, of_memory_usage_stats_t* stats)
- * @brief		free amemory adress
- * @param prt		(IN) pointer to free
- * @param stats		(IN/OUT) Pointer to memory statistics
- * @return		void
- */
-inline void 	of_free (void* ptr, of_memory_usage_stats_t* stats);
-
-#else  /* } OF_DEBUG { */
-
-/**
- * \struct of_memory_usage_stats_t
- * \brief Fake memory usage statistics, for a given codec instance.
- */
-
 
 /**
  * @fn			inline void*	of_malloc (size_t size)
@@ -105,7 +46,7 @@ inline void 	of_free (void* ptr, of_memory_usage_stats_t* stats);
  * @param size		(IN) size of wanted allocated area.
  * @return		allocated pointer or NULL if error.
  */
-inline void*	of_malloc (size_t size);
+void*	of_malloc (size_t size);
 
 /**
  * @fn			inline void*	of_calloc (size_t nmemb,size_t size)
@@ -114,7 +55,7 @@ inline void*	of_malloc (size_t size);
  * @param size		(IN) size of wanted allocated area.
  * @return		allocated pointer or NULL if error.
  */
-inline void*	of_calloc (size_t nmemb, size_t size);
+void*	of_calloc (size_t nmemb, size_t size);
 
 /**
  * @fn			inline void*	of_realloc (void* ptr, size_t size)
@@ -123,7 +64,7 @@ inline void*	of_calloc (size_t nmemb, size_t size);
  * @param size		(IN) size of wanted allocated area.
  * @return		allocated pointer or NULL if error.
  */
-inline void*	of_realloc (void* ptr, size_t size);
+void*	of_realloc (void* ptr, size_t size);
 
 /**
  * @fn			inline void 	of_free (void* ptr)
@@ -131,9 +72,7 @@ inline void*	of_realloc (void* ptr, size_t size);
  * @param ptr		(IN) pointer to free
  * @return		void
  */
-inline void	of_free (void* ptr);
-
-#endif /* } OF_DEBUG */
+void	of_free (void* ptr);
 
 
 #endif  //OF_MEM_H

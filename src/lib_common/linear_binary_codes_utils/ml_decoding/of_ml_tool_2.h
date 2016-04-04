@@ -1,4 +1,4 @@
-/* $Id: of_ml_tool_2.h 72 2012-04-13 13:27:26Z detchart $ */
+/* $Id: of_ml_tool_2.h 186 2014-07-16 07:17:53Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -34,15 +34,10 @@
 #ifndef _OF_ML_TOOL_2_H
 #define _OF_ML_TOOL_2_H
 
-#include "../../of_openfec_profile.h"
-
 #ifdef OF_USE_DECODER
 #ifdef OF_USE_LINEAR_BINARY_CODES_UTILS
 #ifdef ML_DECODING
 
-#include "../../of_types.h"
-#include "../../of_openfec_api.h" 	
-#include "of_ml_decoding.h"
 
 /**
  * This function create a copy of the linear system (H). If the ML decoding fails, H can be rolled back.

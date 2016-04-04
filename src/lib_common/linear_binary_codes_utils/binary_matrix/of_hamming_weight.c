@@ -1,4 +1,4 @@
-/* $Id: of_hamming_weight.c 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: of_hamming_weight.c 186 2014-07-16 07:17:53Z roca $ */
 /*
  * Source: Wikipedia http://en.wikipedia.org/wiki/Hamming_weight
  *
@@ -31,7 +31,8 @@
  * The best way to do this is with a link to this web page: http://creativecommons.org/licenses/by-sa/3.0/
  */
 
-#include "of_hamming_weight.h"
+#include "../of_linear_binary_code.h"
+
 
 #ifdef OF_USE_LINEAR_BINARY_CODES_UTILS
 

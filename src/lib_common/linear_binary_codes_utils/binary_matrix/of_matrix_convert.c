@@ -1,4 +1,4 @@
-/* $Id: of_matrix_convert.c 72 2012-04-13 13:27:26Z detchart $ */
+/* $Id: of_matrix_convert.c 186 2014-07-16 07:17:53Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -31,8 +31,8 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-#include "of_matrix_convert.h"
-#include "../../of_types.h"
+#include "../of_linear_binary_code.h"
+
 
 #ifdef OF_USE_LINEAR_BINARY_CODES_UTILS
 
@@ -70,8 +70,7 @@ void	of_mod2sparse_to_dense (of_mod2sparse *m, 	/* Sparse matrix to convert */
 /* CONVERT A MOD2 MATRIX FROM DENSE TO SPARSE FORM.  */
 
 void	of_mod2dense_to_sparse (of_mod2dense *m, 	/* Dense matrix to convert */
-				of_mod2sparse *r,	/* Place to store result */
-				of_memory_usage_stats_t *stats)
+				of_mod2sparse *r)	/* Place to store result */
 {
 	UINT32 i, j;
 
@@ -89,7 +88,7 @@ void	of_mod2dense_to_sparse (of_mod2dense *m, 	/* Dense matrix to convert */
 		{
 			if (of_mod2dense_get (m, i, j))
 			{
-				of_mod2sparse_insert (r, i, j,stats);
+				of_mod2sparse_insert (r, i, j);
 			}
 		}
 	}

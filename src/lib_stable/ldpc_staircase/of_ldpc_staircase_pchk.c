@@ -1,4 +1,4 @@
-/* $Id: of_ldpc_staircase_pchk.c 104 2014-04-08 07:26:27Z roca $ */
+/* $Id: of_ldpc_staircase_pchk.c 184 2014-07-15 09:42:57Z roca $ */
 /*
  * The contents of this directory and its sub-directories are
  * Copyright (c) 1995-2003 by Radford M. Neal
@@ -77,10 +77,10 @@ of_mod2sparse* of_create_pchck_matrix_rfc5170_compliant (UINT32		nb_rows,
 		return NULL;
 	}
 	of_rfc5170_srand (seed);
-	pchkMatrix = of_mod2sparse_allocate (nb_rows, nb_cols, ofcb->stats);
+	pchkMatrix = of_mod2sparse_allocate (nb_rows, nb_cols);
 	/* create the initial version of the parity check matrix. */
 	/* evenboth make method only */
-	u = (UINT32*) of_calloc (left_degree * nbDataCols, sizeof * u MEM_STATS_ARG);
+	u = (UINT32*) of_calloc (left_degree * nbDataCols, sizeof * u);
 	/* initialize a list of possible choices to guarantee a homogeneous "1" distribution */
 	for (k = left_degree * nbDataCols - 1; k >= 0; k--)
 	{
@@ -106,7 +106,7 @@ of_mod2sparse* of_create_pchck_matrix_rfc5170_compliant (UINT32		nb_rows,
 					i = t + of_rfc5170_rand (left_degree * nbDataCols - t);
 				}
 				while (of_mod2sparse_find (pchkMatrix, u[i], j));
-				of_mod2sparse_insert (pchkMatrix, u[i], j, ofcb->stats);
+				of_mod2sparse_insert (pchkMatrix, u[i], j);
 				/* replace with u[t] which has never been chosen */
 				u[i] = u[t];
 				t++;
@@ -123,7 +123,7 @@ of_mod2sparse* of_create_pchck_matrix_rfc5170_compliant (UINT32		nb_rows,
 					i = of_rfc5170_rand (nb_rows);
 				}
 				while (of_mod2sparse_find (pchkMatrix, i, j));
-				of_mod2sparse_insert (pchkMatrix, i, j, ofcb->stats);
+				of_mod2sparse_insert (pchkMatrix, i, j);
 			}
 		}
 	}
@@ -131,7 +131,7 @@ of_mod2sparse* of_create_pchck_matrix_rfc5170_compliant (UINT32		nb_rows,
 	{
 		OF_PRINT_LVL(1, ("%s: Had to place %d checks in rows unevenly\n", __FUNCTION__, uneven))
 	}
-	of_free (u MEM_STATS_ARG);	/* VR: added */
+	of_free (u);	/* VR: added */
 	/* Add extra bits to avoid rows with less than two checks. */
 	added = 0;
 	for (i = 0; i < nb_rows; i++)
@@ -140,7 +140,7 @@ of_mod2sparse* of_create_pchck_matrix_rfc5170_compliant (UINT32		nb_rows,
 		if (of_mod2sparse_at_end (e))
 		{
 			j = (of_rfc5170_rand (nbDataCols)) + skipCols;
-			e = of_mod2sparse_insert (pchkMatrix, i, j, ofcb->stats);
+			e = of_mod2sparse_insert (pchkMatrix, i, j);
 			added ++;
 		}
 		e = of_mod2sparse_first_in_row (pchkMatrix, i);
@@ -151,7 +151,7 @@ of_mod2sparse* of_create_pchck_matrix_rfc5170_compliant (UINT32		nb_rows,
 				j = (of_rfc5170_rand (nbDataCols)) + skipCols;
 			}
 			while (j == of_mod2sparse_col (e));
-			of_mod2sparse_insert (pchkMatrix, i, j, ofcb->stats);
+			of_mod2sparse_insert (pchkMatrix, i, j);
 			added ++;
 		}
 	}
@@ -165,14 +165,14 @@ of_mod2sparse* of_create_pchck_matrix_rfc5170_compliant (UINT32		nb_rows,
 		ofcb->extra_entries_added_in_pchk = 0;	/* nothing added, there are exactly N1 entries per column. */
 	}
 	/* finally, create the staircase */
-	of_mod2sparse_insert (pchkMatrix, 0, 0, ofcb->stats);	/* 1st row */
+	of_mod2sparse_insert (pchkMatrix, 0, 0);	/* 1st row */
 	for (i = 1; i < nb_rows; i++)
 	{
 		/* for all other rows */
 		/* identity */
-		of_mod2sparse_insert (pchkMatrix, i, i, ofcb->stats);
+		of_mod2sparse_insert (pchkMatrix, i, i);
 		/* staircase */
-		of_mod2sparse_insert (pchkMatrix, i, i - 1, ofcb->stats);
+		of_mod2sparse_insert (pchkMatrix, i, i - 1);
 	}
 	OF_EXIT_FUNCTION
 	return pchkMatrix;

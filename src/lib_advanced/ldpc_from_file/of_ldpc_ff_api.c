@@ -1,4 +1,4 @@
-/* $Id: of_ldpc_ff_api.c 96 2013-10-04 19:51:25Z roca $ */
+/* $Id: of_ldpc_ff_api.c 182 2014-07-15 09:27:51Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -40,11 +40,7 @@ of_status_t of_ldpc_ff_create_codec_instance(of_ldpc_ff_cb_t**	of_cb)
 {
 	OF_ENTER_FUNCTION
 	of_codec_type_t		codec_type;	/* temporary value */
-#ifdef OF_DEBUG
-	of_ldpc_ff_cb_t* ff_cb = (of_ldpc_ff_cb_t*) of_realloc (*of_cb, sizeof (of_ldpc_ff_cb_t),NULL);
-#else
-	of_ldpc_ff_cb_t* ff_cb = (of_ldpc_ff_cb_t*) of_realloc (*of_cb, sizeof (of_ldpc_ff_cb_t));
-#endif
+	of_ldpc_ff_cb_t* ff_cb = (of_ldpc_ff_cb_t*) of_realloc(*of_cb, sizeof(of_ldpc_ff_cb_t));
 	of_ldpc_staircase_cb_t* cb = 	(of_ldpc_staircase_cb_t*) ff_cb;
 
 	*of_cb=ff_cb;
@@ -69,61 +65,57 @@ of_status_t	of_ldpc_ff_set_fec_parameters (of_ldpc_ff_cb_t*	cb,
 	of_mod2entry	*e;
 	UINT32		row;
 	UINT32		seq;
-	UINT32 matrix_nb_par, matrix_nb_src;
-	UINT32 *p_matrix_nb_par,*p_matrix_nb_src;
-	p_matrix_nb_src=&matrix_nb_src;
-	p_matrix_nb_par=&matrix_nb_par;
+	UINT32		matrix_nb_par;
+	UINT32		matrix_nb_src;
+	UINT32		*p_matrix_nb_par;
+	UINT32		*p_matrix_nb_src;
+	char		* m_matrix_file;
+	FILE		*pFile;
 
 	OF_ENTER_FUNCTION
-
+	p_matrix_nb_src = &matrix_nb_src;
+	p_matrix_nb_par = &matrix_nb_par;
 #ifdef OF_DEBUG
-	cb->cb1.stats_xor = of_calloc(1, sizeof(of_symbol_stats_op_t),NULL);
+	cb->cb1.stats_xor = of_calloc(1, sizeof(of_symbol_stats_op_t));
 #endif
 	/* open the matrix file */
-	char * m_matrix_file=	params->pchk_file;
+	m_matrix_file=	params->pchk_file;
 	of_ldpc_staircase_cb_t* ofcb = 	(of_ldpc_staircase_cb_t*) cb;
-
-
-	FILE * pFile;
 	pFile = fopen (m_matrix_file,"r");
-	if(pFile == NULL){
-	  OF_PRINT_ERROR(("of_ldpc_ff_set_fec_parameters : ERROR, cannot open matrix file %s",m_matrix_file))
-	    goto error;
+	if (pFile == NULL)
+	{
+		OF_PRINT_ERROR(("of_ldpc_ff_set_fec_parameters : ERROR, cannot open matrix file %s",m_matrix_file))
+		goto error;
 	}
-	ofcb->pchk_matrix =
-		of_mod2sparse_read_human_readable(pFile,
-					       p_matrix_nb_src,
-					       p_matrix_nb_par,NULL);
-
+	ofcb->pchk_matrix = of_mod2sparse_read_human_readable(pFile, p_matrix_nb_src, p_matrix_nb_par);
 	fclose(pFile);
+
 	if (ofcb->pchk_matrix == NULL)
 	{
 		OF_PRINT_ERROR(("of_ldpc_ff_set_fec_parameters : ERROR, parity check matrix can't be created with this parameters.."))
 		goto error;
 	}
 
-	cb->H2_is_identity_with_lower_triangle=true;
+	cb->H2_is_identity_with_lower_triangle = true;
 
-	of_mod2sparse_matrix_stats(stdout,ofcb->pchk_matrix,*p_matrix_nb_src,*p_matrix_nb_par );
-
+	of_mod2sparse_matrix_stats(stdout, ofcb->pchk_matrix, *p_matrix_nb_src, *p_matrix_nb_par);
 
 	/* set ofcb attribute specific to from file code*/
-
 	if ((ofcb->nb_source_symbols = matrix_nb_src ) > ofcb->max_nb_source_symbols) {
 		OF_PRINT_ERROR(("of_ldpc_staircase_set_fec_parameters: ERROR, invalid nb_source_symbols parameter (got %d, maximum is %d)",
 				ofcb->nb_source_symbols, ofcb->max_nb_source_symbols));
 		goto error;
 	}
-	ofcb->nb_repair_symbols =matrix_nb_par ;
-	ofcb->nb_total_symbols = matrix_nb_src + matrix_nb_par ;
+	ofcb->nb_repair_symbols =matrix_nb_par;
+	ofcb->nb_total_symbols = matrix_nb_src + matrix_nb_par;
 	if (ofcb->nb_total_symbols > ofcb->max_nb_encoding_symbols) {
 		OF_PRINT_ERROR(("of_ldpc_staircase_set_fec_parameters: ERROR, invalid number of encoding symbols (got %d, maximum is %d)",
 				ofcb->nb_total_symbols, ofcb->max_nb_encoding_symbols));
 		goto error;
 	}
 
-	params->nb_source_symbols=ofcb->nb_source_symbols;
-	params->nb_repair_symbols=ofcb->nb_repair_symbols;
+	params->nb_source_symbols = ofcb->nb_source_symbols;
+	params->nb_repair_symbols = ofcb->nb_repair_symbols;
 
 	/*set ofcb attribute non-specific to from file code */
 	ofcb->encoding_symbol_length = params->encoding_symbol_length;
@@ -131,21 +123,20 @@ of_status_t	of_ldpc_ff_set_fec_parameters (of_ldpc_ff_cb_t*	cb,
 	OF_TRACE_LVL (1, ("%s: k=%u, n-k=%u, n=%u, symbol_length=%u, PRNG seed=%u, N1=%u\n", __FUNCTION__,
 			ofcb->nb_source_symbols, ofcb->nb_repair_symbols, ofcb->nb_total_symbols,
 			ofcb->encoding_symbol_length, ofcb->prng_seed, ofcb->N1))
-
 #ifdef ML_DECODING
 	ofcb->pchk_matrix_simplified = NULL;
 #endif
-	if ((ofcb->encoding_symbols_tab = (void**) of_calloc (ofcb->nb_total_symbols, sizeof (void*) MEM_STATS_ARG)) == NULL) {
+	if ((ofcb->encoding_symbols_tab = (void**) of_calloc(ofcb->nb_total_symbols, sizeof(void*))) == NULL) {
 		goto no_mem;
 	}
 
 #ifdef OF_USE_DECODER
 	if (ofcb->codec_type & OF_DECODER)
 	{
-		ofcb->tab_nb_unknown_symbols = (UINT16*) of_calloc (ofcb->nb_repair_symbols, sizeof (UINT16) MEM_STATS_ARG);
-		ofcb->tab_const_term_of_equ = (void**) of_calloc (ofcb->nb_repair_symbols, sizeof (void*) MEM_STATS_ARG);
-		ofcb->tab_nb_equ_for_repair = (UINT16*) of_calloc (ofcb->nb_repair_symbols, sizeof (UINT16) MEM_STATS_ARG);
-		ofcb->tab_nb_enc_symbols_per_equ = (UINT16*) of_calloc (ofcb->nb_repair_symbols, sizeof (UINT16) MEM_STATS_ARG);
+		ofcb->tab_nb_unknown_symbols = (UINT16*) of_calloc(ofcb->nb_repair_symbols, sizeof(UINT16));
+		ofcb->tab_const_term_of_equ = (void**) of_calloc(ofcb->nb_repair_symbols, sizeof(void*));
+		ofcb->tab_nb_equ_for_repair = (UINT16*) of_calloc(ofcb->nb_repair_symbols, sizeof(UINT16));
+		ofcb->tab_nb_enc_symbols_per_equ = (UINT16*) of_calloc(ofcb->nb_repair_symbols, sizeof(UINT16));
 		if (ofcb->tab_nb_unknown_symbols == NULL || ofcb->tab_const_term_of_equ == NULL ||
 			ofcb->tab_nb_equ_for_repair == NULL || ofcb->tab_nb_enc_symbols_per_equ == NULL) {
 			goto no_mem;
@@ -205,8 +196,7 @@ of_status_t	of_ldpc_ff_build_repair_symbol (of_ldpc_ff_cb_t*	ofcb,
 	if (ofcb->H2_is_identity_with_lower_triangle)
 	{
 		/* encoding is exactly the same as that of ldpc staircase codes */
-		return of_ldpc_staircase_build_repair_symbol((of_ldpc_staircase_cb_t*)ofcb,
-						encoding_symbols_tab, esi_of_symbol_to_build);
+		return of_ldpc_staircase_build_repair_symbol((of_ldpc_staircase_cb_t*)ofcb, encoding_symbols_tab, esi_of_symbol_to_build);
 	}
 	else
 	{
@@ -273,14 +263,14 @@ error:
 of_status_t  of_get_pck_matrix_dimensions_from_file(char * matrix_file,UINT32 * n_rows, UINT32 *n_cols){
 
 	FILE * f;
+	char * pch;
+	char line[1024];
+
 	f = fopen (matrix_file,"r");
-	if(f == NULL){
+	if (f == NULL) {
 		OF_PRINT_ERROR(("Cannot open file %s\n",matrix_file))
 		goto error;
 	}
-
-	char * pch;
-	char line[1024];
 	// get the number of row of the matrix
 	if (fgets (line, sizeof line, f) != NULL)
 	{
@@ -298,8 +288,9 @@ of_status_t  of_get_pck_matrix_dimensions_from_file(char * matrix_file,UINT32 * 
 		//printf("ncol = %d\n",n_cols);
 	}
 	fclose(f);
-	return OF_STATUS_OK;
 	OF_EXIT_FUNCTION
+	return OF_STATUS_OK;
+
 error:
 	OF_EXIT_FUNCTION
 	return OF_STATUS_ERROR;

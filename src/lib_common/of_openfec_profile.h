@@ -1,4 +1,4 @@
-/* $Id: of_openfec_profile.h 148 2014-07-08 08:01:56Z roca $ */
+/* $Id: of_openfec_profile.h 175 2014-07-11 09:58:38Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -68,5 +68,18 @@
  */
 #define OF_USE_LINEAR_BINARY_CODES_UTILS
 #define OF_USE_GALOIS_FIELD_CODES_UTILS
+
+/**
+ * Define if you need SSE optimizations for XOR operations.
+ * This is useful for PC usage, with processors that support this
+ * extension (i.e. all the processors except the very old ones).
+ */
+//#define ASSEMBLY_SSE_OPT
+ 
+/*
+ * NB: if SSE is not defined, then we'll use regular XOR operations,
+ * either on 32 bit or 64 bit integers depending on the operating
+ * system.
+ */
 
 #endif // OF_OPENFEC_PROFILE_H

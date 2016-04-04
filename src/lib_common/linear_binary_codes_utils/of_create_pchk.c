@@ -1,4 +1,4 @@
-/* $Id: of_create_pchk.c 104 2014-04-08 07:26:27Z roca $ */
+/* $Id: of_create_pchk.c 186 2014-07-16 07:17:53Z roca $ */
 /*
  * The contents of this directory and its sub-directories are
  * Copyright (c) 1995-2003 by Radford M. Neal
@@ -15,7 +15,7 @@
  */
 
 #include "of_linear_binary_code.h"
-#include <math.h>
+
 
 of_mod2sparse* of_create_pchk_matrix (UINT32		nb_rows,
 				      UINT32		nb_cols,
@@ -24,31 +24,20 @@ of_mod2sparse* of_create_pchk_matrix (UINT32		nb_rows,
 				      UINT32		seed,
 				      bool		no4cycle,
 				      of_session_type	type,
-				      UINT8		verbosity,
-				      of_memory_usage_stats_t	*stats)
+				      UINT8		verbosity)
 {
 	OF_ENTER_FUNCTION
 	of_mod2sparse* m;
-	switch (type)
-	{
+	switch (type) {
 	case TypeREGULAR_LDPC:
-		m = of_create_pchk_matrix_general (nb_rows,
-						   nb_cols,
-						   make_method,
-						   left_degree,
-						   seed,
-						   no4cycle,
-						   type,
-						   verbosity,
-						   stats);
+		m = of_create_pchk_matrix_general (nb_rows, nb_cols, make_method, left_degree,
+						   seed, no4cycle, type, verbosity);
 		break;
+
 	case Type2DMATRIX:
-		m = of_create_2D_pchk_matrix	(nb_rows,
-						nb_cols,
-						type,
-						verbosity,
-						stats);
+		m = of_create_2D_pchk_matrix	(nb_rows, nb_cols, type, verbosity);
 		break;
+
 	default:
 		abort();
 		OF_EXIT_FUNCTION
@@ -59,26 +48,23 @@ of_mod2sparse* of_create_pchk_matrix (UINT32		nb_rows,
 }
 
 
-of_mod2sparse* of_create_pchk_matrix_general (UINT32 nb_rows,
-					      UINT32 nb_cols,
-					      make_method make_method,
-					      UINT32 left_degree,
-					      UINT32 seed,
-					      bool no4cycle,
-					      of_session_type type,
-					      UINT8 verbosity,of_memory_usage_stats_t *stats)
+of_mod2sparse* of_create_pchk_matrix_general (UINT32		nb_rows,
+					      UINT32		nb_cols,
+					      make_method	make_method,
+					      UINT32		left_degree,
+					      UINT32		seed,
+					      bool		no4cycle,
+					      of_session_type	type,
+					      UINT8		verbosity)
 {
-	OF_ENTER_FUNCTION
-
 	UINT32 row_start = 0;
 	UINT32 row_end = 0;
 	UINT32 col_start = 0;
 	UINT32 col_end = 0;
-
 	INT32 i;
 	of_mod2sparse *pchkMatrix = NULL;
 
-
+	OF_ENTER_FUNCTION
 	if (type != TypeLDGM && type != TypeSTAIRS && type != TypeTRIANGLE && type != TypeREGULAR_LDPC)
 	{
 
@@ -94,19 +80,16 @@ of_mod2sparse* of_create_pchk_matrix_general (UINT32 nb_rows,
 		OF_EXIT_FUNCTION
 		return NULL;
 	}
-
 	if (no4cycle)
 	{
 		OF_PRINT_ERROR(("no4cycle mode is no longer supported!"));
 		OF_EXIT_FUNCTION
 		return NULL;
 	}
-
 	of_rfc5170_srand (seed);
-	pchkMatrix = of_mod2sparse_allocate (nb_rows, nb_cols,stats);
+	pchkMatrix = of_mod2sparse_allocate (nb_rows, nb_cols);
 
-	switch (type)
-	{
+	switch (type) {
 	case TypeLDGM:
 		row_start = 0;
 		row_end = nb_rows;
@@ -124,25 +107,15 @@ of_mod2sparse* of_create_pchk_matrix_general (UINT32 nb_rows,
 	default:
 		break;
 	}
+	of_fill_regular_pchk_matrix (pchkMatrix, row_start, row_end, col_start, col_end, make_method,
+				     left_degree, no4cycle, verbosity);
 
-	of_fill_regular_pchk_matrix (pchkMatrix,
-				     row_start,
-				     row_end,
-				     col_start,
-				     col_end,
-				     make_method,
-				     left_degree,
-				     no4cycle,
-				     verbosity,stats);
-
-
-	switch (type)
-	{
+	switch (type) {
 	case TypeLDGM:
 		for (i = 0; i < nb_rows; i++)
 		{
 			/* identity */
-			of_mod2sparse_insert (pchkMatrix, i, i,stats);
+			of_mod2sparse_insert (pchkMatrix, i, i);
 		}
 		break;
 
@@ -159,8 +132,7 @@ of_mod2sparse* of_create_pchk_matrix_general (UINT32 nb_rows,
 of_mod2sparse* of_create_2D_pchk_matrix		(UINT32		nb_rows,
 						UINT32		nb_cols,
 						of_session_type	type,
-						UINT8		verbosity,
-						of_memory_usage_stats_t *stats)
+						UINT8		verbosity)
 {
 	OF_ENTER_FUNCTION
 	of_mod2sparse	*pchkMatrix;
@@ -177,12 +149,8 @@ of_mod2sparse* of_create_2D_pchk_matrix		(UINT32		nb_rows,
 		if (l - floor(l) == 0 && ((d + l) == nb_rows))
 		{
 			//it's OK for a correct 2D-pchk matrix
-			pchkMatrix = of_mod2sparse_allocate((l + d), (l * d) + (l + d), stats);
-			of_fill_2D_pchk_matrix( pchkMatrix,
-					       l,
-					       d,
-					       verbosity,
-					       stats);
+			pchkMatrix = of_mod2sparse_allocate((l + d), (l * d) + (l + d));
+			of_fill_2D_pchk_matrix(pchkMatrix, l, d, verbosity);
 			OF_EXIT_FUNCTION
 			return pchkMatrix;
 		}
@@ -194,18 +162,17 @@ error:
 }
 
 
-of_mod2sparse* 	of_fill_2D_pchk_matrix 		(of_mod2sparse* m,
-					         UINT32	d,
-						 UINT32	l,
-					         UINT8 verbosity,
-					         of_memory_usage_stats_t *stats)
+of_mod2sparse* 	of_fill_2D_pchk_matrix 		(of_mod2sparse	*m,
+					         UINT32		d,
+						 UINT32		l,
+					         UINT8		verbosity)
 {
 	OF_ENTER_FUNCTION
 	UINT32		i, j;
 
 	for (i = 0; i < (l+d); i++)
 	{
-		of_mod2sparse_insert(m, i, i, stats);
+		of_mod2sparse_insert(m, i, i);
 	}
 	// create non interleaved constraints
 	for (i = 0; i < d; i++)
@@ -213,7 +180,7 @@ of_mod2sparse* 	of_fill_2D_pchk_matrix 		(of_mod2sparse* m,
 		//set 1 for source symbols included in equation
 		for (j = 0; j < l; j++)
 		{
-			of_mod2sparse_insert(m, i, j + (i * l) + l + d, stats);
+			of_mod2sparse_insert(m, i, j + (i * l) + l + d);
 		}
 	}
 	// create interleaved constraints
@@ -221,7 +188,7 @@ of_mod2sparse* 	of_fill_2D_pchk_matrix 		(of_mod2sparse* m,
 	{
 		for (j = 0; j < d; j++)
 		{
-			of_mod2sparse_insert(m, i, 4 * j + ( i - d )+l+d, stats);
+			of_mod2sparse_insert(m, i, 4 * j + ( i - d )+l+d);
 		}
 	}
 	return m;
@@ -229,24 +196,24 @@ of_mod2sparse* 	of_fill_2D_pchk_matrix 		(of_mod2sparse* m,
 }
 
 
-of_mod2sparse* of_fill_regular_pchk_matrix (of_mod2sparse* m,
-					    UINT32 row_start,
-					    UINT32 row_end,
-					    UINT32 col_start,
-					    UINT32 col_end,
-					    make_method make_method,
-					    UINT32 left_degree,
-					    bool no4cycle,
-					    UINT8 verbosity,of_memory_usage_stats_t *stats)
+of_mod2sparse* of_fill_regular_pchk_matrix (of_mod2sparse	*m,
+					    UINT32		row_start,
+					    UINT32		row_end,
+					    UINT32		col_start,
+					    UINT32		col_end,
+					    make_method		make_method,
+					    UINT32		left_degree,
+					    bool		no4cycle,
+					    UINT8		verbosity)
 {
-	OF_ENTER_FUNCTION
-
 	of_mod2entry *e;
 	UINT32 added, uneven;
 	INT32 i, j, k, t;
 	UINT32 *u;
 	of_mod2sparse *pchkMatrix = m;
 	UINT32 nb_col, nb_row;
+
+	OF_ENTER_FUNCTION
 	nb_col = col_end - col_start;
 	nb_row = row_end - row_start;
 
@@ -263,13 +230,13 @@ of_mod2sparse* of_fill_regular_pchk_matrix (of_mod2sparse* m,
 					i = of_rfc5170_rand (nb_row);
 				}
 				while (of_mod2sparse_find (pchkMatrix, i, j));
-				of_mod2sparse_insert (pchkMatrix, i, j,stats);
+				of_mod2sparse_insert (pchkMatrix, i, j);
 			}
 		}
 		break;
 
 	case Evenboth:
-		u = (UINT32*) of_calloc (left_degree * nb_col, sizeof * u MEM_STATS);
+		u = (UINT32*) of_calloc (left_degree * nb_col, sizeof * u);
 
 		/* initialize a list of possible choices to guarantee a homogeneous "1" distribution */
 		for (k = left_degree * nb_col - 1; k >= 0; k--)
@@ -296,7 +263,7 @@ of_mod2sparse* of_fill_regular_pchk_matrix (of_mod2sparse* m,
 						i = t + of_rfc5170_rand (left_degree * nb_col - t);
 					}
 					while (of_mod2sparse_find (pchkMatrix, u[i], j));
-					of_mod2sparse_insert (pchkMatrix, u[i], j,stats);
+					of_mod2sparse_insert (pchkMatrix, u[i], j);
 					/* replace with u[t] which has never been chosen */
 					u[i] = u[t];
 					t++;
@@ -310,7 +277,7 @@ of_mod2sparse* of_fill_regular_pchk_matrix (of_mod2sparse* m,
 						i = of_rfc5170_rand (nb_row);
 					}
 					while (of_mod2sparse_find (pchkMatrix, i, j));
-					of_mod2sparse_insert (pchkMatrix, i, j,stats);
+					of_mod2sparse_insert (pchkMatrix, i, j);
 				}
 			}
 		}
@@ -319,7 +286,7 @@ of_mod2sparse* of_fill_regular_pchk_matrix (of_mod2sparse* m,
 		{
 			OF_PRINT_ERROR(("Had to place %d checks in rows unevenly\n", uneven));
 		}
-		of_free (u MEM_STATS);	/* VR: added */
+		of_free (u);	/* VR: added */
 		break;
 
 	default:
@@ -334,7 +301,7 @@ of_mod2sparse* of_fill_regular_pchk_matrix (of_mod2sparse* m,
 		if (of_mod2sparse_at_end (e))
 		{
 			j = (of_rfc5170_rand (nb_col) + col_start);
-			e = of_mod2sparse_insert (pchkMatrix, i, j,stats);
+			e = of_mod2sparse_insert (pchkMatrix, i, j);
 			added ++;
 		}
 		e = of_mod2sparse_first_in_row (pchkMatrix, i);
@@ -345,7 +312,7 @@ of_mod2sparse* of_fill_regular_pchk_matrix (of_mod2sparse* m,
 				j = (of_rfc5170_rand (nb_col)) + col_start;
 			}
 			while (j == of_mod2sparse_col (e));
-			of_mod2sparse_insert (pchkMatrix, i, j,stats);
+			of_mod2sparse_insert (pchkMatrix, i, j);
 			added ++;
 		}
 	}
@@ -367,7 +334,7 @@ of_mod2sparse* of_fill_regular_pchk_matrix (of_mod2sparse* m,
 				j = (of_rfc5170_rand (nb_col)) + col_start;
 			}
 			while (of_mod2sparse_find (pchkMatrix, i, j));
-			of_mod2sparse_insert (pchkMatrix, i, j,stats);
+			of_mod2sparse_insert (pchkMatrix, i, j);
 		}
 		if (verbosity >= 1)
 		{

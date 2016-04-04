@@ -1,4 +1,4 @@
-/* $Id: of_ml_tool.c 72 2012-04-13 13:27:26Z detchart $ */
+/* $Id: of_ml_tool.c 183 2014-07-15 09:38:55Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -31,21 +31,17 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-#include "of_ml_tool.h"
+#include "../of_linear_binary_code.h"
 
 #ifdef OF_USE_DECODER
 #ifdef OF_USE_LINEAR_BINARY_CODES_UTILS
 #ifdef ML_DECODING
 
-#include <math.h>
-#include <string.h>
 
-
-
-INT32	of_linear_binary_code_solve_dense_system (of_mod2dense *m,
-			       void ** constant_member,
-			       void **variables,
-			       of_linear_binary_code_cb_t *ofcb)
+INT32	of_linear_binary_code_solve_dense_system (of_mod2dense *		m,
+					          void **			constant_member,
+					          void **			variables,
+					          of_linear_binary_code_cb_t *	ofcb)
 {
 	OF_ENTER_FUNCTION
 	if (!of_linear_binary_code_triangularize_dense_system (m, constant_member, ofcb))
@@ -76,9 +72,10 @@ INT32	of_linear_binary_code_solve_dense_system (of_mod2dense *m,
 	return 1;
 }
 
-INT32	of_linear_binary_code_preprocess_dense_system (of_mod2dense *m,
-				    void **check_values,
-				    UINT32 symbol_size)
+
+INT32	of_linear_binary_code_preprocess_dense_system  (of_mod2dense *		m,
+							void **			check_values,
+							UINT32			symbol_size)
 {
 	OF_ENTER_FUNCTION
 	INT32 i, n, p, w;
@@ -106,9 +103,10 @@ INT32	of_linear_binary_code_preprocess_dense_system (of_mod2dense *m,
 	return 1;
 }
 
-INT32	of_linear_binary_code_triangularize_dense_system (of_mod2dense *m,
-				       void **check_values,
-				       of_linear_binary_code_cb_t *ofcb)
+
+INT32	of_linear_binary_code_triangularize_dense_system (of_mod2dense *		m,
+							  void **			check_values,
+							  of_linear_binary_code_cb_t *	ofcb)
 {
 	OF_ENTER_FUNCTION
 	INT32 i,  n, p, w;
@@ -129,10 +127,10 @@ INT32	of_linear_binary_code_triangularize_dense_system (of_mod2dense *m,
 }
 
 
-inline INT32	of_linear_binary_code_col_forward_elimination (	of_mod2dense		*m,
-							void			**check_values,
-							of_linear_binary_code_cb_t	*ofcb,
-							INT32			col_idx)
+inline INT32	of_linear_binary_code_col_forward_elimination  (of_mod2dense		*m,
+								void			**check_values,
+								of_linear_binary_code_cb_t	*ofcb,
+								INT32			col_idx)
 {
 	OF_ENTER_FUNCTION
 	of_mod2word *s, *t;
@@ -189,54 +187,38 @@ inline INT32	of_linear_binary_code_col_forward_elimination (	of_mod2dense		*m,
 				t++;
 			}
 			//of_mod2dense_print(stdout,m);
-			/*for (k = k0; k < w; k++)
-				s[k] ^= t[k]; // add column i with coluln j*/
 			if (check_values[i] != NULL)
 			{
 				// if the buffer of line i is NULL there is nothing to Add
 				// add the checkValues of the i to the m_checkValue of line j
 				if (check_values[j] == NULL)
 				{
-					check_values[j] = of_malloc (symbol_size MEM_STATS_ARG);
-				
+					check_values[j] = of_malloc (symbol_size);
 					// Copy data now
 					memcpy (check_values[j],
 						check_values[i],
 						symbol_size);
-				} // if (checkValues[m_index_rows[__current_row]] == NULL)
+				}
 				else
 				{
 					ofcb->tmp_tab_symbols[ofcb->nb_tmp_symbols++] = check_values[j];
-#if 0
-					of_add_to_symbol (check_values[j],
-							  check_values[i],
-							  symbol_size OP_ARG_VAL);
-#endif
-				} // if (checkValues[m_index_rows[__current_row]] == NULL) ... else ...
+				}
 			}
 			else
 			{
-				check_values[i] = of_calloc (1, symbol_size MEM_STATS_ARG);
-				//memset (check_values[i], 0, symbol_size);
+				check_values[i] = of_calloc (1, symbol_size);
 			}
 		}
 	}
-#if 1
 	if (ofcb->nb_tmp_symbols!=0)
 		if (ofcb->nb_tmp_symbols == 1)
-			of_add_to_symbol (ofcb->tmp_tab_symbols[0],
-							  check_values[i],
-							  symbol_size OP_ARG_VAL);
+			of_add_to_symbol(ofcb->tmp_tab_symbols[0], check_values[i], symbol_size OP_ARG_VAL);
 		else
+			of_add_to_multiple_symbols(ofcb->tmp_tab_symbols,check_values[i],ofcb->nb_tmp_symbols, ofcb->encoding_symbol_length
 #ifdef OF_DEBUG
-		of_add_to_multiple_symbols(ofcb->tmp_tab_symbols,check_values[i],ofcb->nb_tmp_symbols,
-								   ofcb->encoding_symbol_length,
-								   &(ofcb->stats_xor->nb_xor_for_ML));
-#else
-	of_add_to_multiple_symbols(ofcb->tmp_tab_symbols,check_values[i],ofcb->nb_tmp_symbols,
-							   ofcb->encoding_symbol_length);
+						   , &(ofcb->stats_xor->nb_xor_for_ML)
 #endif
-#endif
+						   );
 	OF_EXIT_FUNCTION
 	return 1;
 }
@@ -281,7 +263,6 @@ INT32	of_linear_binary_code_col_forward_elimination_pivot_reordering (of_mod2den
 		check_values[i] = check_values[j];
 		check_values[j] = tmp_buffer;
 	}
-	//for (j = 0; j<p; j++)
 	for (j = i; j < p; j++)
 	{
 		if (j != i && of_mod2_getbit (m->row[j][k0], b0))
@@ -299,26 +280,21 @@ INT32	of_linear_binary_code_col_forward_elimination_pivot_reordering (of_mod2den
 				// add the checkValues of the i to the m_checkValue of line j
 				if (check_values[j] == NULL)
 				{
-					check_values[j] =  of_malloc (symbol_size MEM_STATS_ARG);
+					check_values[j] =  of_malloc (symbol_size);
 					//printf("malloc %d\n",symbolSize);
 					// Copy data now
-					memcpy (
-						check_values[j],
+					memcpy (check_values[j],
 						check_values[i],
 						symbol_size);
-					//MEM_STORE(checkValues[j]);
-				} // if (checkValues[m_index_rows[__current_row]] == NULL)
+				}
 				else
 				{
-					of_add_to_symbol (
-						check_values[j],
-						check_values[i],
-						symbol_size OP_ARG_VAL);
-				} // if (checkValues[m_index_rows[__current_row]] == NULL) ... else ...
+					of_add_to_symbol (check_values[j], check_values[i], symbol_size OP_ARG_VAL);
+				}
 			}
 			else
 			{
-				check_values[i] = of_malloc (symbol_size MEM_STATS_ARG);
+				check_values[i] = of_malloc (symbol_size);
 				memset (check_values[i], 0, symbol_size);
 			}
 		}
@@ -327,11 +303,12 @@ INT32	of_linear_binary_code_col_forward_elimination_pivot_reordering (of_mod2den
 	return 1;
 }
 
+
 /* Deduce the value of the missing symbols from the inverted dense matrix */
-INT32	of_linear_binary_code_backward_substitution (void * variables[],
-				  void * constant_member[],
-				  of_mod2dense *m,
-				  of_linear_binary_code_cb_t *ofcb)
+INT32	of_linear_binary_code_backward_substitution    (void *				variables[],
+							void *				constant_member[],
+							of_mod2dense *			m,
+							of_linear_binary_code_cb_t *	ofcb)
 {
 	OF_ENTER_FUNCTION
 	INT32 i, j, n, p, w, k0, b0;
@@ -345,18 +322,11 @@ INT32	of_linear_binary_code_backward_substitution (void * variables[],
 			k0 = i >> of_mod2_wordsize_shift; // word index of the ith bit
 			b0 = i & of_mod2_wordsize_mask;  // bit index of the ith bit in the k0-th word
 			ASSERT(of_mod2_getbit (m->row[i][k0], b0))
-			/*if (!of_mod2_getbit (m->row[i][k0], b0))
-			{
-				// check if the diagonal is non null
-				OF_PRINT_LVL (1, ("diagonal element %d is null !! \n ", i))
-				OF_EXIT_FUNCTION
-				return 0;
-			}*/
 			// the missing source symbol in col i is equal to the sum of P'_i and all the
 			// source symbol represented in row i
 			//printf("rebuilding source symbol %d with col %d\n",col_index[i],i);
-            variables[i] = constant_member[i];
-            constant_member[i] = NULL;
+			variables[i] = constant_member[i];
+			constant_member[i] = NULL;
 
 			ofcb->nb_tmp_symbols=0;
 			for (j = i + 1; j < n;j++)
@@ -367,40 +337,30 @@ INT32	of_linear_binary_code_backward_substitution (void * variables[],
 				if (of_mod2_getbit (m->row[i][k0], b0))
 				{
 					ofcb->tmp_tab_symbols[ofcb->nb_tmp_symbols++] = variables[j];
-#if 0
-					of_add_to_symbol (
-						variables[i],//GetBufferPtrOnly(m_checkValues[m_index_rows[j]]),
-						variables[j],//GetBuffer(m_checkValues[m_index_rows[i]])
-						symbol_size OP_ARG_VAL);
-#endif
 				}
 			}
 			//printf("%i\n",ofcb->nb_tmp_symbols);
-#if 1
 			if (ofcb->nb_tmp_symbols!=0)
+				of_add_from_multiple_symbols(variables[i], (const void**)ofcb->tmp_tab_symbols, ofcb->nb_tmp_symbols, ofcb->encoding_symbol_length
 #ifdef OF_DEBUG
-				of_add_from_multiple_symbols(variables[i],ofcb->tmp_tab_symbols,ofcb->nb_tmp_symbols,
-										   ofcb->encoding_symbol_length,
-										   &(ofcb->stats_xor->nb_xor_for_ML));
-#else
-			of_add_from_multiple_symbols(variables[i],(const void**)ofcb->tmp_tab_symbols,ofcb->nb_tmp_symbols,
-									   ofcb->encoding_symbol_length);
+							     , &(ofcb->stats_xor->nb_xor_for_ML)
 #endif
-#endif
+							     );
 		}
-        else
-        {
-            OF_PRINT_ERROR(("Backward_Substitution_mt: ERROR variables[%d] should be NULL\n", i))
-        }
+		else
+		{
+			OF_PRINT_ERROR(("Backward_Substitution_mt: ERROR variables[%d] should be NULL\n", i))
+		}
 	}
 	OF_EXIT_FUNCTION
 	return 1;
 }
 
-INT32	of_linear_binary_code_col_forward_permutation (of_mod2dense *m,
-				    void **check_values,
-				    UINT32 symbol_size,
-				    INT32 col_idx)
+
+INT32	of_linear_binary_code_col_forward_permutation  (of_mod2dense *		m,
+							void **			check_values,
+							UINT32			symbol_size,
+							INT32			col_idx)
 {
 	OF_ENTER_FUNCTION
 	of_mod2word  *t;
@@ -438,7 +398,6 @@ INT32	of_linear_binary_code_col_forward_permutation (of_mod2dense *m,
 	OF_EXIT_FUNCTION
 	return 1;
 }
-
 
 
 #endif //ML_DECODING

@@ -1,4 +1,4 @@
-/* $Id: of_codec_profile.h 152 2014-07-08 14:01:42Z roca $ */
+/* $Id: of_codec_profile.h 175 2014-07-11 09:58:38Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -43,8 +43,6 @@
 #define MEM_STATS_ARG
 #define MEM_STATS
 #endif
-
-#define ASSEMBLY_SSE_OPT
 
 /**
  * Define if you want to enable the use of the ML (Maximum Likelyhood) decoding.

@@ -1,4 +1,4 @@
-/* $Id: of_ldpc_includes.h 72 2012-04-13 13:27:26Z detchart $ */
+/* $Id: of_ldpc_includes.h 189 2014-07-16 08:53:50Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -35,27 +35,23 @@
 #define OF_LDPC_INCLUDES
 
 #include <stdio.h>
-//#include <malloc.h>
-#include <math.h>
-#include <sys/time.h>	/* for timersub */
+#include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
-#include <pthread.h>
 
-
-#include "../../lib_common/of_types.h"
-#include "../../lib_common/of_debug.h"
 #include "../../lib_common/of_openfec_api.h"
-#include "../../lib_common/of_cb.h"
-#include "../../lib_common/of_mem.h"
+
+/* 
+ * the remaining includes will only be considered if of_codec_profile.h is
+ * included above by of_openfec_api.h => of_openfec_profile.h
+ */
+#ifdef OF_USE_LDPC_STAIRCASE_CODEC
+
 #include "../../lib_common/linear_binary_codes_utils/of_linear_binary_code.h"
-
-
-#ifdef IL_SUPPORT	/* to check calling after of_codec_profile.h */
-#include <IL/il.h>
-#endif
 
 #include "of_ldpc_staircase_api.h"
 #include "of_ldpc_staircase.h"
 
 
+#endif //OF_USE_LDPC_STAIRCASE_CODEC
 #endif //OF_LDPC_INCLUDES

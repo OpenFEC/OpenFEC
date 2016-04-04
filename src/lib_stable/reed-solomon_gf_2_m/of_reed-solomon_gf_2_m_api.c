@@ -1,4 +1,4 @@
-/* $Id: of_reed-solomon_gf_2_m_api.c 152 2014-07-08 14:01:42Z roca $ */
+/* $Id: of_reed-solomon_gf_2_m_api.c 186 2014-07-16 07:17:53Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -39,13 +39,11 @@
 
 of_status_t of_rs_2_m_create_codec_instance (of_rs_2_m_cb_t**	of_cb)
 {
-	OF_ENTER_FUNCTION
 	of_codec_type_t		codec_type;	/* temporary value */
-#ifdef OF_DEBUG
-	of_rs_2_m_cb_t* cb = (of_rs_2_m_cb_t*) of_realloc (*of_cb, sizeof (of_rs_2_m_cb_t), NULL);
-#else
-	of_rs_2_m_cb_t* cb = (of_rs_2_m_cb_t*) of_realloc (*of_cb, sizeof (of_rs_2_m_cb_t));
-#endif
+	of_rs_2_m_cb_t		*cb;
+
+	OF_ENTER_FUNCTION
+	cb = (of_rs_2_m_cb_t*) of_realloc (*of_cb, sizeof (of_rs_2_m_cb_t));
 	*of_cb = cb;
 	/* realloc does not initialize the additional buffer space, so do that manually,
 	 * then re-initialize a few parameters */
@@ -70,24 +68,15 @@ of_status_t	of_rs_2_m_release_codec_instance (of_rs_2_m_cb_t*	ofcb)
 #ifdef OF_USE_DECODER
 	if (ofcb->available_symbols_tab != NULL)
 	{
-		of_free(ofcb->available_symbols_tab MEM_STATS_ARG);
+		of_free(ofcb->available_symbols_tab);
 		ofcb->available_symbols_tab = NULL;
 	}
 #endif  /* OF_USE_DECODER */
 #ifdef OF_DEBUG /* { */
-	if (of_verbosity >= 0)
-	{
-		of_print_memory_statistics(ofcb->stats);
-	}
 	OF_TRACE_LVL(1, ("\tTo be added: Reed-Solomon GF(2^4): total of %ld bytes for precalculated tables (incl. %ld for the optimized mult table)\n", 
 		sizeof(of_gf_2_4_log) + sizeof(of_gf_2_4_exp) + sizeof(of_gf_2_4_inv) + sizeof(of_gf_2_4_mul_table) + sizeof(of_gf_2_4_opt_mul_table), sizeof(of_gf_2_4_opt_mul_table)))
 	OF_TRACE_LVL(1, ("\tTo be added: Reed-Solomon GF(2^8): total of %ld bytes for precalculated tables (incl. %ld for mult table)\n", 
 		sizeof(of_gf_2_8_log) + sizeof(of_gf_2_8_exp) + sizeof(of_gf_2_8_inv) + sizeof(of_gf_2_8_mul_table), sizeof(of_gf_2_8_mul_table)))
-	if (ofcb->stats != NULL) {
-		of_hash_table_destroy(ofcb->stats->hash);
-		of_free(ofcb->stats->hash, NULL);
-		of_free(ofcb->stats, NULL);
-	}
 #endif  /* } OF_DEBUG */
 	OF_EXIT_FUNCTION
 	return OF_STATUS_OK;
@@ -98,11 +87,6 @@ of_status_t	of_rs_2_m_set_fec_parameters   (of_rs_2_m_cb_t*		ofcb,
 						of_rs_2_m_parameters_t*	params)
 {
 	OF_ENTER_FUNCTION
-#ifdef OF_DEBUG
-	ofcb->stats			= of_calloc(1, sizeof(of_memory_usage_stats_t), NULL);
-	ofcb->stats->hash		= of_calloc(1, sizeof(of_hash_table_t), NULL);
-	of_hash_table_init(ofcb->stats->hash, 97, of_hash, NULL);
-#endif
 	ofcb->m				= params->m;
 	if ((ofcb->m != 4) && (ofcb->m != 8)) {
 		OF_PRINT_ERROR(("ERROR: invalid m parameter (must be 4 or 8)"));
@@ -120,8 +104,9 @@ of_status_t	of_rs_2_m_set_fec_parameters   (of_rs_2_m_cb_t*		ofcb,
 	ofcb->encoding_symbol_length	= params->encoding_symbol_length;
 	ofcb->nb_encoding_symbols	= ofcb->nb_source_symbols + ofcb->nb_repair_symbols;
 #ifdef OF_USE_DECODER
-	ofcb->available_symbols_tab	= (void**) of_calloc (ofcb->nb_encoding_symbols, sizeof (void*) MEM_STATS_ARG);
+	ofcb->available_symbols_tab	= (void**) of_calloc (ofcb->nb_encoding_symbols, sizeof (void*));
 	ofcb->nb_available_symbols	= 0;
+	ofcb->nb_available_source_symbols = 0;
 #endif  /* OF_USE_DECODER */
 	OF_EXIT_FUNCTION
 	return OF_STATUS_OK;
@@ -166,7 +151,7 @@ of_status_t	of_rs_2_m_build_repair_symbol  (of_rs_2_m_cb_t*	ofcb,
 	}
 	if (encoding_symbols_tab[esi_of_symbol_to_build] == NULL)
 	{
-		if ((encoding_symbols_tab[esi_of_symbol_to_build] = of_calloc (1, ofcb->encoding_symbol_length MEM_STATS_ARG)) == NULL)
+		if ((encoding_symbols_tab[esi_of_symbol_to_build] = of_calloc (1, ofcb->encoding_symbol_length)) == NULL)
 		{
 			OF_PRINT_ERROR(("ERROR: no memory\n"))
 			goto error;
@@ -263,11 +248,10 @@ of_status_t	of_rs_2_m_set_available_symbols    (of_rs_2_m_cb_t*	ofcb,
 	ofcb->nb_available_source_symbols = 0;
 	for (i = 0; i < ofcb->nb_encoding_symbols; i++)
 	{
-		if (encoding_symbols_tab[i] == NULL)
+		if ((ofcb->available_symbols_tab[i] = encoding_symbols_tab[i]) == NULL)
 		{
 			continue;
 		}
-		ofcb->available_symbols_tab[ofcb->nb_available_symbols] = encoding_symbols_tab[i];
 		if (i < ofcb->nb_source_symbols)
 		{
 			ofcb->nb_available_source_symbols++;
@@ -430,7 +414,7 @@ of_status_t	of_rs_2_m_finish_decoding (of_rs_2_m_cb_t*	ofcb)
 	 * NB: this is required by the current FEC codec which modifies
 	 * the tmp_buf buffers!!!
 	 */
-	large_buf = (char *) of_malloc(k * ofcb->encoding_symbol_length MEM_STATS_ARG);
+	large_buf = (char *) of_malloc(k * ofcb->encoding_symbol_length);
 	if (large_buf == NULL)
 	{
 		goto no_mem;
@@ -533,7 +517,7 @@ of_status_t	of_rs_2_m_finish_decoding (of_rs_2_m_cb_t*	ofcb)
 		}
 		else
 		{
-			*ass_buf = (void *) of_malloc (ofcb->encoding_symbol_length MEM_STATS_ARG);
+			*ass_buf = (void *) of_malloc (ofcb->encoding_symbol_length);
 		}
 		if (*ass_buf == NULL)
 		{
@@ -543,7 +527,7 @@ of_status_t	of_rs_2_m_finish_decoding (of_rs_2_m_cb_t*	ofcb)
 		OF_TRACE_LVL(2, ("of_rs_finish_decoding: decoded source symbol esi=%d from tmp_buf[%d]\n",
 					tmp_idx, tmp_idx))
 	}
-	of_free(large_buf MEM_STATS_ARG);
+	of_free(large_buf);
 	OF_EXIT_FUNCTION
 		return OF_STATUS_OK;
 

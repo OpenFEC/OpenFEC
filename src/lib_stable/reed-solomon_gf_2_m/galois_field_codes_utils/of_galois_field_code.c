@@ -1,4 +1,4 @@
-/* $Id: of_galois_field_code.c 148 2014-07-08 08:01:56Z roca $ */
+/* $Id: of_galois_field_code.c 185 2014-07-15 09:57:16Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2012 INRIA - All rights reserved
@@ -98,12 +98,12 @@ void		of_rs_2m_release(of_galois_field_code_cb_t* ofcb)
 	 OF_ENTER_FUNCTION
 	 if (ofcb->enc_matrix != NULL)
 	 {
-		 of_free(ofcb->enc_matrix MEM_STATS_ARG);
+		 of_free(ofcb->enc_matrix);
 		 ofcb->enc_matrix=NULL;
 	 }
 	 if (ofcb->dec_matrix != NULL)
 	 {
-		 of_free(ofcb->dec_matrix MEM_STATS_ARG);
+		 of_free(ofcb->dec_matrix);
 		 ofcb->dec_matrix=NULL;
 	 }
 	 OF_EXIT_FUNCTION
@@ -117,7 +117,7 @@ of_status_t of_rs_2m_build_encoding_matrix(of_galois_field_code_cb_t* ofcb)
 	UINT32 k,r,col,row;
 	k=ofcb->nb_source_symbols;
 	r = ofcb->nb_repair_symbols;
-	if ((ofcb->enc_matrix = of_malloc((k+r)*(k) MEM_STATS_ARG)) == NULL)
+	if ((ofcb->enc_matrix = of_malloc((k+r)*(k))) == NULL)
 	{
 		goto no_mem;
 	}
@@ -126,7 +126,7 @@ of_status_t of_rs_2m_build_encoding_matrix(of_galois_field_code_cb_t* ofcb)
 	 * bit systems */
 	ofcb->magic = ( (FEC_MAGIC ^ k) ^ (k+r)) ^ ((uintptr_t)(ofcb->enc_matrix) & 0xFFFFFFFF);
 
-	if ((tmp_m = of_malloc((k+r)*(k) MEM_STATS_ARG)) == NULL)
+	if ((tmp_m = of_malloc((k+r)*(k))) == NULL)
 	{
 		goto no_mem;
 	}
@@ -172,7 +172,7 @@ of_status_t of_rs_2m_build_encoding_matrix(of_galois_field_code_cb_t* ofcb)
 	for (p = ofcb->enc_matrix, col = 0 ; col < k ; col++, p += k + 1)
 		*p = 1 ;
 
-	of_free (tmp_m MEM_STATS_ARG);
+	of_free (tmp_m);
 
 	OF_EXIT_FUNCTION
 	return OF_STATUS_OK;
@@ -192,7 +192,7 @@ of_status_t of_rs_2m_build_decoding_matrix(of_galois_field_code_cb_t* ofcb, int 
 	gf *p;
 	k = ofcb->nb_source_symbols;
 	r = ofcb->nb_repair_symbols;
-	if ((ofcb->dec_matrix = of_malloc((k)*(k) MEM_STATS_ARG)) == NULL)
+	if ((ofcb->dec_matrix = of_malloc((k)*(k))) == NULL)
 	{
 		goto no_mem;
 	}
@@ -212,7 +212,7 @@ of_status_t of_rs_2m_build_decoding_matrix(of_galois_field_code_cb_t* ofcb, int 
 			{
 				OF_PRINT_ERROR ( ("decode: invalid index %d (max %d)\n",
 					     index[i], k+r - 1))
-				of_free (ofcb->dec_matrix MEM_STATS_ARG);
+				of_free (ofcb->dec_matrix);
 				OF_EXIT_FUNCTION
 				return OF_STATUS_FATAL_ERROR ;
 			}
@@ -229,7 +229,7 @@ of_status_t of_rs_2m_build_decoding_matrix(of_galois_field_code_cb_t* ofcb, int 
 	}
 	if (result)
 	{
-		of_free (ofcb->dec_matrix MEM_STATS_ARG);
+		of_free (ofcb->dec_matrix);
 		ofcb->dec_matrix = NULL ;
 	}
 	OF_EXIT_FUNCTION
@@ -267,12 +267,12 @@ of_status_t of_rs_2m_decode (of_galois_field_code_cb_t* ofcb, gf *_pkt[], int in
 	/*
 	 * do the actual decoding
 	 */
-	new_pkt = (gf **) of_malloc (k * sizeof (gf *) MEM_STATS_ARG);
+	new_pkt = (gf **) of_malloc (k * sizeof (gf *));
 	for (row = 0 ; row < k ; row++)
 	{
 		if (index[row] >= k)
 		{
-			new_pkt[row] = (gf *) of_calloc (sz, sizeof (gf) MEM_STATS_ARG);
+			new_pkt[row] = (gf *) of_calloc (sz, sizeof (gf));
 			for (col = 0 ; col < k ; col++)
 			{
 				if (ofcb->dec_matrix[row*k + col] != 0)
@@ -302,12 +302,12 @@ of_status_t of_rs_2m_decode (of_galois_field_code_cb_t* ofcb, gf *_pkt[], int in
 		if (index[row] >= k)
 		{
 			bcopy (new_pkt[row], pkt[row], sz*sizeof (gf));
-			of_free (new_pkt[row] MEM_STATS_ARG);
+			of_free (new_pkt[row]);
 		}
 	}
 //#endif
-	of_free (new_pkt MEM_STATS_ARG);
-	of_free(ofcb->dec_matrix MEM_STATS_ARG);
+	of_free (new_pkt);
+	of_free(ofcb->dec_matrix);
 	ofcb->dec_matrix = NULL;
 	OF_EXIT_FUNCTION
 	return OF_STATUS_OK;

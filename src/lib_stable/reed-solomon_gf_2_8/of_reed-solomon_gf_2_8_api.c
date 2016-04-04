@@ -1,4 +1,4 @@
-/* $Id: of_reed-solomon_gf_2_8_api.c 2 2011-03-02 11:01:37Z detchart $ */
+/* $Id: of_reed-solomon_gf_2_8_api.c 186 2014-07-16 07:17:53Z roca $ */
 /*
  * OpenFEC.org AL-FEC Library.
  * (c) Copyright 2009 - 2011 INRIA - All rights reserved
@@ -58,13 +58,11 @@ bool	of_rs_is_repair_symbol	(of_rs_cb_t*	ofcb,
 
 of_status_t of_rs_create_codec_instance (of_rs_cb_t**	of_cb)
 {
-	OF_ENTER_FUNCTION
 	of_codec_type_t		codec_type;	/* temporary value */
-#ifdef OF_DEBUG
-	of_rs_cb_t* cb = (of_rs_cb_t*) of_realloc (*of_cb, sizeof (of_rs_cb_t), NULL);
-#else
-	of_rs_cb_t* cb = (of_rs_cb_t*) of_realloc (*of_cb, sizeof (of_rs_cb_t));
-#endif
+	of_rs_cb_t		*cb;
+
+	OF_ENTER_FUNCTION
+	cb = (of_rs_cb_t*) of_realloc (*of_cb, sizeof (of_rs_cb_t));
 	*of_cb = cb;
 	/* realloc does not initialize the additional buffer space, so do that manually,
 	 * then re-initialize a few parameters */
@@ -91,11 +89,7 @@ of_status_t	of_rs_release_codec_instance (of_rs_cb_t*	ofcb)
 #ifdef OF_USE_DECODER
 	if (ofcb->available_symbols_tab != NULL)
 	{
-#ifdef OF_DEBUG
-		of_free(ofcb->available_symbols_tab, NULL);
-#else
 		of_free(ofcb->available_symbols_tab);
-#endif
 		ofcb->available_symbols_tab = NULL;
 	}
 #endif  /* OF_USE_DECODER */
@@ -118,12 +112,9 @@ of_status_t	of_rs_set_fec_parameters (of_rs_cb_t*		ofcb,
 	ofcb->encoding_symbol_length = params->encoding_symbol_length;
 	ofcb->nb_encoding_symbols = ofcb->nb_source_symbols + ofcb->nb_repair_symbols;
 #ifdef OF_USE_DECODER
-#ifdef OF_DEBUG
-	ofcb->available_symbols_tab = (void**) of_calloc (ofcb->nb_encoding_symbols, sizeof (void*), NULL);
-#else
 	ofcb->available_symbols_tab = (void**) of_calloc (ofcb->nb_encoding_symbols, sizeof (void*));
-#endif
 	ofcb->nb_available_symbols = 0;
+	ofcb->nb_available_source_symbols = 0;
 #endif  /* OF_USE_DECODER */
 	OF_EXIT_FUNCTION
 	return OF_STATUS_OK;
@@ -168,11 +159,7 @@ of_status_t	of_rs_build_repair_symbol (of_rs_cb_t*		ofcb,
 	}
 	if (encoding_symbols_tab[esi_of_symbol_to_build] == NULL)
 	{
-#ifdef OF_DEBUG
-		if ((encoding_symbols_tab[esi_of_symbol_to_build] = of_calloc (1, ofcb->encoding_symbol_length, NULL)) == NULL)
-#else
 		if ((encoding_symbols_tab[esi_of_symbol_to_build] = of_calloc (1, ofcb->encoding_symbol_length)) == NULL)
-#endif
 		{
 			OF_PRINT_ERROR(("of_rs_build_repair_symbol: Error, no memory\n"))
 			goto error;
@@ -275,11 +262,10 @@ of_status_t	of_rs_set_available_symbols    (of_rs_cb_t*	ofcb,
 	ofcb->nb_available_source_symbols = 0;
 	for (i = 0; i < ofcb->nb_encoding_symbols; i++)
 	{
-		if (encoding_symbols_tab[i] == NULL)
+		if ((ofcb->available_symbols_tab[i] = encoding_symbols_tab[i]) == NULL)
 		{
 			continue;	
 		}
-		ofcb->available_symbols_tab[ofcb->nb_available_symbols] = encoding_symbols_tab[i];
 		if (i < ofcb->nb_source_symbols)
 		{
 			ofcb->nb_available_source_symbols++;
@@ -335,11 +321,7 @@ of_status_t	of_rs_finish_decoding (of_rs_cb_t*	ofcb)
 	 * NB: this is required by the current FEC codec which modifies
 	 * the tmp_buf buffers!!!
 	 */
-#ifdef OF_DEBUG
-	large_buf = (char *) of_malloc(k * ofcb->encoding_symbol_length, NULL);
-#else
 	large_buf = (char *) of_malloc(k * ofcb->encoding_symbol_length);
-#endif
 	if (large_buf == NULL)
 	{
 		goto no_mem;
@@ -437,11 +419,7 @@ of_status_t	of_rs_finish_decoding (of_rs_cb_t*	ofcb)
 		}
 		else
 		{
-#ifdef OF_DEBUG
-			*ass_buf = (void *) of_malloc (ofcb->encoding_symbol_length, NULL);
-#else
 			*ass_buf = (void *) of_malloc (ofcb->encoding_symbol_length);
-#endif
 		}
 		if (*ass_buf == NULL)
 		{
@@ -451,11 +429,7 @@ of_status_t	of_rs_finish_decoding (of_rs_cb_t*	ofcb)
 		OF_TRACE_LVL(2, ("of_rs_finish_decoding: decoded source symbol esi=%d from tmp_buf[%d]\n",
 				tmp_idx, tmp_idx))
 	}
-#ifdef OF_DEBUG
-	of_free(large_buf, NULL);
-#else
 	of_free(large_buf);
-#endif
 	OF_EXIT_FUNCTION
 	return OF_STATUS_OK;
 no_mem:
