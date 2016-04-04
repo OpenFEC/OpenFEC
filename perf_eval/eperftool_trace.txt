@@ -1,0 +1,2021 @@
+--------------------------------
+Hostname=doom
+  OS=linux
+uname=Linux doom 2.6.27.41-170.2.117.fc10.x86_64 #1 SMP Thu Dec 10 10:36:29 EST 2009 x86_64 x86_64 x86_64 GNU/Linux
+
+--------------------------------
+
+
+
+iter=0
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:10 -seed=1
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309933.892131
+init_end=1334309933.892418  init_time=0.000287
+random seed=1
+encoding_start=1334309933.892509
+encoding_end=1334309933.920592  encoding_time=0.028083
+decoding_start=1334309933.920634
+decoding_end=1334309933.947158  decoding_time=0.026524  nb_received_symbols=1103  inefficiency_ratio=1.077148
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=1
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:10 -seed=2
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309933.967122
+init_end=1334309933.967374  init_time=0.000252
+random seed=2
+encoding_start=1334309933.967464
+encoding_end=1334309933.994968  encoding_time=0.027504
+decoding_start=1334309933.995032
+decoding_end=1334309934.26773  decoding_time=0.031741  nb_received_symbols=1111  inefficiency_ratio=1.084961
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=2
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:10 -seed=3
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309933.926340
+init_end=1334309933.926596  init_time=0.000256
+random seed=3
+encoding_start=1334309933.926685
+encoding_end=1334309933.950380  encoding_time=0.023695
+decoding_start=1334309933.950407
+decoding_end=1334309933.977114  decoding_time=0.026707  nb_received_symbols=1074  inefficiency_ratio=1.048828
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=3
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:10 -seed=4
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.8988
+init_end=1334309934.9242  init_time=0.000254
+random seed=4
+encoding_start=1334309934.9324
+encoding_end=1334309934.43060  encoding_time=0.033736
+decoding_start=1334309934.43111
+decoding_end=1334309934.73769  decoding_time=0.030658  nb_received_symbols=1070  inefficiency_ratio=1.044922
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=4
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:10 -seed=5
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309933.956698
+init_end=1334309933.957342  init_time=0.000644
+random seed=5
+encoding_start=1334309933.957441
+encoding_end=1334309933.982208  encoding_time=0.024767
+decoding_start=1334309933.982257
+decoding_end=1334309934.21272  decoding_time=0.039015  nb_received_symbols=1093  inefficiency_ratio=1.067383
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=5
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:10 -seed=6
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.49345
+init_end=1334309934.49641  init_time=0.000296
+random seed=6
+encoding_start=1334309934.49730
+encoding_end=1334309934.79141  encoding_time=0.029411
+decoding_start=1334309934.79189
+decoding_end=1334309934.106861  decoding_time=0.027672  nb_received_symbols=1085  inefficiency_ratio=1.059570
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=6
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:10 -seed=7
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.47801
+init_end=1334309934.48107  init_time=0.000306
+random seed=7
+encoding_start=1334309934.48210
+encoding_end=1334309934.79181  encoding_time=0.030971
+decoding_start=1334309934.79207
+decoding_end=1334309934.115137  decoding_time=0.035930  nb_received_symbols=1078  inefficiency_ratio=1.052734
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=7
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:10 -seed=8
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.146332
+init_end=1334309934.146624  init_time=0.000292
+random seed=8
+encoding_start=1334309934.146712
+encoding_end=1334309934.175004  encoding_time=0.028292
+decoding_start=1334309934.175027
+decoding_end=1334309934.206619  decoding_time=0.031592  nb_received_symbols=1099  inefficiency_ratio=1.073242
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=8
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:10 -seed=9
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.90556
+init_end=1334309934.90826  init_time=0.000270
+random seed=9
+encoding_start=1334309934.90909
+encoding_end=1334309934.114596  encoding_time=0.023687
+decoding_start=1334309934.114631
+decoding_end=1334309934.149852  decoding_time=0.035221  nb_received_symbols=1060  inefficiency_ratio=1.035156
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=9
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:10 -seed=10
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.169948
+init_end=1334309934.170191  init_time=0.000243
+random seed=10
+encoding_start=1334309934.170271
+encoding_end=1334309934.194798  encoding_time=0.024527
+decoding_start=1334309934.194861
+decoding_end=1334309934.222148  decoding_time=0.027287  nb_received_symbols=1094  inefficiency_ratio=1.068359
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=0
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:15 -seed=1
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.325043
+init_end=1334309934.325324  init_time=0.000281
+random seed=1
+encoding_start=1334309934.325432
+encoding_end=1334309934.352979  encoding_time=0.027547
+decoding_start=1334309934.353010
+decoding_end=1334309934.381233  decoding_time=0.028223  nb_received_symbols=1078  inefficiency_ratio=1.052734
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=1
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:15 -seed=2
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.408970
+init_end=1334309934.409261  init_time=0.000291
+random seed=2
+encoding_start=1334309934.409352
+encoding_end=1334309934.442394  encoding_time=0.033042
+decoding_start=1334309934.442450
+decoding_end=1334309934.469144  decoding_time=0.026694  nb_received_symbols=1100  inefficiency_ratio=1.074219
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=2
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:15 -seed=3
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.362315
+init_end=1334309934.362577  init_time=0.000262
+random seed=3
+encoding_start=1334309934.362664
+encoding_end=1334309934.390870  encoding_time=0.028206
+decoding_start=1334309934.390910
+decoding_end=1334309934.418559  decoding_time=0.027649  nb_received_symbols=1134  inefficiency_ratio=1.107422
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=3
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:15 -seed=4
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.442955
+init_end=1334309934.443223  init_time=0.000268
+random seed=4
+encoding_start=1334309934.443309
+encoding_end=1334309934.467474  encoding_time=0.024165
+decoding_start=1334309934.467512
+decoding_end=1334309934.495781  decoding_time=0.028269  nb_received_symbols=1091  inefficiency_ratio=1.065430
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=4
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:15 -seed=5
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.403922
+init_end=1334309934.404178  init_time=0.000256
+random seed=5
+encoding_start=1334309934.404259
+encoding_end=1334309934.428432  encoding_time=0.024173
+decoding_start=1334309934.428483
+decoding_end=1334309934.460853  decoding_time=0.032370  nb_received_symbols=1055  inefficiency_ratio=1.030273
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=5
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:15 -seed=6
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.482887
+init_end=1334309934.483172  init_time=0.000285
+random seed=6
+encoding_start=1334309934.483267
+encoding_end=1334309934.511105  encoding_time=0.027838
+decoding_start=1334309934.511165
+decoding_end=1334309934.538040  decoding_time=0.026875  nb_received_symbols=1074  inefficiency_ratio=1.048828
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=6
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:15 -seed=7
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.484974
+init_end=1334309934.485225  init_time=0.000251
+random seed=7
+encoding_start=1334309934.485310
+encoding_end=1334309934.514593  encoding_time=0.029283
+decoding_start=1334309934.514650
+decoding_end=1334309934.541287  decoding_time=0.026637  nb_received_symbols=1044  inefficiency_ratio=1.019531
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=7
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:15 -seed=8
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.570019
+init_end=1334309934.570304  init_time=0.000285
+random seed=8
+encoding_start=1334309934.570398
+encoding_end=1334309934.598246  encoding_time=0.027848
+decoding_start=1334309934.598318
+decoding_end=1334309934.625496  decoding_time=0.027178  nb_received_symbols=1122  inefficiency_ratio=1.095703
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=8
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:15 -seed=9
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.565105
+init_end=1334309934.565433  init_time=0.000328
+random seed=9
+encoding_start=1334309934.565535
+encoding_end=1334309934.593723  encoding_time=0.028188
+decoding_start=1334309934.593796
+decoding_end=1334309934.621847  decoding_time=0.028051  nb_received_symbols=1099  inefficiency_ratio=1.073242
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=9
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:15 -seed=10
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.646178
+init_end=1334309934.646472  init_time=0.000294
+random seed=10
+encoding_start=1334309934.646567
+encoding_end=1334309934.679035  encoding_time=0.032468
+decoding_start=1334309934.679098
+decoding_end=1334309934.705493  decoding_time=0.026395  nb_received_symbols=1136  inefficiency_ratio=1.109375
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=0
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:20 -seed=1
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.791446
+init_end=1334309934.791730  init_time=0.000284
+random seed=1
+encoding_start=1334309934.791827
+encoding_end=1334309934.819915  encoding_time=0.028088
+decoding_start=1334309934.819952
+decoding_end=1334309934.847730  decoding_time=0.027778  nb_received_symbols=1108  inefficiency_ratio=1.082031
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=1
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:20 -seed=2
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.873046
+init_end=1334309934.873289  init_time=0.000243
+random seed=2
+encoding_start=1334309934.873375
+encoding_end=1334309934.901330  encoding_time=0.027955
+decoding_start=1334309934.901379
+decoding_end=1334309934.934016  decoding_time=0.032637  nb_received_symbols=1078  inefficiency_ratio=1.052734
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=2
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:20 -seed=3
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.829452
+init_end=1334309934.829710  init_time=0.000258
+random seed=3
+encoding_start=1334309934.829798
+encoding_end=1334309934.854088  encoding_time=0.024290
+decoding_start=1334309934.854134
+decoding_end=1334309934.884397  decoding_time=0.030263  nb_received_symbols=1135  inefficiency_ratio=1.108398
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=3
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:20 -seed=4
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.914874
+init_end=1334309934.915129  init_time=0.000255
+random seed=4
+encoding_start=1334309934.915216
+encoding_end=1334309934.939794  encoding_time=0.024578
+decoding_start=1334309934.939824
+decoding_end=1334309934.967398  decoding_time=0.027574  nb_received_symbols=1095  inefficiency_ratio=1.069336
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=4
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:20 -seed=5
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.871290
+init_end=1334309934.871555  init_time=0.000265
+random seed=5
+encoding_start=1334309934.871642
+encoding_end=1334309934.899389  encoding_time=0.027747
+decoding_start=1334309934.899418
+decoding_end=1334309934.927616  decoding_time=0.028198  nb_received_symbols=1069  inefficiency_ratio=1.043945
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=5
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:20 -seed=6
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.966604
+init_end=1334309934.966900  init_time=0.000296
+random seed=6
+encoding_start=1334309934.967000
+encoding_end=1334309934.994730  encoding_time=0.027730
+decoding_start=1334309934.994758
+decoding_end=1334309935.20966  decoding_time=0.026208  nb_received_symbols=1128  inefficiency_ratio=1.101562
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=6
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:20 -seed=7
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309934.968591
+init_end=1334309934.968879  init_time=0.000288
+random seed=7
+encoding_start=1334309934.968977
+encoding_end=1334309934.994222  encoding_time=0.025245
+decoding_start=1334309934.994260
+decoding_end=1334309935.34279  decoding_time=0.040019  nb_received_symbols=1051  inefficiency_ratio=1.026367
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=7
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:20 -seed=8
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309935.69329
+init_end=1334309935.69616  init_time=0.000287
+random seed=8
+encoding_start=1334309935.69703
+encoding_end=1334309935.101198  encoding_time=0.031495
+decoding_start=1334309935.101247
+decoding_end=1334309935.129679  decoding_time=0.028432  nb_received_symbols=1098  inefficiency_ratio=1.072266
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=8
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:20 -seed=9
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309935.2866
+init_end=1334309935.3112  init_time=0.000246
+random seed=9
+encoding_start=1334309935.3195
+encoding_end=1334309935.28474  encoding_time=0.025279
+decoding_start=1334309935.28515
+decoding_end=1334309935.56163  decoding_time=0.027648  nb_received_symbols=1104  inefficiency_ratio=1.078125
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=9
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:20 -seed=10
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309935.80677
+init_end=1334309935.80980  init_time=0.000303
+random seed=10
+encoding_start=1334309935.81081
+encoding_end=1334309935.110301  encoding_time=0.029220
+decoding_start=1334309935.110332
+decoding_end=1334309935.140563  decoding_time=0.030231  nb_received_symbols=1104  inefficiency_ratio=1.078125
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=0
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:25 -seed=1
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309935.250531
+init_end=1334309935.250812  init_time=0.000281
+random seed=1
+encoding_start=1334309935.250910
+encoding_end=1334309935.278309  encoding_time=0.027399
+decoding_start=1334309935.278354
+decoding_end=1334309935.306154  decoding_time=0.027800  nb_received_symbols=1081  inefficiency_ratio=1.055664
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=1
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:25 -seed=2
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309935.342228
+init_end=1334309935.342474  init_time=0.000246
+random seed=2
+encoding_start=1334309935.342569
+encoding_end=1334309935.366286  encoding_time=0.023717
+decoding_start=1334309935.366350
+decoding_end=1334309935.397326  decoding_time=0.030976  nb_received_symbols=1081  inefficiency_ratio=1.055664
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=2
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:25 -seed=3
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309935.282419
+init_end=1334309935.282683  init_time=0.000264
+random seed=3
+encoding_start=1334309935.282769
+encoding_end=1334309935.307249  encoding_time=0.024480
+decoding_start=1334309935.307278
+decoding_end=1334309935.334056  decoding_time=0.026778  nb_received_symbols=1114  inefficiency_ratio=1.087891
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=3
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:25 -seed=4
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309935.362015
+init_end=1334309935.362304  init_time=0.000289
+random seed=4
+encoding_start=1334309935.362419
+encoding_end=1334309935.389871  encoding_time=0.027452
+decoding_start=1334309935.389923
+decoding_end=1334309935.421252  decoding_time=0.031329  nb_received_symbols=1117  inefficiency_ratio=1.090820
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=4
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:25 -seed=5
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309935.336073
+init_end=1334309935.336363  init_time=0.000290
+random seed=5
+encoding_start=1334309935.336468
+encoding_end=1334309935.364151  encoding_time=0.027683
+decoding_start=1334309935.364185
+decoding_end=1334309935.395245  decoding_time=0.031060  nb_received_symbols=1077  inefficiency_ratio=1.051758
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=5
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:25 -seed=6
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309935.442649
+init_end=1334309935.442884  init_time=0.000235
+random seed=6
+encoding_start=1334309935.442965
+encoding_end=1334309935.473370  encoding_time=0.030405
+decoding_start=1334309935.473429
+decoding_end=1334309935.500791  decoding_time=0.027362  nb_received_symbols=1068  inefficiency_ratio=1.042969
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=6
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:25 -seed=7
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309935.433545
+init_end=1334309935.433856  init_time=0.000311
+random seed=7
+encoding_start=1334309935.433964
+encoding_end=1334309935.476748  encoding_time=0.042784
+decoding_start=1334309935.476800
+decoding_end=1334309935.503439  decoding_time=0.026639  nb_received_symbols=1045  inefficiency_ratio=1.020508
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=7
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:25 -seed=8
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309935.535841
+init_end=1334309935.536122  init_time=0.000281
+random seed=8
+encoding_start=1334309935.536217
+encoding_end=1334309935.563246  encoding_time=0.027029
+decoding_start=1334309935.563306
+decoding_end=1334309935.598715  decoding_time=0.035409  nb_received_symbols=1074  inefficiency_ratio=1.048828
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=8
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:25 -seed=9
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309935.437648
+init_end=1334309935.437986  init_time=0.000338
+random seed=9
+encoding_start=1334309935.438079
+encoding_end=1334309935.463571  encoding_time=0.025492
+decoding_start=1334309935.463620
+decoding_end=1334309935.491408  decoding_time=0.027788  nb_received_symbols=1148  inefficiency_ratio=1.121094
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=9
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:25 -seed=10
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309935.519247
+init_end=1334309935.519511  init_time=0.000264
+random seed=10
+encoding_start=1334309935.522564
+encoding_end=1334309935.549050  encoding_time=0.026486
+decoding_start=1334309935.549089
+decoding_end=1334309935.576239  decoding_time=0.027150  nb_received_symbols=1093  inefficiency_ratio=1.067383
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=0
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:30 -seed=1
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309935.712440
+init_end=1334309935.712719  init_time=0.000279
+random seed=1
+encoding_start=1334309935.712821
+encoding_end=1334309935.740377  encoding_time=0.027556
+decoding_start=1334309935.740417
+ERROR in "/scratch/of/trunk/openfec/src/lib_stable/reed-solomon_gf_2_8/of_reed-solomon_gf_2_8_api.c":322:of_rs_finish_decoding(): of_rs_finish_decoding: Error, nb received symbols < nb source symbols
+ERROR in "/scratch/of/trunk/openfec/applis/eperftool/receiver.c":208:receive_and_decode(): ERROR: of_finish_decoding() failed
+ERROR in "/scratch/of/trunk/openfec/src/lib_stable/reed-solomon_gf_2_8/of_reed-solomon_gf_2_8_api.c":322:of_rs_finish_decoding(): of_rs_finish_decoding: Error, nb received symbols < nb source symbols
+ERROR in "/scratch/of/trunk/openfec/applis/eperftool/receiver.c":208:receive_and_decode(): ERROR: of_finish_decoding() failed
+FAILURE, did not manage to finish decoding even after receiving 1075 symbols, inefficiency_ratio>1.049805
+eperf_tool: decoding failure
+decoding_status=1
+
+
+iter=1
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:30 -seed=2
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309935.790966
+init_end=1334309935.791213  init_time=0.000247
+random seed=2
+encoding_start=1334309935.791302
+encoding_end=1334309935.817669  encoding_time=0.026367
+decoding_start=1334309935.817706
+decoding_end=1334309935.845441  decoding_time=0.027735  nb_received_symbols=1063  inefficiency_ratio=1.038086
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=2
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:30 -seed=3
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309935.749558
+init_end=1334309935.749820  init_time=0.000262
+random seed=3
+encoding_start=1334309935.749911
+encoding_end=1334309935.774913  encoding_time=0.025002
+decoding_start=1334309935.774970
+decoding_end=1334309935.802490  decoding_time=0.027520  nb_received_symbols=1071  inefficiency_ratio=1.045898
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=3
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:30 -seed=4
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309935.823003
+init_end=1334309935.823255  init_time=0.000252
+random seed=4
+encoding_start=1334309935.823347
+encoding_end=1334309935.848729  encoding_time=0.025382
+decoding_start=1334309935.848773
+ERROR in "/scratch/of/trunk/openfec/src/lib_stable/reed-solomon_gf_2_8/of_reed-solomon_gf_2_8_api.c":322:of_rs_finish_decoding(): of_rs_finish_decoding: Error, nb received symbols < nb source symbols
+ERROR in "/scratch/of/trunk/openfec/applis/eperftool/receiver.c":208:receive_and_decode(): ERROR: of_finish_decoding() failed
+FAILURE, did not manage to finish decoding even after receiving 1075 symbols, inefficiency_ratio>1.049805
+eperf_tool: decoding failure
+decoding_status=1
+
+
+iter=4
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:30 -seed=5
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309935.801457
+init_end=1334309935.801765  init_time=0.000308
+random seed=5
+encoding_start=1334309935.801865
+encoding_end=1334309935.829479  encoding_time=0.027614
+decoding_start=1334309935.829556
+decoding_end=1334309935.862632  decoding_time=0.033076  nb_received_symbols=1071  inefficiency_ratio=1.045898
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=5
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:30 -seed=6
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309935.952620
+init_end=1334309935.952911  init_time=0.000291
+random seed=6
+encoding_start=1334309935.953028
+encoding_end=1334309935.980321  encoding_time=0.027293
+decoding_start=1334309935.980369
+decoding_end=1334309936.12104  decoding_time=0.031735  nb_received_symbols=1071  inefficiency_ratio=1.045898
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=6
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:30 -seed=7
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309935.883176
+init_end=1334309935.883537  init_time=0.000361
+random seed=7
+encoding_start=1334309935.883648
+encoding_end=1334309935.916989  encoding_time=0.033341
+decoding_start=1334309935.917059
+ERROR in "/scratch/of/trunk/openfec/src/lib_stable/reed-solomon_gf_2_8/of_reed-solomon_gf_2_8_api.c":322:of_rs_finish_decoding(): of_rs_finish_decoding: Error, nb received symbols < nb source symbols
+ERROR in "/scratch/of/trunk/openfec/applis/eperftool/receiver.c":208:receive_and_decode(): ERROR: of_finish_decoding() failed
+FAILURE, did not manage to finish decoding even after receiving 1075 symbols, inefficiency_ratio>1.049805
+eperf_tool: decoding failure
+decoding_status=1
+
+
+iter=7
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:30 -seed=8
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309935.977456
+init_end=1334309935.977756  init_time=0.000300
+random seed=8
+encoding_start=1334309935.977854
+encoding_end=1334309936.2550  encoding_time=0.024696
+decoding_start=1334309936.2626
+decoding_end=1334309936.34932  decoding_time=0.032306  nb_received_symbols=1048  inefficiency_ratio=1.023438
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=8
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:30 -seed=9
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309935.939480
+init_end=1334309935.939736  init_time=0.000256
+random seed=9
+encoding_start=1334309935.939828
+encoding_end=1334309935.971482  encoding_time=0.031654
+decoding_start=1334309935.971538
+ERROR in "/scratch/of/trunk/openfec/src/lib_stable/reed-solomon_gf_2_8/of_reed-solomon_gf_2_8_api.c":322:of_rs_finish_decoding(): of_rs_finish_decoding: Error, nb received symbols < nb source symbols
+ERROR in "/scratch/of/trunk/openfec/applis/eperftool/receiver.c":208:receive_and_decode(): ERROR: of_finish_decoding() failed
+ERROR in "/scratch/of/trunk/openfec/src/lib_stable/reed-solomon_gf_2_8/of_reed-solomon_gf_2_8_api.c":322:of_rs_finish_decoding(): of_rs_finish_decoding: Error, nb received symbols < nb source symbols
+ERROR in "/scratch/of/trunk/openfec/applis/eperftool/receiver.c":208:receive_and_decode(): ERROR: of_finish_decoding() failed
+FAILURE, did not manage to finish decoding even after receiving 1075 symbols, inefficiency_ratio>1.049805
+eperf_tool: decoding failure
+decoding_status=1
+
+
+iter=9
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=1 -symb_sz=4 -tx_type=0 -loss=2:30 -seed=10
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=1
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309936.30317
+init_end=1334309936.30570  init_time=0.000253
+random seed=10
+encoding_start=1334309936.30660
+encoding_end=1334309936.77002  encoding_time=0.046342
+decoding_start=1334309936.77068
+ERROR in "/scratch/of/trunk/openfec/src/lib_stable/reed-solomon_gf_2_8/of_reed-solomon_gf_2_8_api.c":322:of_rs_finish_decoding(): of_rs_finish_decoding: Error, nb received symbols < nb source symbols
+ERROR in "/scratch/of/trunk/openfec/applis/eperftool/receiver.c":208:receive_and_decode(): ERROR: of_finish_decoding() failed
+FAILURE, did not manage to finish decoding even after receiving 1075 symbols, inefficiency_ratio>1.049805
+eperf_tool: decoding failure
+decoding_status=1
+
+
+iter=0
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:10 -seed=1
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309936.193355
+init_end=1334309936.193663  init_time=0.000308
+random seed=1
+encoding_start=1334309936.193757
+encoding_end=1334309936.195016  encoding_time=0.001259
+decoding_start=1334309936.195033
+decoding_end=1334309936.196584  decoding_time=0.001551  nb_received_symbols=1131  inefficiency_ratio=1.104492
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=1
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:10 -seed=2
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309936.217752
+init_end=1334309936.218049  init_time=0.000297
+random seed=2
+encoding_start=1334309936.218138
+encoding_end=1334309936.219191  encoding_time=0.001053
+decoding_start=1334309936.219208
+decoding_end=1334309936.220635  decoding_time=0.001427  nb_received_symbols=1133  inefficiency_ratio=1.106445
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=2
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:10 -seed=3
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309936.244763
+init_end=1334309936.245059  init_time=0.000296
+random seed=3
+encoding_start=1334309936.245151
+encoding_end=1334309936.247587  encoding_time=0.002436
+decoding_start=1334309936.247609
+decoding_end=1334309936.249042  decoding_time=0.001433  nb_received_symbols=1127  inefficiency_ratio=1.100586
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=3
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:10 -seed=4
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309936.272188
+init_end=1334309936.272500  init_time=0.000312
+random seed=4
+encoding_start=1334309936.272592
+encoding_end=1334309936.273679  encoding_time=0.001087
+decoding_start=1334309936.273694
+decoding_end=1334309936.275115  decoding_time=0.001421  nb_received_symbols=1124  inefficiency_ratio=1.097656
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=4
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:10 -seed=5
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309936.314702
+init_end=1334309936.315003  init_time=0.000301
+random seed=5
+encoding_start=1334309936.315096
+encoding_end=1334309936.316147  encoding_time=0.001051
+decoding_start=1334309936.316162
+decoding_end=1334309936.317554  decoding_time=0.001392  nb_received_symbols=1125  inefficiency_ratio=1.098633
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=5
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:10 -seed=6
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309936.339851
+init_end=1334309936.340148  init_time=0.000297
+random seed=6
+encoding_start=1334309936.340240
+encoding_end=1334309936.341348  encoding_time=0.001108
+decoding_start=1334309936.341366
+decoding_end=1334309936.342759  decoding_time=0.001393  nb_received_symbols=1134  inefficiency_ratio=1.107422
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=6
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:10 -seed=7
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309936.373467
+init_end=1334309936.373774  init_time=0.000307
+random seed=7
+encoding_start=1334309936.373868
+encoding_end=1334309936.375030  encoding_time=0.001162
+decoding_start=1334309936.375051
+decoding_end=1334309936.376522  decoding_time=0.001471  nb_received_symbols=1151  inefficiency_ratio=1.124023
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=7
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:10 -seed=8
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309936.401335
+init_end=1334309936.401634  init_time=0.000299
+random seed=8
+encoding_start=1334309936.401728
+encoding_end=1334309936.402796  encoding_time=0.001068
+decoding_start=1334309936.402811
+decoding_end=1334309936.404218  decoding_time=0.001407  nb_received_symbols=1123  inefficiency_ratio=1.096680
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=8
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:10 -seed=9
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309936.438650
+init_end=1334309936.438945  init_time=0.000295
+random seed=9
+encoding_start=1334309936.439035
+encoding_end=1334309936.440228  encoding_time=0.001193
+decoding_start=1334309936.440247
+decoding_end=1334309936.441732  decoding_time=0.001485  nb_received_symbols=1126  inefficiency_ratio=1.099609
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=9
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:10 -seed=10
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309936.470961
+init_end=1334309936.471262  init_time=0.000301
+random seed=10
+encoding_start=1334309936.471355
+encoding_end=1334309936.472428  encoding_time=0.001073
+decoding_start=1334309936.472445
+decoding_end=1334309936.473825  decoding_time=0.001380  nb_received_symbols=1117  inefficiency_ratio=1.090820
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=0
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:15 -seed=1
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309936.628852
+init_end=1334309936.629146  init_time=0.000294
+random seed=1
+encoding_start=1334309936.629239
+encoding_end=1334309936.630319  encoding_time=0.001080
+decoding_start=1334309936.630342
+decoding_end=1334309936.631797  decoding_time=0.001455  nb_received_symbols=1133  inefficiency_ratio=1.106445
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=1
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:15 -seed=2
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309936.654902
+init_end=1334309936.655200  init_time=0.000298
+random seed=2
+encoding_start=1334309936.655301
+encoding_end=1334309936.656358  encoding_time=0.001057
+decoding_start=1334309936.656376
+decoding_end=1334309936.657780  decoding_time=0.001404  nb_received_symbols=1136  inefficiency_ratio=1.109375
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=2
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:15 -seed=3
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309936.682157
+init_end=1334309936.682466  init_time=0.000309
+random seed=3
+encoding_start=1334309936.682561
+encoding_end=1334309936.683621  encoding_time=0.001060
+decoding_start=1334309936.683637
+decoding_end=1334309936.685058  decoding_time=0.001421  nb_received_symbols=1114  inefficiency_ratio=1.087891
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=3
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:15 -seed=4
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309936.710973
+init_end=1334309936.711267  init_time=0.000294
+random seed=4
+encoding_start=1334309936.711368
+encoding_end=1334309936.712440  encoding_time=0.001072
+decoding_start=1334309936.712454
+decoding_end=1334309936.713862  decoding_time=0.001408  nb_received_symbols=1129  inefficiency_ratio=1.102539
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=4
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:15 -seed=5
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309936.748773
+init_end=1334309936.749073  init_time=0.000300
+random seed=5
+encoding_start=1334309936.749165
+encoding_end=1334309936.750238  encoding_time=0.001073
+decoding_start=1334309936.750254
+decoding_end=1334309936.751682  decoding_time=0.001428  nb_received_symbols=1124  inefficiency_ratio=1.097656
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=5
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:15 -seed=6
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309936.774009
+init_end=1334309936.774308  init_time=0.000299
+random seed=6
+encoding_start=1334309936.774413
+encoding_end=1334309936.775505  encoding_time=0.001092
+decoding_start=1334309936.775523
+decoding_end=1334309936.776926  decoding_time=0.001403  nb_received_symbols=1132  inefficiency_ratio=1.105469
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=6
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:15 -seed=7
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309936.816941
+init_end=1334309936.817228  init_time=0.000287
+random seed=7
+encoding_start=1334309936.817322
+encoding_end=1334309936.818383  encoding_time=0.001061
+decoding_start=1334309936.818397
+decoding_end=1334309936.819817  decoding_time=0.001420  nb_received_symbols=1145  inefficiency_ratio=1.118164
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=7
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:15 -seed=8
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309936.843956
+init_end=1334309936.844255  init_time=0.000299
+random seed=8
+encoding_start=1334309936.844359
+encoding_end=1334309936.845418  encoding_time=0.001059
+decoding_start=1334309936.845432
+decoding_end=1334309936.846856  decoding_time=0.001424  nb_received_symbols=1130  inefficiency_ratio=1.103516
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=8
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:15 -seed=9
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309936.874274
+init_end=1334309936.874603  init_time=0.000329
+random seed=9
+encoding_start=1334309936.874703
+encoding_end=1334309936.875856  encoding_time=0.001153
+decoding_start=1334309936.875882
+decoding_end=1334309936.877356  decoding_time=0.001474  nb_received_symbols=1125  inefficiency_ratio=1.098633
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=9
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:15 -seed=10
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309936.903579
+init_end=1334309936.903871  init_time=0.000292
+random seed=10
+encoding_start=1334309936.903969
+encoding_end=1334309936.905007  encoding_time=0.001038
+decoding_start=1334309936.905022
+decoding_end=1334309936.906399  decoding_time=0.001377  nb_received_symbols=1123  inefficiency_ratio=1.096680
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=0
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:20 -seed=1
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309937.74604
+init_end=1334309937.74901  init_time=0.000297
+random seed=1
+encoding_start=1334309937.74997
+encoding_end=1334309937.76043  encoding_time=0.001046
+decoding_start=1334309937.76058
+decoding_end=1334309937.77466  decoding_time=0.001408  nb_received_symbols=1146  inefficiency_ratio=1.119141
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=1
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:20 -seed=2
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309937.98604
+init_end=1334309937.98899  init_time=0.000295
+random seed=2
+encoding_start=1334309937.98992
+encoding_end=1334309937.100021  encoding_time=0.001029
+decoding_start=1334309937.100035
+decoding_end=1334309937.101461  decoding_time=0.001426  nb_received_symbols=1131  inefficiency_ratio=1.104492
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=2
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:20 -seed=3
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309937.128080
+init_end=1334309937.128379  init_time=0.000299
+random seed=3
+encoding_start=1334309937.128478
+encoding_end=1334309937.129540  encoding_time=0.001062
+decoding_start=1334309937.129558
+decoding_end=1334309937.131069  decoding_time=0.001511  nb_received_symbols=1130  inefficiency_ratio=1.103516
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=3
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:20 -seed=4
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309937.195540
+init_end=1334309937.195825  init_time=0.000285
+random seed=4
+encoding_start=1334309937.195921
+encoding_end=1334309937.196938  encoding_time=0.001017
+decoding_start=1334309937.196950
+decoding_end=1334309937.198323  decoding_time=0.001373  nb_received_symbols=1137  inefficiency_ratio=1.110352
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=4
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:20 -seed=5
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309937.175831
+init_end=1334309937.176125  init_time=0.000294
+random seed=5
+encoding_start=1334309937.176218
+encoding_end=1334309937.177318  encoding_time=0.001100
+decoding_start=1334309937.177334
+decoding_end=1334309937.178725  decoding_time=0.001391  nb_received_symbols=1130  inefficiency_ratio=1.103516
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=5
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:20 -seed=6
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309937.210880
+init_end=1334309937.211486  init_time=0.000606
+random seed=6
+encoding_start=1334309937.211771
+encoding_end=1334309937.213246  encoding_time=0.001475
+decoding_start=1334309937.213267
+decoding_end=1334309937.214676  decoding_time=0.001409  nb_received_symbols=1132  inefficiency_ratio=1.105469
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=6
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:20 -seed=7
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309937.253694
+init_end=1334309937.253992  init_time=0.000298
+random seed=7
+encoding_start=1334309937.254089
+encoding_end=1334309937.255183  encoding_time=0.001094
+decoding_start=1334309937.255204
+decoding_end=1334309937.256672  decoding_time=0.001468  nb_received_symbols=1136  inefficiency_ratio=1.109375
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=7
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:20 -seed=8
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309937.281542
+init_end=1334309937.281841  init_time=0.000299
+random seed=8
+encoding_start=1334309937.281939
+encoding_end=1334309937.283010  encoding_time=0.001071
+decoding_start=1334309937.283025
+decoding_end=1334309937.284440  decoding_time=0.001415  nb_received_symbols=1125  inefficiency_ratio=1.098633
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=8
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:20 -seed=9
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309937.319211
+init_end=1334309937.319520  init_time=0.000309
+random seed=9
+encoding_start=1334309937.319624
+encoding_end=1334309937.320709  encoding_time=0.001085
+decoding_start=1334309937.320724
+decoding_end=1334309937.322151  decoding_time=0.001427  nb_received_symbols=1116  inefficiency_ratio=1.089844
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=9
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:20 -seed=10
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309937.354673
+init_end=1334309937.354977  init_time=0.000304
+random seed=10
+encoding_start=1334309937.355076
+encoding_end=1334309937.356140  encoding_time=0.001064
+decoding_start=1334309937.356156
+decoding_end=1334309937.358023  decoding_time=0.001867  nb_received_symbols=1129  inefficiency_ratio=1.102539
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=0
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:25 -seed=1
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309937.515533
+init_end=1334309937.515827  init_time=0.000294
+random seed=1
+encoding_start=1334309937.515929
+encoding_end=1334309937.517010  encoding_time=0.001081
+decoding_start=1334309937.517024
+decoding_end=1334309937.518418  decoding_time=0.001394  nb_received_symbols=1134  inefficiency_ratio=1.107422
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=1
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:25 -seed=2
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309937.541441
+init_end=1334309937.541776  init_time=0.000335
+random seed=2
+encoding_start=1334309937.541881
+encoding_end=1334309937.542933  encoding_time=0.001052
+decoding_start=1334309937.542947
+decoding_end=1334309937.544377  decoding_time=0.001430  nb_received_symbols=1131  inefficiency_ratio=1.104492
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=2
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:25 -seed=3
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309937.572438
+init_end=1334309937.572759  init_time=0.000321
+random seed=3
+encoding_start=1334309937.572860
+encoding_end=1334309937.573938  encoding_time=0.001078
+decoding_start=1334309937.573955
+decoding_end=1334309937.575388  decoding_time=0.001433  nb_received_symbols=1119  inefficiency_ratio=1.092773
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=3
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:25 -seed=4
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309937.607174
+init_end=1334309937.607462  init_time=0.000288
+random seed=4
+encoding_start=1334309937.607574
+encoding_end=1334309937.608661  encoding_time=0.001087
+decoding_start=1334309937.608676
+decoding_end=1334309937.610106  decoding_time=0.001430  nb_received_symbols=1130  inefficiency_ratio=1.103516
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=4
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:25 -seed=5
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309937.638242
+init_end=1334309937.638575  init_time=0.000333
+random seed=5
+encoding_start=1334309937.638676
+encoding_end=1334309937.639779  encoding_time=0.001103
+decoding_start=1334309937.639799
+decoding_end=1334309937.641280  decoding_time=0.001481  nb_received_symbols=1134  inefficiency_ratio=1.107422
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=5
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:25 -seed=6
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309937.669742
+init_end=1334309937.670039  init_time=0.000297
+random seed=6
+encoding_start=1334309937.670136
+encoding_end=1334309937.671184  encoding_time=0.001048
+decoding_start=1334309937.671201
+decoding_end=1334309937.672706  decoding_time=0.001505  nb_received_symbols=1135  inefficiency_ratio=1.108398
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=6
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:25 -seed=7
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309937.712332
+init_end=1334309937.712631  init_time=0.000299
+random seed=7
+encoding_start=1334309937.712736
+encoding_end=1334309937.713841  encoding_time=0.001105
+decoding_start=1334309937.713866
+decoding_end=1334309937.715369  decoding_time=0.001503  nb_received_symbols=1138  inefficiency_ratio=1.111328
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=7
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:25 -seed=8
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309937.742888
+init_end=1334309937.743177  init_time=0.000289
+random seed=8
+encoding_start=1334309937.743275
+encoding_end=1334309937.744318  encoding_time=0.001043
+decoding_start=1334309937.744333
+decoding_end=1334309937.745831  decoding_time=0.001498  nb_received_symbols=1139  inefficiency_ratio=1.112305
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=8
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:25 -seed=9
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309937.775419
+init_end=1334309937.775727  init_time=0.000308
+random seed=9
+encoding_start=1334309937.775833
+encoding_end=1334309937.776964  encoding_time=0.001131
+decoding_start=1334309937.776982
+decoding_end=1334309937.778410  decoding_time=0.001428  nb_received_symbols=1129  inefficiency_ratio=1.102539
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=9
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:25 -seed=10
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309937.808447
+init_end=1334309937.808753  init_time=0.000306
+random seed=10
+encoding_start=1334309937.808851
+encoding_end=1334309937.809927  encoding_time=0.001076
+decoding_start=1334309937.809943
+decoding_end=1334309937.811410  decoding_time=0.001467  nb_received_symbols=1134  inefficiency_ratio=1.107422
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=0
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:30 -seed=1
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309937.975265
+init_end=1334309937.975567  init_time=0.000302
+random seed=1
+encoding_start=1334309937.975680
+encoding_end=1334309937.976728  encoding_time=0.001048
+decoding_start=1334309937.976742
+decoding_end=1334309937.981073  decoding_time=0.004331  nb_received_symbols=1076  inefficiency_ratio=1.050781
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=1
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:30 -seed=2
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309938.7521
+init_end=1334309938.8354  init_time=0.000833
+random seed=2
+encoding_start=1334309938.8468
+encoding_end=1334309938.9523  encoding_time=0.001055
+decoding_start=1334309938.9539
+decoding_end=1334309938.13905  decoding_time=0.004366  nb_received_symbols=1076  inefficiency_ratio=1.050781
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=2
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:30 -seed=3
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309938.33879
+init_end=1334309938.34232  init_time=0.000353
+random seed=3
+encoding_start=1334309938.34383
+encoding_end=1334309938.35492  encoding_time=0.001109
+decoding_start=1334309938.35508
+decoding_end=1334309938.39663  decoding_time=0.004155  nb_received_symbols=1076  inefficiency_ratio=1.050781
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=3
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:30 -seed=4
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309938.65071
+init_end=1334309938.65385  init_time=0.000314
+random seed=4
+encoding_start=1334309938.65492
+encoding_end=1334309938.66559  encoding_time=0.001067
+decoding_start=1334309938.66577
+decoding_end=1334309938.70888  decoding_time=0.004311  nb_received_symbols=1076  inefficiency_ratio=1.050781
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=4
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:30 -seed=5
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309938.100585
+init_end=1334309938.100882  init_time=0.000297
+random seed=5
+encoding_start=1334309938.100981
+encoding_end=1334309938.102043  encoding_time=0.001062
+decoding_start=1334309938.102056
+decoding_end=1334309938.106683  decoding_time=0.004627  nb_received_symbols=1076  inefficiency_ratio=1.050781
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=5
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:30 -seed=6
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309938.134004
+init_end=1334309938.134296  init_time=0.000292
+random seed=6
+encoding_start=1334309938.134403
+encoding_end=1334309938.135454  encoding_time=0.001051
+decoding_start=1334309938.135469
+decoding_end=1334309938.139590  decoding_time=0.004121  nb_received_symbols=1076  inefficiency_ratio=1.050781
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=6
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:30 -seed=7
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309938.163961
+init_end=1334309938.164260  init_time=0.000299
+random seed=7
+encoding_start=1334309938.164374
+encoding_end=1334309938.165453  encoding_time=0.001079
+decoding_start=1334309938.165472
+decoding_end=1334309938.169883  decoding_time=0.004411  nb_received_symbols=1076  inefficiency_ratio=1.050781
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=7
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:30 -seed=8
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309938.197458
+init_end=1334309938.197743  init_time=0.000285
+random seed=8
+encoding_start=1334309938.197844
+encoding_end=1334309938.198908  encoding_time=0.001064
+decoding_start=1334309938.198923
+decoding_end=1334309938.203354  decoding_time=0.004431  nb_received_symbols=1076  inefficiency_ratio=1.050781
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=8
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:30 -seed=9
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309938.228105
+init_end=1334309938.229109  init_time=0.001004
+random seed=9
+encoding_start=1334309938.229394
+encoding_end=1334309938.230509  encoding_time=0.001115
+decoding_start=1334309938.230532
+decoding_end=1334309938.234830  decoding_time=0.004298  nb_received_symbols=1076  inefficiency_ratio=1.050781
+eperf_tool: decoding ok
+decoding_status=0
+
+
+iter=9
+
+../bin/Release/eperftool -k=1024 -r=512 -codec=3 -ldpc_N1=5 -symb_sz=4 -tx_type=0 -loss=2:30 -seed=10
+../bin/Release/eperftooleperf_tool: an extended AL-FEC performance evaluation tool
+OpenFEC.org - Version 1.3.0alpha, October 18th, 2010
+
+tot_nb_source_symbols=1024  tot_nb_repair_symbols=512  symbol_size=4  ldpc_N1=5  rs_m=4
+codec_id=3
+transmission_type=randomly_send_all_source_and_repair_symbols
+init_start=1334309938.265391
+init_end=1334309938.265691  init_time=0.000300
+random seed=10
+encoding_start=1334309938.265798
+encoding_end=1334309938.266874  encoding_time=0.001076
+decoding_start=1334309938.266887
+decoding_end=1334309938.271124  decoding_time=0.004237  nb_received_symbols=1076  inefficiency_ratio=1.050781
+eperf_tool: decoding ok
+decoding_status=0
