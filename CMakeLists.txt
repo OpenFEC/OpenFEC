@@ -20,7 +20,7 @@ message(STATUS "Debug mode ON" )
 else(DEBUG STREQUAL "ON")
 # Release mode
 set(CMAKE_BUILD_TYPE Release)
-set(CMAKE_C_FLAGS "-O4")
+set(CMAKE_C_FLAGS "-O2")
 message(STATUS "Debug mode OFF")
 
 endif (DEBUG STREQUAL "ON")
