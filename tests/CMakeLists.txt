@@ -17,6 +17,8 @@ add_test("code_params" ${EXECUTABLE_OUTPUT_PATH}/test_code_params)
 set_tests_properties ("code_params"
 	PROPERTIES FAIL_REGULAR_EXPRESSION "ERROR;FAILURE")
 
+add_executable(encoder_fuzz encoder_fuzz.c)
+target_link_libraries(encoder_fuzz openfec m crypto)
 
 # definition of the do_test macro used below
 macro (do_test name)
