@@ -27,3 +27,5 @@ target_link_libraries(openfec m)
 
 #target_link_libraries(openfec pthread IL)
 #target_link_libraries(openfec pthread)
+
+install(TARGETS openfec DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR})

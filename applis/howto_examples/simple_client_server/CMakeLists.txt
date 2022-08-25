@@ -12,3 +12,5 @@ set(SIMPLE_SERVER_BIN ${PROJECT_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE}/simple_clien
 add_executable(simple_client ${simple_client_sources})
 
 target_link_libraries(simple_client openfec m)
+
+install(TARGETS simple_server simple_client)
