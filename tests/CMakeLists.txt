@@ -1,19 +1,19 @@
 # list of dedicated binary tests
 add_executable(test_create_instance create_instance_test.c)
 target_link_libraries(test_create_instance openfec m)
-add_test("create_instance" ${EXECUTABLE_OUTPUT_PATH}/test_create_instance)
+add_test("create_instance" ${PROJECT_BINARY_DIR}/tests/test_create_instance)
 set_tests_properties ("create_instance"
 	PROPERTIES FAIL_REGULAR_EXPRESSION "ERROR;FAILURE")
 
 add_executable(test_encoder_instance encoder_instance_test.c)
 target_link_libraries(test_encoder_instance openfec m)
-add_test("encoder_instance" ${EXECUTABLE_OUTPUT_PATH}/test_encoder_instance)
+add_test("encoder_instance" ${PROJECT_BINARY_DIR}/tests/test_encoder_instance)
 set_tests_properties ("encoder_instance"
 	PROPERTIES FAIL_REGULAR_EXPRESSION "ERROR;FAILURE")
 
 add_executable(test_code_params code_params_test.c)
 target_link_libraries(test_code_params openfec m)
-add_test("code_params" ${EXECUTABLE_OUTPUT_PATH}/test_code_params)
+add_test("code_params" ${PROJECT_BINARY_DIR}/tests/test_code_params)
 set_tests_properties ("code_params"
 	PROPERTIES FAIL_REGULAR_EXPRESSION "ERROR;FAILURE")
 
