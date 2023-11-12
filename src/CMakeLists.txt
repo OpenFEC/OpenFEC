@@ -23,6 +23,7 @@ set_target_properties(openfec PROPERTIES
 # Otherwise remove the IL library.
 
 target_link_libraries(openfec m)
+target_include_directories(openfec PUBLIC lib_common)
 #target_link_libraries(openfec m IL)
 
 #target_link_libraries(openfec pthread IL)
