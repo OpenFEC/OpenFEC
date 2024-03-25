@@ -46,7 +46,7 @@
 #include <arpa/inet.h>
 #include <sys/time.h>	/* for gettimeofday */
 
-#include "../../../src/lib_common/of_openfec_api.h"
+#include "of_openfec_api.h"
 
 /*
  * OS dependant definitions
